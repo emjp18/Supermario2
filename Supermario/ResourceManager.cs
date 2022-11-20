@@ -18,12 +18,13 @@ namespace Supermario
         string m_coinblockpath = "coinblock";
         string m_backgroundpath = "background";
         string m_platformpath = "block";
-        string m_variouspath;
+        string m_variouspath = "smbvarious";
+        string m_marioTinyPath = "marioTiny";
         Texture2D m_coinblockTex;
         Texture2D m_cointex;
         Texture2D m_backrgoundTex;
         Texture2D m_platformtex;
-        Texture2D m_varioustex;
+        Texture2D m_marioTinyTex;
         public ResourceManager(Game game) : base(game)
         {
             m_spritedata.texture = m_platformpath;
@@ -46,6 +47,16 @@ namespace Supermario
             m_spritedata.usedSheetY = 0;
             m_spritedata.type = SPRITE_TYPE.BACKGROUND;
             m_objectData.Add(SPRITE_TYPE.BACKGROUND, m_spritedata);
+
+            m_spritedata.texture = m_marioTinyPath;
+            m_spritedata.fullsheetsizeX = 10;
+            m_spritedata.fullSheetsizeY = 2;
+            m_spritedata.usedsheetX =6;
+            m_spritedata.usedSheetY =0;
+            m_spritedata.width = 300;
+            m_spritedata.height = 44;
+            m_spritedata.type = SPRITE_TYPE.PLAYER;
+            m_objectData.Add(SPRITE_TYPE.PLAYER, m_spritedata);
         }
 
         
@@ -53,13 +64,14 @@ namespace Supermario
 
         protected override void LoadContent()
         {
-          
+            m_marioTinyTex = Game.Content.Load<Texture2D>(m_marioTinyPath);
             m_platformtex = Game.Content.Load<Texture2D>(m_platformpath);
             m_coinblockTex = Game.Content.Load<Texture2D>(m_coinblockpath);
             m_backrgoundTex = Game.Content.Load<Texture2D>(m_backgroundpath);
             m_textures.Add(m_platformpath, m_platformtex);
             m_textures.Add(m_coinblockpath, m_coinblockTex);
             m_textures.Add(m_backgroundpath, m_backrgoundTex);
+            m_textures.Add(m_marioTinyPath, m_marioTinyTex);
             base.LoadContent();
         }
 

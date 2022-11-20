@@ -36,7 +36,7 @@ namespace Supermario
         public List<StaticObject> GetBackground() { return m_backgroundObjects; }
         public void ReadFromFile(string fileName)
         {
-            //OBJECT_CONSTRUCTION_DATA playerdata = ResourceManager.GetSpritedata(SPRITE_TYPE.PLAYER);
+            OBJECT_CONSTRUCTION_DATA playerdata = ResourceManager.GetSpritedata(SPRITE_TYPE.PLAYER);
             //OBJECT_CONSTRUCTION_DATA enemydata = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY);
             OBJECT_CONSTRUCTION_DATA coinblockata = ResourceManager.GetSpritedata(SPRITE_TYPE.COINBLOCK);
             OBJECT_CONSTRUCTION_DATA blockata = ResourceManager.GetSpritedata(SPRITE_TYPE.BLOCK);
@@ -82,10 +82,10 @@ namespace Supermario
                 n.SetIsEditable(false);
                 m_backgroundObjects.Add(n);
             }
-            //Vector2 playerpos = GetPos(m_directory + fileName, "player");
-            //playerdata.x = (int)playerpos.X;
-            //playerdata.y = (int)playerpos.Y;
-            //m_player = new Player(playerdata);
+            Vector2 playerpos = GetPos(m_directory + fileName, "player");
+            playerdata.x = (int)playerpos.X;
+            playerdata.y = (int)playerpos.Y;
+            m_player = new Player(playerdata);
         }
         public void WriteToFile(string fileName, List<GameObject> gameObjectList)
         {
