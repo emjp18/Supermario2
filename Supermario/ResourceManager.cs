@@ -7,13 +7,45 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SharpDX.Direct2D1;
 
 namespace Supermario
 {
     internal class ResourceManager : Microsoft.Xna.Framework.DrawableGameComponent
     {
+        OBJECT_CONSTRUCTION_DATA m_spritedata;
+        string m_cloudpath;
+        string m_coinblockpath = "coinblock";
+        string m_backgroundpath = "background";
+        string m_platformpath = "block";
+        string m_variouspath;
+        Texture2D m_coinblockTex;
+        Texture2D m_cointex;
+        Texture2D m_backrgoundTex;
+        Texture2D m_platformtex;
+        Texture2D m_varioustex;
         public ResourceManager(Game game) : base(game)
         {
+            m_spritedata.texture = m_platformpath;
+            m_spritedata.fullsheetsizeX = 1;
+            m_spritedata.fullSheetsizeY = 1;
+            m_spritedata.usedsheetX = 0;
+            m_spritedata.usedSheetY = 0;
+            m_spritedata.width = m_spritedata.height = GameManager.GetTileSize();
+            m_spritedata.type = SPRITE_TYPE.BLOCK;
+            m_objectData.Add(SPRITE_TYPE.BLOCK, m_spritedata);
+            m_spritedata.texture = m_coinblockpath;
+            m_spritedata.type = SPRITE_TYPE.COINBLOCK;
+            m_objectData.Add(SPRITE_TYPE.COINBLOCK, m_spritedata);
+            m_spritedata.width = GameManager.GetRes(true);
+            m_spritedata.height = GameManager.GetRes(false);
+            m_spritedata.texture = m_backgroundpath;
+            m_spritedata.fullsheetsizeX = 1;
+            m_spritedata.fullSheetsizeY = 1;
+            m_spritedata.usedsheetX = 0;
+            m_spritedata.usedSheetY = 0;
+            m_spritedata.type = SPRITE_TYPE.BACKGROUND;
+            m_objectData.Add(SPRITE_TYPE.BACKGROUND, m_spritedata);
         }
 
         
@@ -21,6 +53,13 @@ namespace Supermario
 
         protected override void LoadContent()
         {
+          
+            m_platformtex = Game.Content.Load<Texture2D>(m_platformpath);
+            m_coinblockTex = Game.Content.Load<Texture2D>(m_coinblockpath);
+            m_backrgoundTex = Game.Content.Load<Texture2D>(m_backgroundpath);
+            m_textures.Add(m_platformpath, m_platformtex);
+            m_textures.Add(m_coinblockpath, m_coinblockTex);
+            m_textures.Add(m_backgroundpath, m_backrgoundTex);
             base.LoadContent();
         }
 

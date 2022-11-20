@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SharpDX.Direct3D9;
 using SuperMario;
 using System;
 using System.Collections.Generic;
@@ -10,10 +11,13 @@ namespace Supermario
 {
     internal class GameManager
     {
+        GAME_STATE m_currentState;
+        static LEVEL_TYPE m_currentLevel;
         DO_ONCE m_doOnce = DO_ONCE.DO;
         FileManager m_filemanager;
         GameObjectManager m_gameobjectManager;
         //SoundManager m_soundmanager;
+        ResourceManager m_resourcemanager;
         LevelManager m_levelmanager;
         const string m_directory = "../../../";
         const int m_resX = 800;
@@ -25,6 +29,7 @@ namespace Supermario
         Dictionary<LEVEL_TYPE, string> m_levels = new Dictionary<LEVEL_TYPE, string>();
         public GameManager(Game game)
         {
+            m_resourcemanager = new ResourceManager(game);
             m_filemanager = new FileManager(m_directory);
             //m_soundmanager = new SoundManager(game);
             m_gameobjectManager = new GameObjectManager(game);
@@ -32,17 +37,20 @@ namespace Supermario
             m_levels.Add(LEVEL_TYPE.LEVELE, m_levelEditor);
             m_levels.Add(LEVEL_TYPE.LEVEL0, m_level0);
             m_levels.Add(LEVEL_TYPE.LEVEL1, m_level1);
-            LoadLevel(LEVEL_TYPE.LEVELE);
-
+           
+            m_currentLevel = LEVEL_TYPE.LEVELE;
         }
         public static int GetTileSize() { return m_tileSize; }
         public static int GetRes(bool x) { if (x) return m_resX; else return m_resY; }
         public GameObjectManager GetGameObjectManager() { return m_gameobjectManager; }
         //public SoundManager GetSoundManager() { return m_soundmanager; }
         public FileManager GetFileManager() { return m_filemanager; }
+        public ResourceManager GetResourceManager() { return m_resourcemanager; }
         public LevelManager GetLevelManager() { return m_levelmanager; }
         public void LoadLevel(LEVEL_TYPE level)
         {
+            m_currentState = GAME_STATE.GAME;
+            m_currentLevel = level;
             m_filemanager.ReadFromFile(m_levels[level]);
             ResourceManager.GetObjects().Clear();
             foreach (GameObject s in m_filemanager.GetBackground())
@@ -65,7 +73,8 @@ namespace Supermario
                 ResourceManager.AddObject(s);
 
             }
-            ResourceManager.AddObject(m_filemanager.GetPlayer());
+            
+            //ResourceManager.AddObject(m_filemanager.GetPlayer());
             m_levelmanager.SetLevelType(level);
         }
         public void UpdateGameState()
@@ -100,6 +109,8 @@ namespace Supermario
 
             }
         }
+        public static LEVEL_TYPE GetCurrentLevel() { return m_currentLevel; }
+        public GAME_STATE GetState() { return m_currentState; }
         public void SaveLevel()
         {
 

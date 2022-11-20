@@ -36,21 +36,21 @@ namespace Supermario
         public List<StaticObject> GetBackground() { return m_backgroundObjects; }
         public void ReadFromFile(string fileName)
         {
-            OBJECT_CONSTRUCTION_DATA playerdata = ResourceManager.GetSpritedata(SPRITE_TYPE.PLAYER);
-            OBJECT_CONSTRUCTION_DATA enemydata = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY);
+            //OBJECT_CONSTRUCTION_DATA playerdata = ResourceManager.GetSpritedata(SPRITE_TYPE.PLAYER);
+            //OBJECT_CONSTRUCTION_DATA enemydata = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY);
             OBJECT_CONSTRUCTION_DATA coinblockata = ResourceManager.GetSpritedata(SPRITE_TYPE.COINBLOCK);
             OBJECT_CONSTRUCTION_DATA blockata = ResourceManager.GetSpritedata(SPRITE_TYPE.BLOCK);
             OBJECT_CONSTRUCTION_DATA backgroundData = ResourceManager.GetSpritedata(SPRITE_TYPE.BACKGROUND);
-            List<Vector2> enemies = GetPosList(m_directory + fileName, "enemies");
-            foreach (Vector2 pos in enemies)
-            {
-                enemydata.x = (int)pos.X;
-                enemydata.y = (int)pos.Y;
+            //List<Vector2> enemies = GetPosList(m_directory + fileName, "enemies");
+            //foreach (Vector2 pos in enemies)
+            //{
+            //    enemydata.x = (int)pos.X;
+            //    enemydata.y = (int)pos.Y;
 
-                DynamicObject p = new DynamicObject(enemydata);
+            //    Enemy p = new Enemy(enemydata);
 
-                m_blockList.Add(p);
-            }
+            //    m_enemyList.Add(p);
+            //}
             List<Vector2> coinblocks = GetPosList(m_directory + fileName, "coinblocks");
             foreach (Vector2 pos in coinblocks)
             {
@@ -82,10 +82,10 @@ namespace Supermario
                 n.SetIsEditable(false);
                 m_backgroundObjects.Add(n);
             }
-            Vector2 playerpos = GetPos(m_directory + fileName, "player");
-            playerdata.x = (int)playerpos.X;
-            playerdata.y = (int)playerpos.Y;
-            m_player = new Player(playerdata);
+            //Vector2 playerpos = GetPos(m_directory + fileName, "player");
+            //playerdata.x = (int)playerpos.X;
+            //playerdata.y = (int)playerpos.Y;
+            //m_player = new Player(playerdata);
         }
         public void WriteToFile(string fileName, List<GameObject> gameObjectList)
         {
@@ -195,7 +195,7 @@ namespace Supermario
             }
             bigobj.Add("enemies", enemyArray);
             bigobj.Add("blocks", blockarray);
-            bigobj.Add("coinblocks", blockarray);
+            bigobj.Add("coinblocks", coinblockarray);
             bigobj.Add("backgrounds", backgroundarray);
             //System.Diagnostics.Debug.WriteLine(bigobj.ToString());
             File.WriteAllText(filename, bigobj.ToString());

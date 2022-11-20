@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 namespace SuperMario
 {
+    public enum GAME_STATE { GAME, MENU, HIGHSCORE};
     public enum LEVEL_TYPE { LEVEL0, LEVEL1, LEVEL2, LEVELE };
     public enum SPRITE_TYPE { PLAYER, BLOCK, ENEMY, BACKGROUND, COINBLOCK };
     public enum DO_ONCE { DO, DONT };

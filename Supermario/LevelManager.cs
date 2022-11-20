@@ -13,13 +13,14 @@ namespace Supermario
     internal class LevelManager : DrawableGameComponent
     {
         LEVEL_TYPE m_currentLevel;
-        SPRITE_TYPE m_sprite;
+        static SPRITE_TYPE m_sprite;
         const int m_spriteTypeCount = 5;
         public LevelManager(Game game, LEVEL_TYPE currentLevel) : base(game)
         {
             m_currentLevel = currentLevel;
         }
         public void SetLevelType(LEVEL_TYPE currentLevel) { m_currentLevel = currentLevel; }
+        public static SPRITE_TYPE GetSelection() { return m_sprite; }
         public override void Update(GameTime gameTime)
         {
             switch(m_currentLevel)
@@ -46,7 +47,7 @@ namespace Supermario
                             GameManager.ModTileWithRes(ref p);
                             if (GameManager.IsWithinWindowBounds(new Rectangle(mp, new Point(0, 0))))
                             {
-                                foreach (GameObject sprite in ResourceManager.GetResourceManager().GetSprites())
+                                foreach (GameObject sprite in ResourceManager.GetObjects())
                                 {
                                     if (sprite.GetBounds().Contains(p) && sprite.GetIsEditable())
                                     {
@@ -55,20 +56,40 @@ namespace Supermario
                                 }
                                 switch (m_sprite)
                                 {
-                                    case SPRITE_TYPE.PLATFORM:
+                                    case SPRITE_TYPE.COINBLOCK:
                                         {
-                                            SPRITE_STRUCT data = ResourceManager.GetResourceManager().GetSpritedata(SPRITE_TYPE.PLATFORM);
+                                            OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.COINBLOCK);
 
 
                                             data.x = p.X; data.y = p.Y;
                                             int size = GameManager.GetTileSize();
                                             data.height = data.width = size;
-                                            GameObject s = new Platform(data);
-                                            ResourceManager.GetResourceManager().AddSprite(s);
+                                            GameObject s = new StaticObject(data);
+                                            ResourceManager.AddObject(s);
                                             break;
                                         }
                                     case SPRITE_TYPE.ENEMY:
                                         {
+                                            OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY);
+
+
+                                            data.x = p.X; data.y = p.Y;
+                                            int size = GameManager.GetTileSize();
+                                            data.height = data.width = size;
+                                            GameObject s = new Enemy(data);
+                                            ResourceManager.AddObject(s);
+                                            break;
+                                        }
+                                    case SPRITE_TYPE.BLOCK:
+                                        {
+                                            OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.BLOCK);
+
+
+                                            data.x = p.X; data.y = p.Y;
+                                            int size = GameManager.GetTileSize();
+                                            data.height = data.width = size;
+                                            GameObject s = new StaticObject(data);
+                                            ResourceManager.AddObject(s);
                                             break;
                                         }
 
@@ -82,11 +103,11 @@ namespace Supermario
                             GameManager.ModTileWithRes(ref p);
                             if (GameManager.IsWithinWindowBounds(new Rectangle(mp, new Point(0, 0))))
                             {
-                                foreach (GameObject sprite in ResourceManager.GetResourceManager().GetSprites())
+                                foreach (GameObject sprite in ResourceManager.GetObjects())
                                 {
                                     if (sprite.GetBounds().Contains(p) && sprite.GetIsEditable())
                                     {
-                                        ResourceManager.GetResourceManager().GetSprites().Remove(sprite);
+                                        ResourceManager.GetObjects().Remove(sprite);
                                         return;
                                     }
                                 }
@@ -111,12 +132,14 @@ namespace Supermario
                 {
                     m_sprite = 0;
                 }
-                if ((int)m_sprite == (int)SPRITE_TYPE.PLAYER)
+                if (m_sprite == SPRITE_TYPE.PLAYER)
                 {
                     SelectSprite();
                 }
             }
         }
+
+
     }
     
 }

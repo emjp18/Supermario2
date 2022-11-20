@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using SuperMario;
 
 namespace Supermario
 {
@@ -8,17 +9,23 @@ namespace Supermario
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
+        GameManager m_gamemanager;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            m_gamemanager = new GameManager(this);
         }
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            Components.Add(m_gamemanager.GetResourceManager());
+            Components.Add(m_gamemanager.GetGameObjectManager());
+            Components.Add(m_gamemanager.GetLevelManager());
+            _graphics.PreferredBackBufferWidth = GameManager.GetRes(true);
+            _graphics.PreferredBackBufferHeight = GameManager.GetRes(false);
+            _graphics.ApplyChanges();
 
             base.Initialize();
         }
@@ -27,16 +34,20 @@ namespace Supermario
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            m_gamemanager.LoadLevel(GameManager.GetCurrentLevel());
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+           
+            KeyMouseReader.Update();
+            m_gamemanager.UpdateGameState();
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter)&&GameManager.GetCurrentLevel() == SuperMario.LEVEL_TYPE.LEVELE)
+            {
+                m_gamemanager.SaveLevel();
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape)&&m_gamemanager.GetState()==GAME_STATE.MENU)
                 Exit();
-
-            // TODO: Add your update logic here
-
             base.Update(gameTime);
         }
 
@@ -44,7 +55,7 @@ namespace Supermario
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+          
 
             base.Draw(gameTime);
         }

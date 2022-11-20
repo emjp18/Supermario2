@@ -69,6 +69,7 @@ namespace Supermario
         public bool GetCanMove() { return m_canmove; }
         public void SetIsEditable(bool canbeedited) { m_isEditable = canbeedited; }
         public SPRITE_TYPE GetSpriteType() { return m_type; }
+        public void SetPos(Vector2 pos) { m_position = pos; }
         protected GameObject(OBJECT_CONSTRUCTION_DATA constructiondata)
         {
             m_fullsheetSize = new Point(constructiondata.fullsheetsizeX, constructiondata.fullSheetsizeY);

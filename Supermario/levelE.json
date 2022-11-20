@@ -1,0 +1,157 @@
+{
+  "enemies": [],
+  "blocks": [
+    {
+      "positionX": 0.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 25.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 50.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 75.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 100.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 125.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 150.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 175.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 200.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 225.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 250.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 275.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 300.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 325.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 350.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 375.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 400.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 425.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 450.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 450.0,
+      "positionY": 600.0
+    },
+    {
+      "positionX": 475.0,
+      "positionY": 600.0
+    },
+    {
+      "positionX": 500.0,
+      "positionY": 600.0
+    },
+    {
+      "positionX": 525.0,
+      "positionY": 600.0
+    },
+    {
+      "positionX": 525.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 550.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 575.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 600.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 625.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 650.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 675.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 700.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 725.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 750.0,
+      "positionY": 575.0
+    },
+    {
+      "positionX": 775.0,
+      "positionY": 575.0
+    }
+  ],
+  "coinblocks": [
+    {
+      "positionX": 400.0,
+      "positionY": 425.0
+    },
+    {
+      "positionX": 250.0,
+      "positionY": 425.0
+    }
+  ],
+  "backgrounds": [
+    {
+      "positionX": 0.0,
+      "positionY": 0.0
+    }
+  ]
+}
