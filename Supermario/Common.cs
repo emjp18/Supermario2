@@ -3,10 +3,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 namespace SuperMario
 {
-    public enum GAME_STATE { GAME, MENU, HIGHSCORE};
-    public enum LEVEL_TYPE { LEVEL0, LEVEL1, LEVEL2, LEVELE };
+    public enum GAME_STATE { GAME, MENU,EDITOR, HIGHSCORE};
+    public enum LEVEL_TYPE { LEVEL1, LEVEL2, LEVEL3, LEVELE, NONE };
     public enum SPRITE_TYPE { PLAYER, BLOCK, ENEMY, BACKGROUND, COINBLOCK };
-    public enum DO_ONCE { DO, DONT };
+    public enum MENU_TYPE { TIMEUP, GAMEOVER, START, BUTTON};
+    public enum BUTTON_TYPE { LEVEL1= 0, LEVEL2 = 1, LEVEL3 = 2, CUSTOM = 3,HS = 4, EDITOR = 5}
 
     public struct OBJECT_CONSTRUCTION_DATA
     {

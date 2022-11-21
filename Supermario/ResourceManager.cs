@@ -14,17 +14,28 @@ namespace Supermario
     internal class ResourceManager : Microsoft.Xna.Framework.DrawableGameComponent
     {
         OBJECT_CONSTRUCTION_DATA m_spritedata;
-        string m_cloudpath;
-        string m_coinblockpath = "coinblock";
-        string m_backgroundpath = "background";
-        string m_platformpath = "block";
-        string m_variouspath = "smbvarious";
-        string m_marioTinyPath = "marioTiny";
+       static string m_cloudpath;
+       static string m_coinblockpath = "coinblock";
+       static string m_backgroundpath = "background";
+       static string m_platformpath = "block";
+       static string m_variouspath = "smbvarious";
+       static string m_marioTinyPath = "marioTiny";
+        static string m_timeuppath = "timeup";
+        static string m_gameoverpath = "gameover";
+        static string m_buttonpath = "button";
         Texture2D m_coinblockTex;
         Texture2D m_cointex;
         Texture2D m_backrgoundTex;
         Texture2D m_platformtex;
         Texture2D m_marioTinyTex;
+        Texture2D m_timeupTex;
+        Texture2D m_gameoverTex;
+        Texture2D m_buttonTex;
+        static List<GameObject> m_buttons = new List<GameObject>();
+        static List<GameObject> m_objects = new List<GameObject>();
+        static Dictionary<SPRITE_TYPE, OBJECT_CONSTRUCTION_DATA> m_objectData = new Dictionary<SPRITE_TYPE, OBJECT_CONSTRUCTION_DATA>();
+        static Dictionary<string, Texture2D> m_textures = new Dictionary<string, Texture2D>();
+        static Dictionary<MENU_TYPE, GameObject> m_menuObjects = new Dictionary<MENU_TYPE, GameObject>();
         public ResourceManager(Game game) : base(game)
         {
             m_spritedata.texture = m_platformpath;
@@ -64,6 +75,9 @@ namespace Supermario
 
         protected override void LoadContent()
         {
+            m_buttonTex = Game.Content.Load<Texture2D>(m_buttonpath);
+            m_gameoverTex = Game.Content.Load<Texture2D>(m_gameoverpath);
+            m_timeupTex = Game.Content.Load<Texture2D>(m_timeuppath);
             m_marioTinyTex = Game.Content.Load<Texture2D>(m_marioTinyPath);
             m_platformtex = Game.Content.Load<Texture2D>(m_platformpath);
             m_coinblockTex = Game.Content.Load<Texture2D>(m_coinblockpath);
@@ -72,13 +86,13 @@ namespace Supermario
             m_textures.Add(m_coinblockpath, m_coinblockTex);
             m_textures.Add(m_backgroundpath, m_backrgoundTex);
             m_textures.Add(m_marioTinyPath, m_marioTinyTex);
+            m_textures.Add(m_timeuppath, m_timeupTex);
+            m_textures.Add(m_gameoverpath, m_gameoverTex);
+            m_textures.Add(m_buttonpath, m_buttonTex);
             base.LoadContent();
         }
 
        
-        static List<GameObject> m_objects = new List<GameObject>();
-        static Dictionary<SPRITE_TYPE, OBJECT_CONSTRUCTION_DATA> m_objectData = new Dictionary<SPRITE_TYPE, OBJECT_CONSTRUCTION_DATA>();
-        static Dictionary<string, Texture2D> m_textures = new Dictionary<string, Texture2D>();
         public static Texture2D GetTexture(string name) { return m_textures[name]; }
         public static OBJECT_CONSTRUCTION_DATA GetSpritedata(SPRITE_TYPE type) { return m_objectData[type]; }
         public static Dictionary<string, Texture2D> GetTexture() { return m_textures; }
@@ -90,5 +104,41 @@ namespace Supermario
         }
         public static void AddObject(GameObject s) { m_objects.Add(s); }
         public static ref List<GameObject> GetObjects() { return ref m_objects; }
+        public static ref List<GameObject> GetButtons() { return ref m_buttons; }
+        public static void AddMenuObject( GameObject s, MENU_TYPE type) { s.SetIsEditable(false);
+            switch (type)
+            {
+                case MENU_TYPE.TIMEUP:
+                    {
+                        s.SetTexture(m_timeuppath);
+                        m_menuObjects.Add(type, s);
+                        break;
+                    }
+                case MENU_TYPE.GAMEOVER:
+                    {
+                        s.SetTexture(m_gameoverpath);
+                        m_menuObjects.Add(type, s);
+                        break;
+                    }
+                case MENU_TYPE.START:
+                    {
+                        s.SetTexture(m_backgroundpath);
+                        m_menuObjects.Add(type, s);
+                        break;
+                    }
+                case MENU_TYPE.BUTTON:
+                    {
+                        s.SetTexture(m_buttonpath);
+                        s.SetColor(Color.DarkGreen);
+                        m_buttons.Add(s);
+
+
+                        break;
+                    }
+            }
+            
+            
+        }
+        public static ref Dictionary<MENU_TYPE, GameObject> GetMenuObjects() { return ref m_menuObjects; }
     }
 }

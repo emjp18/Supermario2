@@ -33,21 +33,24 @@ namespace Supermario
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            m_gamemanager.LoadLevel(GameManager.GetCurrentLevel());
+            m_gamemanager.LoadMenuObjects();
+            //m_gamemanager.LoadLevel(GameManager.GetCurrentLevel());
         }
 
         protected override void Update(GameTime gameTime)
         {
            
             KeyMouseReader.Update();
-            m_gamemanager.UpdateGameState();
-            if (Keyboard.GetState().IsKeyDown(Keys.Enter)&&GameManager.GetCurrentLevel() == SuperMario.LEVEL_TYPE.LEVELE)
+            m_gamemanager.Update();
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape)&&GameManager.GetCurrentLevel() == SuperMario.LEVEL_TYPE.LEVELE)
             {
                 m_gamemanager.SaveLevel();
+                GameManager.SetState(GAME_STATE.MENU);
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape)&&m_gamemanager.GetState()==GAME_STATE.MENU)
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape)&& GameManager.GetState()==GAME_STATE.MENU)
                 Exit();
+
             base.Update(gameTime);
         }
 

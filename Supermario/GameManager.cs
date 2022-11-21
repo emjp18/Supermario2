@@ -11,9 +11,9 @@ namespace Supermario
 {
     internal class GameManager
     {
-        GAME_STATE m_currentState;
+        LEVEL_TYPE m_oldtLevel;
+        static GAME_STATE m_currentState = GAME_STATE.MENU;
         static LEVEL_TYPE m_currentLevel;
-        DO_ONCE m_doOnce = DO_ONCE.DO;
         FileManager m_filemanager;
         GameObjectManager m_gameobjectManager;
         //SoundManager m_soundmanager;
@@ -35,10 +35,11 @@ namespace Supermario
             m_gameobjectManager = new GameObjectManager(game);
             m_levelmanager = new LevelManager(game, LEVEL_TYPE.LEVELE);
             m_levels.Add(LEVEL_TYPE.LEVELE, m_levelEditor);
-            m_levels.Add(LEVEL_TYPE.LEVEL0, m_level0);
-            m_levels.Add(LEVEL_TYPE.LEVEL1, m_level1);
+            m_levels.Add(LEVEL_TYPE.LEVEL1, m_level0);
+            m_levels.Add(LEVEL_TYPE.LEVEL2, m_level1);
            
-            m_currentLevel = LEVEL_TYPE.LEVELE;
+            m_currentLevel = LEVEL_TYPE.NONE;
+            m_oldtLevel = LEVEL_TYPE.NONE;
         }
         public static int GetTileSize() { return m_tileSize; }
         public static int GetRes(bool x) { if (x) return m_resX; else return m_resY; }
@@ -47,9 +48,23 @@ namespace Supermario
         public FileManager GetFileManager() { return m_filemanager; }
         public ResourceManager GetResourceManager() { return m_resourcemanager; }
         public LevelManager GetLevelManager() { return m_levelmanager; }
+        public void LoadMenuObjects()
+        {
+           
+            ResourceManager.GetMenuObjects().Clear();            
+            ResourceManager.AddMenuObject(new StaticObject(ResourceManager.GetSpritedata(SPRITE_TYPE.BACKGROUND)), MENU_TYPE.GAMEOVER);
+            ResourceManager.AddMenuObject(new StaticObject(ResourceManager.GetSpritedata(SPRITE_TYPE.BACKGROUND)), MENU_TYPE.TIMEUP);
+            ResourceManager.AddMenuObject(new StaticObject(ResourceManager.GetSpritedata(SPRITE_TYPE.BACKGROUND)), MENU_TYPE.START);
+            ResourceManager.AddMenuObject(new Button(ResourceManager.GetSpritedata(SPRITE_TYPE.BACKGROUND)), MENU_TYPE.BUTTON);
+            ResourceManager.AddMenuObject(new Button(ResourceManager.GetSpritedata(SPRITE_TYPE.BACKGROUND)), MENU_TYPE.BUTTON);
+            ResourceManager.AddMenuObject(new Button(ResourceManager.GetSpritedata(SPRITE_TYPE.BACKGROUND)), MENU_TYPE.BUTTON);
+            ResourceManager.AddMenuObject(new Button(ResourceManager.GetSpritedata(SPRITE_TYPE.BACKGROUND)), MENU_TYPE.BUTTON);
+            ResourceManager.AddMenuObject(new Button(ResourceManager.GetSpritedata(SPRITE_TYPE.BACKGROUND)), MENU_TYPE.BUTTON);
+            ResourceManager.AddMenuObject(new Button(ResourceManager.GetSpritedata(SPRITE_TYPE.BACKGROUND)), MENU_TYPE.BUTTON);
+        }
         public void LoadLevel(LEVEL_TYPE level)
         {
-            m_currentState = GAME_STATE.GAME;
+            
             m_currentLevel = level;
             m_filemanager.ReadFromFile(m_levels[level]);
             ResourceManager.GetObjects().Clear();
@@ -74,17 +89,10 @@ namespace Supermario
 
             }
             
-            //ResourceManager.AddObject(m_filemanager.GetPlayer());
+            ResourceManager.AddObject(m_filemanager.GetPlayer());
             m_levelmanager.SetLevelType(level);
         }
-        public void UpdateGameState()
-        {
-            if (m_doOnce == DO_ONCE.DO)
-            {
-
-                m_doOnce = DO_ONCE.DONT;
-            }
-        }
+        
         public static bool IsWithinWindowBounds(Rectangle rect)
         {
             if ((rect.X + rect.Width <= m_resX) && (rect.Y + rect.Height <= m_resY)
@@ -110,11 +118,25 @@ namespace Supermario
             }
         }
         public static LEVEL_TYPE GetCurrentLevel() { return m_currentLevel; }
-        public GAME_STATE GetState() { return m_currentState; }
         public void SaveLevel()
         {
 
             m_filemanager.WriteToFile("levelE.json", ResourceManager.GetObjects());
+        }
+        public static GAME_STATE GetState() { return m_currentState; }
+        public static void SetState(GAME_STATE state) { m_currentState = state; }
+        public static void SetLevel(LEVEL_TYPE level) { m_currentLevel = level; }
+        public void Update()
+        {
+            if(m_currentState == GAME_STATE.GAME)
+            {
+                if (m_oldtLevel != m_currentLevel)
+                {
+                    LoadLevel(m_currentLevel);
+                    m_oldtLevel = m_currentLevel;
+                }
+            }
+           
         }
     }
 }

@@ -70,6 +70,8 @@ namespace Supermario
         public void SetIsEditable(bool canbeedited) { m_isEditable = canbeedited; }
         public SPRITE_TYPE GetSpriteType() { return m_type; }
         public void SetPos(Vector2 pos) { m_position = pos; }
+        public void SetTexture(string tex) { m_textureName = tex; m_texture = ResourceManager.GetTexture(m_textureName); }
+        public  void SetColor(Color c) { m_color = c; }
         protected GameObject(OBJECT_CONSTRUCTION_DATA constructiondata)
         {
             m_fullsheetSize = new Point(constructiondata.fullsheetsizeX, constructiondata.fullSheetsizeY);
@@ -112,7 +114,7 @@ namespace Supermario
             m_color, 0, Vector2.Zero,
             1f, m_effect, 0);
         }
-        public Rectangle GetBounds()
+        public  Rectangle GetBounds()
         {
             return new Rectangle(
             (int)m_position.X,

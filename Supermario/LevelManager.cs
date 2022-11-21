@@ -23,100 +23,105 @@ namespace Supermario
         public static SPRITE_TYPE GetSelection() { return m_sprite; }
         public override void Update(GameTime gameTime)
         {
-            switch(m_currentLevel)
+            if(GameManager.GetState()==GAME_STATE.GAME)
             {
-                case LEVEL_TYPE.LEVEL0:
-                    {
-                        break;
-                    }
-                case LEVEL_TYPE.LEVEL1:
-                    {
-                        break;
-                    }
-                case LEVEL_TYPE.LEVEL2:
-                    {
-                        break;
-                    }
-                case LEVEL_TYPE.LEVELE:
-                    {
-                        SelectSprite();
-                        if (KeyMouseReader.LeftClickHover())
+                switch (m_currentLevel)
+                {
+                    case LEVEL_TYPE.LEVEL1:
                         {
-                            Point mp = KeyMouseReader.mouseState.Position;
-                            Point p = new Point(mp.X, mp.Y);
-                            GameManager.ModTileWithRes(ref p);
-                            if (GameManager.IsWithinWindowBounds(new Rectangle(mp, new Point(0, 0))))
-                            {
-                                foreach (GameObject sprite in ResourceManager.GetObjects())
-                                {
-                                    if (sprite.GetBounds().Contains(p) && sprite.GetIsEditable())
-                                    {
-                                        return;
-                                    }
-                                }
-                                switch (m_sprite)
-                                {
-                                    case SPRITE_TYPE.COINBLOCK:
-                                        {
-                                            OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.COINBLOCK);
-
-
-                                            data.x = p.X; data.y = p.Y;
-                                            int size = GameManager.GetTileSize();
-                                            data.height = data.width = size;
-                                            GameObject s = new StaticObject(data);
-                                            ResourceManager.AddObject(s);
-                                            break;
-                                        }
-                                    case SPRITE_TYPE.ENEMY:
-                                        {
-                                            OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY);
-
-
-                                            data.x = p.X; data.y = p.Y;
-                                            int size = GameManager.GetTileSize();
-                                            data.height = data.width = size;
-                                            GameObject s = new Enemy(data);
-                                            ResourceManager.AddObject(s);
-                                            break;
-                                        }
-                                    case SPRITE_TYPE.BLOCK:
-                                        {
-                                            OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.BLOCK);
-
-
-                                            data.x = p.X; data.y = p.Y;
-                                            int size = GameManager.GetTileSize();
-                                            data.height = data.width = size;
-                                            GameObject s = new StaticObject(data);
-                                            ResourceManager.AddObject(s);
-                                            break;
-                                        }
-
-                                }
-                            }
+                            break;
                         }
-                        else if (KeyMouseReader.RightClickHover())
-                        {
-                            Point mp = KeyMouseReader.mouseState.Position;
-                            Point p = new Point(mp.X, mp.Y);
-                            GameManager.ModTileWithRes(ref p);
-                            if (GameManager.IsWithinWindowBounds(new Rectangle(mp, new Point(0, 0))))
-                            {
-                                foreach (GameObject sprite in ResourceManager.GetObjects())
-                                {
-                                    if (sprite.GetBounds().Contains(p) && sprite.GetIsEditable())
-                                    {
-                                        ResourceManager.GetObjects().Remove(sprite);
-                                        return;
-                                    }
-                                }
-
-                            }
-                        }
-                        break;
-                    }
+                }
             }
+            else if(GameManager.GetState()==GAME_STATE.EDITOR)
+            {
+                switch (m_currentLevel)
+                {
+                    
+                    case LEVEL_TYPE.LEVELE:
+                        {
+                            SelectSprite();
+                            if (KeyMouseReader.LeftClickHover())
+                            {
+                                Point mp = KeyMouseReader.mouseState.Position;
+                                Point p = new Point(mp.X, mp.Y);
+                                GameManager.ModTileWithRes(ref p);
+                                if (GameManager.IsWithinWindowBounds(new Rectangle(mp, new Point(0, 0))))
+                                {
+                                    foreach (GameObject sprite in ResourceManager.GetObjects())
+                                    {
+                                        if (sprite.GetBounds().Contains(p) && sprite.GetIsEditable())
+                                        {
+                                            return;
+                                        }
+                                    }
+                                    switch (m_sprite)
+                                    {
+                                        case SPRITE_TYPE.COINBLOCK:
+                                            {
+                                                OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.COINBLOCK);
+
+
+                                                data.x = p.X; data.y = p.Y;
+                                                int size = GameManager.GetTileSize();
+                                                data.height = data.width = size;
+                                                GameObject s = new StaticObject(data);
+                                                ResourceManager.AddObject(s);
+                                                break;
+                                            }
+                                        case SPRITE_TYPE.ENEMY:
+                                            {
+                                                OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY);
+
+
+                                                data.x = p.X; data.y = p.Y;
+                                                int size = GameManager.GetTileSize();
+                                                data.height = data.width = size;
+                                                GameObject s = new Enemy(data);
+                                                ResourceManager.AddObject(s);
+                                                break;
+                                            }
+                                        case SPRITE_TYPE.BLOCK:
+                                            {
+                                                OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.BLOCK);
+
+
+                                                data.x = p.X; data.y = p.Y;
+                                                int size = GameManager.GetTileSize();
+                                                data.height = data.width = size;
+                                                GameObject s = new StaticObject(data);
+                                                ResourceManager.AddObject(s);
+                                                break;
+                                            }
+
+                                    }
+                                }
+                            }
+                            else if (KeyMouseReader.RightClickHover())
+                            {
+                                Point mp = KeyMouseReader.mouseState.Position;
+                                Point p = new Point(mp.X, mp.Y);
+                                GameManager.ModTileWithRes(ref p);
+                                if (GameManager.IsWithinWindowBounds(new Rectangle(mp, new Point(0, 0))))
+                                {
+                                    foreach (GameObject sprite in ResourceManager.GetObjects())
+                                    {
+                                        if (sprite.GetBounds().Contains(p) && sprite.GetIsEditable())
+                                        {
+                                            ResourceManager.GetObjects().Remove(sprite);
+                                            return;
+                                        }
+                                    }
+
+                                }
+                            }
+                            break;
+                        }
+                }
+            }
+
+
+            
             base.Update(gameTime);
         }
         private void SelectSprite()
