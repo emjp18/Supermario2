@@ -11,7 +11,9 @@ namespace Supermario
 {
     internal class GameManager
     {
-        LEVEL_TYPE m_oldtLevel;
+        Vector2 m_playerStart;
+        LEVEL_TYPE m_oldLevel;
+        GAME_STATE m_oldState = GAME_STATE.MENU;
         static GAME_STATE m_currentState = GAME_STATE.MENU;
         static LEVEL_TYPE m_currentLevel;
         FileManager m_filemanager;
@@ -24,8 +26,8 @@ namespace Supermario
         const int m_resY = 600;
         const int m_tileSize = 25;
         string m_levelEditor = "levelE.json";
-        string m_level0 = "level0.json";
-        string m_level1 = "level1.json";
+        string m_level0 = "level1.json";
+        string m_level1 = "level2.json";
         Dictionary<LEVEL_TYPE, string> m_levels = new Dictionary<LEVEL_TYPE, string>();
         public GameManager(Game game)
         {
@@ -39,7 +41,7 @@ namespace Supermario
             m_levels.Add(LEVEL_TYPE.LEVEL2, m_level1);
            
             m_currentLevel = LEVEL_TYPE.NONE;
-            m_oldtLevel = LEVEL_TYPE.NONE;
+            m_oldLevel = LEVEL_TYPE.NONE;
         }
         public static int GetTileSize() { return m_tileSize; }
         public static int GetRes(bool x) { if (x) return m_resX; else return m_resY; }
@@ -88,8 +90,10 @@ namespace Supermario
                 ResourceManager.AddObject(s);
 
             }
-            
-            ResourceManager.AddObject(m_filemanager.GetPlayer());
+            m_playerStart = new Vector2(0, m_resY - (m_tileSize * 2));
+            Player p = m_filemanager.GetPlayer();
+            p.SetPos(m_playerStart);
+            ResourceManager.AddObject(p);
             m_levelmanager.SetLevelType(level);
         }
         
@@ -128,13 +132,36 @@ namespace Supermario
         public static void SetLevel(LEVEL_TYPE level) { m_currentLevel = level; }
         public void Update()
         {
-            if(m_currentState == GAME_STATE.GAME)
+            
+            if(m_currentState == GAME_STATE.GAME||m_currentState == GAME_STATE.EDITOR)
             {
-                if (m_oldtLevel != m_currentLevel)
+                if (m_oldLevel != m_currentLevel)
                 {
                     LoadLevel(m_currentLevel);
-                    m_oldtLevel = m_currentLevel;
+                    m_oldLevel = m_currentLevel;
                 }
+                if(m_currentState == GAME_STATE.EDITOR)
+                {
+                    foreach (Player obj in ResourceManager.GetObjects())
+                    {
+                        obj.SetShouldUpdate(false);
+                        break;
+                    }
+                }
+                else
+                {
+                    foreach (Player obj in ResourceManager.GetObjects())
+                    {
+                        obj.SetShouldUpdate(true);
+                        break;
+                    }
+
+                }
+            }
+           
+            if(m_oldState != m_currentState)
+            {
+                m_oldState = m_currentState;
             }
            
         }

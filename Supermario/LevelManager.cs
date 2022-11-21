@@ -13,7 +13,7 @@ namespace Supermario
     internal class LevelManager : DrawableGameComponent
     {
         LEVEL_TYPE m_currentLevel;
-        static SPRITE_TYPE m_sprite;
+        static SPRITE_TYPE m_sprite = SPRITE_TYPE.BLOCK;
         const int m_spriteTypeCount = 5;
         public LevelManager(Game game, LEVEL_TYPE currentLevel) : base(game)
         {

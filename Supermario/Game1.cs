@@ -39,18 +39,45 @@ namespace Supermario
 
         protected override void Update(GameTime gameTime)
         {
-           
+           switch(GameManager.GetState())
+            {
+                case GAME_STATE.MENU:
+                    {
+                        if (KeyMouseReader.KeyPressed(Keys.Escape))
+                            Exit();
+                        break;
+
+                    }
+                case GAME_STATE.GAME:
+                    {
+                        if (KeyMouseReader.KeyPressed(Keys.Escape))
+                            GameManager.SetState(GAME_STATE.MENU);
+                        break;
+
+                    }
+                case GAME_STATE.HIGHSCORE:
+                    {
+                        break;
+
+                    }
+                case GAME_STATE.EDITOR:
+                    {
+                        if (KeyMouseReader.KeyPressed(Keys.Escape))
+                        {
+                            m_gamemanager.SaveLevel();
+                            GameManager.SetState(GAME_STATE.MENU);
+                        }
+                        break;
+
+                    }
+            }
+            
+            
+            
+
+
             KeyMouseReader.Update();
             m_gamemanager.Update();
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape)&&GameManager.GetCurrentLevel() == SuperMario.LEVEL_TYPE.LEVELE)
-            {
-                m_gamemanager.SaveLevel();
-                GameManager.SetState(GAME_STATE.MENU);
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape)&& GameManager.GetState()==GAME_STATE.MENU)
-                Exit();
-
             base.Update(gameTime);
         }
 

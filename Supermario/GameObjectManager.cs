@@ -14,7 +14,7 @@ namespace Supermario
     {
         SpriteBatch m_spriteBatch;
         SpriteFont m_font;
-
+        
         List<GameObject> m_editorSprites = new List<GameObject>();
         public GameObjectManager(Game game) : base(game)
         {
@@ -23,7 +23,7 @@ namespace Supermario
         public override void Draw(GameTime gameTime)
         {
             m_spriteBatch.Begin();
-            if (GameManager.GetState() == SuperMario.GAME_STATE.MENU)
+            if (GameManager.GetState() == GAME_STATE.MENU)
             {
                 foreach (KeyValuePair<MENU_TYPE,GameObject> sprite in ResourceManager.GetMenuObjects())
                 {
@@ -67,7 +67,37 @@ namespace Supermario
                 (ResourceManager.GetButtons()[(int)BUTTON_TYPE.EDITOR] as Button).Draw(m_spriteBatch, m_font);
               
             }
-            else
+            else if(GameManager.GetState() == GAME_STATE.EDITOR)
+            {
+                foreach (GameObject sprite in ResourceManager.GetObjects())
+                {
+                    if (sprite.GetShouldDraw())
+                    {
+                        sprite.Draw(m_spriteBatch);
+                    }
+                }
+                m_spriteBatch.DrawString(m_font, "Press E to switch", Vector2.Zero, Color.Black);
+                Vector2 vec2 = Vector2.Zero;
+                foreach (GameObject s in m_editorSprites)
+                {
+                    
+                    if (s.GetSpriteType() == LevelManager.GetSelection() && s is not Player)
+                    {
+                        vec2.X = m_font.MeasureString("Press E to switch sprite").X;
+                        s.SetPos(vec2);
+                        s.Draw(m_spriteBatch);
+                        break;
+                    }
+
+                }
+                vec2.X = 0;
+                vec2.Y += m_font.MeasureString("P").Y;
+                m_spriteBatch.DrawString(m_font, "The level is saved when you return", vec2, Color.Black);
+                vec2.Y += m_font.MeasureString("P").Y;
+                m_spriteBatch.DrawString(m_font, "Press ESCAPE to return", vec2, Color.Black);
+                
+            }
+            else if(GameManager.GetState() == GAME_STATE.GAME)
             {
                 foreach (GameObject sprite in ResourceManager.GetObjects())
                 {
@@ -77,39 +107,7 @@ namespace Supermario
                     }
                 }
 
-                if (GameManager.GetCurrentLevel() == SuperMario.LEVEL_TYPE.LEVELE)
-                {
-                    m_spriteBatch.DrawString(m_font, "Press E to switch", Vector2.Zero, Color.Black);
-                    Vector2 vec2 = Vector2.Zero;
-                    foreach (GameObject s in m_editorSprites)
-                    {
-                        if (s is Player)
-                        {
-                            Vector2 startPos = Vector2.Zero;
-                            startPos.Y += GameManager.GetRes(false) - (GameManager.GetTileSize() * 2);
-                            s.SetPos(startPos);
-                            s.Draw(m_spriteBatch);
-                        }
-                        if (s.GetSpriteType() == LevelManager.GetSelection() && s is not Player)
-                        {
-                            vec2.X = m_font.MeasureString("Press E to switch").X;
-                            s.SetPos(vec2);
-                            s.Draw(m_spriteBatch);
-                            break;
-                        }
-
-                    }
-                    vec2.X = 0;
-                    vec2.Y += m_font.MeasureString("P").Y;
-                    m_spriteBatch.DrawString(m_font, "Press ENTER to save", vec2, Color.Black);
-                    vec2.Y += m_font.MeasureString("P").Y;
-                    m_spriteBatch.DrawString(m_font, "Press ESCAPE to return", vec2, Color.Black);
-
-
-
-
-
-                }
+                
 
             }
 
@@ -120,7 +118,7 @@ namespace Supermario
 
         public override void Update(GameTime gameTime)
         {
-            if (GameManager.GetState() == SuperMario.GAME_STATE.MENU)
+            if (GameManager.GetState() == GAME_STATE.MENU)
             {
                 foreach (GameObject sprite in ResourceManager.GetButtons())
                 {
@@ -131,30 +129,36 @@ namespace Supermario
                 {
                     GameManager.SetLevel(LEVEL_TYPE.LEVEL1);
                     GameManager.SetState(GAME_STATE.GAME);
+                    (ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL1] as Button).SetPressed(false);
                 }
                 else if ((ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL2] as Button).GetPressed())
                 {
                     GameManager.SetLevel(LEVEL_TYPE.LEVEL2);
                     GameManager.SetState(GAME_STATE.GAME);
+                    (ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL2] as Button).SetPressed(false);
                 }
                 else if ((ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL3] as Button).GetPressed())
                 {
                     GameManager.SetLevel(LEVEL_TYPE.LEVEL3);
                     GameManager.SetState(GAME_STATE.GAME);
+                    (ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL3] as Button).SetPressed(false);
                 }
                 else if ((ResourceManager.GetButtons()[(int)BUTTON_TYPE.EDITOR] as Button).GetPressed())
                 {
                     GameManager.SetLevel(LEVEL_TYPE.LEVELE);
                     GameManager.SetState(GAME_STATE.EDITOR);
+                    (ResourceManager.GetButtons()[(int)BUTTON_TYPE.EDITOR] as Button).SetPressed(false);
                 }
                 else if ((ResourceManager.GetButtons()[(int)BUTTON_TYPE.CUSTOM] as Button).GetPressed())
                 {
                     GameManager.SetLevel(LEVEL_TYPE.LEVELE);
                     GameManager.SetState(GAME_STATE.GAME);
+                    (ResourceManager.GetButtons()[(int)BUTTON_TYPE.CUSTOM] as Button).SetPressed(false);
                 }
                 else if ((ResourceManager.GetButtons()[(int)BUTTON_TYPE.HS] as Button).GetPressed())
                 {
                     GameManager.SetState(GAME_STATE.HIGHSCORE);
+                    (ResourceManager.GetButtons()[(int)BUTTON_TYPE.HS] as Button).SetPressed(false);
                 }
             }
             else
@@ -180,7 +184,12 @@ namespace Supermario
             //m_editorSprites.Add(new Enemy(ResourceManager.GetSpritedata(SuperMario.SPRITE_TYPE.ENEMY)));
             m_editorSprites.Add(new StaticObject(ResourceManager.GetSpritedata(SuperMario.SPRITE_TYPE.COINBLOCK)));
             m_editorSprites.Add(new StaticObject(ResourceManager.GetSpritedata(SuperMario.SPRITE_TYPE.BLOCK)));
-            m_editorSprites.Add(new Player(ResourceManager.GetSpritedata(SuperMario.SPRITE_TYPE.PLAYER)));
+            
+            
+
+
+
+
             base.LoadContent();
         }
     }

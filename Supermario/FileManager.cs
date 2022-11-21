@@ -186,13 +186,11 @@ namespace Supermario
 
 
                 }
-                else if (gList[i] is Player)
-                {
-                    JObject obj = CreateObject(gList[i]);
-                    bigobj.Add("player", obj);
-                }
+                
 
             }
+            JObject objp = CreateObject(new Player(ResourceManager.GetSpritedata(SPRITE_TYPE.PLAYER)));
+            bigobj.Add("player", objp);
             bigobj.Add("enemies", enemyArray);
             bigobj.Add("blocks", blockarray);
             bigobj.Add("coinblocks", coinblockarray);

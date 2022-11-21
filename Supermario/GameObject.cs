@@ -72,6 +72,7 @@ namespace Supermario
         public void SetPos(Vector2 pos) { m_position = pos; }
         public void SetTexture(string tex) { m_textureName = tex; m_texture = ResourceManager.GetTexture(m_textureName); }
         public  void SetColor(Color c) { m_color = c; }
+        public void SetShouldUpdate(bool update) { m_update = update; }
         protected GameObject(OBJECT_CONSTRUCTION_DATA constructiondata)
         {
             m_fullsheetSize = new Point(constructiondata.fullsheetsizeX, constructiondata.fullSheetsizeY);
