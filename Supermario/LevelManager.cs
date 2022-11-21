@@ -69,14 +69,35 @@ namespace Supermario
                                                 ResourceManager.AddObject(s);
                                                 break;
                                             }
-                                        case SPRITE_TYPE.ENEMY:
+                                        case SPRITE_TYPE.ENEMY0:
                                             {
-                                                OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY);
+                                                OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY0);
 
 
                                                 data.x = p.X; data.y = p.Y;
-                                                int size = GameManager.GetTileSize();
-                                                data.height = data.width = size;
+                                                
+                                                GameObject s = new Enemy(data);
+                                                ResourceManager.AddObject(s);
+                                                break;
+                                            }
+                                        case SPRITE_TYPE.ENEMY1:
+                                            {
+                                                OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY1);
+
+
+                                                data.x = p.X; data.y = p.Y;
+                                                
+                                                GameObject s = new Enemy(data);
+                                                ResourceManager.AddObject(s);
+                                                break;
+                                            }
+                                        case SPRITE_TYPE.ENEMY2:
+                                            {
+                                                OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY2);
+
+
+                                                data.x = p.X; data.y = p.Y;
+                                                
                                                 GameObject s = new Enemy(data);
                                                 ResourceManager.AddObject(s);
                                                 break;

@@ -18,13 +18,14 @@ namespace Supermario
        static string m_coinblockpath = "coinblock";
        static string m_backgroundpath = "background";
        static string m_platformpath = "block";
-       static string m_variouspath = "smbvarious";
+       static string m_enemiespath = "enemies";
        static string m_marioTinyPath = "marioTiny";
         static string m_timeuppath = "timeup";
         static string m_gameoverpath = "gameover";
         static string m_buttonpath = "button";
         Texture2D m_coinblockTex;
         Texture2D m_cointex;
+        Texture2D m_enemiesTex;
         Texture2D m_backrgoundTex;
         Texture2D m_platformtex;
         Texture2D m_marioTinyTex;
@@ -38,11 +39,14 @@ namespace Supermario
         static Dictionary<MENU_TYPE, GameObject> m_menuObjects = new Dictionary<MENU_TYPE, GameObject>();
         public ResourceManager(Game game) : base(game)
         {
+            m_spritedata.mass = 1;
             m_spritedata.texture = m_platformpath;
             m_spritedata.fullsheetsizeX = 1;
             m_spritedata.fullSheetsizeY = 1;
-            m_spritedata.usedsheetX = 0;
-            m_spritedata.usedSheetY = 0;
+            m_spritedata.usedsheetMaxX = 0;
+            m_spritedata.usedSheetMaxY = 0;
+            m_spritedata.usedsheetMinX = 0;
+            m_spritedata.usedSheetMinY = 0;
             m_spritedata.width = m_spritedata.height = GameManager.GetTileSize();
             m_spritedata.type = SPRITE_TYPE.BLOCK;
             m_objectData.Add(SPRITE_TYPE.BLOCK, m_spritedata);
@@ -54,20 +58,63 @@ namespace Supermario
             m_spritedata.texture = m_backgroundpath;
             m_spritedata.fullsheetsizeX = 1;
             m_spritedata.fullSheetsizeY = 1;
-            m_spritedata.usedsheetX = 0;
-            m_spritedata.usedSheetY = 0;
+            m_spritedata.usedsheetMaxX = 0;
+            m_spritedata.usedSheetMaxY = 0;
+            m_spritedata.usedsheetMinX = 0;
+            m_spritedata.usedSheetMinY = 0;
             m_spritedata.type = SPRITE_TYPE.BACKGROUND;
             m_objectData.Add(SPRITE_TYPE.BACKGROUND, m_spritedata);
 
+            
             m_spritedata.texture = m_marioTinyPath;
             m_spritedata.fullsheetsizeX = 10;
             m_spritedata.fullSheetsizeY = 2;
-            m_spritedata.usedsheetX =6;
-            m_spritedata.usedSheetY =0;
+            m_spritedata.usedsheetMaxX = 6;
+            m_spritedata.usedSheetMaxY = 0;
+            m_spritedata.usedsheetMinX = 0;
+            m_spritedata.usedSheetMinY = 0;
             m_spritedata.width = 300;
             m_spritedata.height = 44;
+            m_spritedata.speed = 1000000;
             m_spritedata.type = SPRITE_TYPE.PLAYER;
             m_objectData.Add(SPRITE_TYPE.PLAYER, m_spritedata);
+
+            m_spritedata.speed = 500000;
+            m_spritedata.texture = m_enemiespath;
+            m_spritedata.fullsheetsizeX = 9;
+            m_spritedata.fullSheetsizeY = 3;
+            m_spritedata.usedsheetMaxX = 8;
+            m_spritedata.usedSheetMaxY = 0;
+            m_spritedata.usedsheetMinX = 0;
+            m_spritedata.usedSheetMinY = 0;
+            m_spritedata.width = 261;
+            m_spritedata.height = 90;
+            m_spritedata.type = SPRITE_TYPE.ENEMY0;
+            m_objectData.Add(SPRITE_TYPE.ENEMY0, m_spritedata);
+
+            m_spritedata.texture = m_enemiespath;
+            m_spritedata.fullsheetsizeX = 9;
+            m_spritedata.fullSheetsizeY = 3;
+            m_spritedata.usedsheetMaxX = 2;
+            m_spritedata.usedSheetMaxY = 1;
+            m_spritedata.usedsheetMinX = 0;
+            m_spritedata.usedSheetMinY = 1;
+            m_spritedata.width = 261;
+            m_spritedata.height = 90;
+            m_spritedata.type = SPRITE_TYPE.ENEMY1;
+            m_objectData.Add(SPRITE_TYPE.ENEMY1, m_spritedata);
+
+            m_spritedata.texture = m_enemiespath;
+            m_spritedata.fullsheetsizeX = 9;
+            m_spritedata.fullSheetsizeY = 3;
+            m_spritedata.usedsheetMaxX = 7;
+            m_spritedata.usedSheetMaxY = 1;
+            m_spritedata.usedsheetMinX = 6;
+            m_spritedata.usedSheetMinY = 1;
+            m_spritedata.width = 261;
+            m_spritedata.height = 90;
+            m_spritedata.type = SPRITE_TYPE.ENEMY2;
+            m_objectData.Add(SPRITE_TYPE.ENEMY2, m_spritedata);
         }
 
         
@@ -82,6 +129,7 @@ namespace Supermario
             m_platformtex = Game.Content.Load<Texture2D>(m_platformpath);
             m_coinblockTex = Game.Content.Load<Texture2D>(m_coinblockpath);
             m_backrgoundTex = Game.Content.Load<Texture2D>(m_backgroundpath);
+            m_enemiesTex = Game.Content.Load<Texture2D>(m_enemiespath);
             m_textures.Add(m_platformpath, m_platformtex);
             m_textures.Add(m_coinblockpath, m_coinblockTex);
             m_textures.Add(m_backgroundpath, m_backrgoundTex);
@@ -89,6 +137,7 @@ namespace Supermario
             m_textures.Add(m_timeuppath, m_timeupTex);
             m_textures.Add(m_gameoverpath, m_gameoverTex);
             m_textures.Add(m_buttonpath, m_buttonTex);
+            m_textures.Add(m_enemiespath, m_enemiesTex);
             base.LoadContent();
         }
 

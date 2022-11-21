@@ -5,7 +5,7 @@ namespace SuperMario
 {
     public enum GAME_STATE { GAME, MENU,EDITOR, HIGHSCORE};
     public enum LEVEL_TYPE { LEVEL1, LEVEL2, LEVEL3, LEVELE, NONE };
-    public enum SPRITE_TYPE { PLAYER, BLOCK, ENEMY, BACKGROUND, COINBLOCK };
+    public enum SPRITE_TYPE { PLAYER, BLOCK, ENEMY0, ENEMY1, ENEMY2, BACKGROUND, COINBLOCK };
     public enum MENU_TYPE { TIMEUP, GAMEOVER, START, BUTTON};
     public enum BUTTON_TYPE { LEVEL1= 0, LEVEL2 = 1, LEVEL3 = 2, CUSTOM = 3,HS = 4, EDITOR = 5}
 
@@ -16,8 +16,10 @@ namespace SuperMario
         public int height;
         public int width;
         public string texture;
-        public int usedsheetX;
-        public int usedSheetY;
+        public int usedsheetMaxX;
+        public int usedSheetMaxY;
+        public int usedsheetMinX;
+        public int usedSheetMinY;
         public int fullsheetsizeX;
         public int fullSheetsizeY;
         public int animationSpeedMSperFrame;

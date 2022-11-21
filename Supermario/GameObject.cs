@@ -35,7 +35,8 @@ namespace Supermario
         protected string m_textureName;
         protected Vector2 m_position;
         protected Point m_frameSize;
-        protected Point m_sheetSize;
+        protected Point m_sheetSizeMax;
+        protected Point m_sheetSizeMin;
         protected Point m_fullsheetSize;
         protected int m_timeSinceLastFrame;
         protected int m_millisecondsPerFrame;
@@ -62,7 +63,8 @@ namespace Supermario
         public Color GetColor() { return m_color; }
         public bool GetIsColliding() { return m_isColliding; }
         public bool GetIsMoving() { return m_moving; }
-        public Point GetUsedSheetSize() { return m_sheetSize; }
+        public Point GetUsedSheetSizeMax() { return m_sheetSizeMax; }
+        public Point GetUsedSheetSizeMin() { return m_sheetSizeMin; }
         public Point GetFullSheetSize() { return m_fullsheetSize; }
         public Point GetFrameSize() { return m_frameSize; }
         public SpriteEffects GetSpriteEffect() { return m_effect; }
@@ -81,13 +83,15 @@ namespace Supermario
             m_position = new Vector2(constructiondata.x, constructiondata.y);
             m_frameSize.X = constructiondata.width / constructiondata.fullsheetsizeX;
             m_frameSize.Y = constructiondata.height / constructiondata.fullSheetsizeY;
-            m_sheetSize = new Point(constructiondata.usedsheetX, constructiondata.usedSheetY);
+            m_sheetSizeMax = new Point(constructiondata.usedsheetMaxX, constructiondata.usedSheetMaxY);
+            m_sheetSizeMin = new Point(constructiondata.usedsheetMinX, constructiondata.usedSheetMinY);
             m_speed = constructiondata.speed;
             m_millisecondsPerFrame = constructiondata.animationSpeedMSperFrame;
             float a = (MathF.PI * (float)m_frameSize.X * (float)m_frameSize.Y) / 4.0f;
             m_r = MathF.Sqrt(a / MathF.PI); //the circle inside the texture
             m_mass = constructiondata.mass;
-            m_currentFrameY = constructiondata.usedSheetY;
+            m_currentFrameY = m_sheetSizeMin.Y;
+            m_currentFrameX = m_sheetSizeMin.X;
             m_prevPos = m_position;
             m_type = constructiondata.type;
         }
@@ -96,13 +100,33 @@ namespace Supermario
         {
             m_F += force;
         }
+        public virtual void UpdateAnimation(GameTime gametime)
+        {
+           
+
+            m_timeSinceLastFrame += gametime.ElapsedGameTime.Milliseconds;
+            if (m_timeSinceLastFrame > m_millisecondsPerFrame)
+            {
+                m_timeSinceLastFrame = 0;
+                m_currentFrameX++;
+                if (m_currentFrameX >= m_sheetSizeMax.X)
+                {
+                    m_currentFrameX = m_sheetSizeMin.X;
+                    m_currentFrameY++;
+                    if (m_currentFrameY >= m_sheetSizeMax.Y)
+                        m_currentFrameY = m_sheetSizeMin.Y;
+                }
+            }
+        }
         public virtual void Update(GameTime gametime)
         {
-            m_F += m_direction * m_speed * gametime.ElapsedGameTime.Seconds;
-            m_velocity = m_F/m_mass* gametime.ElapsedGameTime.Seconds;
+            m_F += m_direction * m_speed * (float)gametime.ElapsedGameTime.TotalSeconds;
+            m_velocity = m_F/m_mass* (float)gametime.ElapsedGameTime.TotalSeconds;
+            
             if (m_canmove)
-                m_position += m_velocity*gametime.ElapsedGameTime.Seconds;
+                m_position += m_velocity * (float)gametime.ElapsedGameTime.TotalSeconds;
 
+            
             m_F = Vector2.Zero;
         }
         public virtual void Draw(SpriteBatch batch)

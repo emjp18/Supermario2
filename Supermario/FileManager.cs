@@ -36,21 +36,47 @@ namespace Supermario
         public List<StaticObject> GetBackground() { return m_backgroundObjects; }
         public void ReadFromFile(string fileName)
         {
+            m_blockList.Clear();
+            m_coinblockList.Clear();
+            m_enemyList.Clear();
+            m_backgroundObjects.Clear();
             OBJECT_CONSTRUCTION_DATA playerdata = ResourceManager.GetSpritedata(SPRITE_TYPE.PLAYER);
-            //OBJECT_CONSTRUCTION_DATA enemydata = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY);
+            OBJECT_CONSTRUCTION_DATA enemydata0 = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY0);
+            OBJECT_CONSTRUCTION_DATA enemydata1 = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY1);
+            OBJECT_CONSTRUCTION_DATA enemydata2 = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY2);
             OBJECT_CONSTRUCTION_DATA coinblockata = ResourceManager.GetSpritedata(SPRITE_TYPE.COINBLOCK);
             OBJECT_CONSTRUCTION_DATA blockata = ResourceManager.GetSpritedata(SPRITE_TYPE.BLOCK);
             OBJECT_CONSTRUCTION_DATA backgroundData = ResourceManager.GetSpritedata(SPRITE_TYPE.BACKGROUND);
-            //List<Vector2> enemies = GetPosList(m_directory + fileName, "enemies");
-            //foreach (Vector2 pos in enemies)
-            //{
-            //    enemydata.x = (int)pos.X;
-            //    enemydata.y = (int)pos.Y;
+            List<Vector2> enemies = GetPosList(m_directory + fileName, "enemies0");
+            foreach (Vector2 pos in enemies)
+            {
+                enemydata0.x = (int)pos.X;
+                enemydata0.y = (int)pos.Y;
 
-            //    Enemy p = new Enemy(enemydata);
+                Enemy p = new Enemy(enemydata0);
 
-            //    m_enemyList.Add(p);
-            //}
+                m_enemyList.Add(p);
+            }
+            List<Vector2> enemies1 = GetPosList(m_directory + fileName, "enemies1");
+            foreach (Vector2 pos in enemies1)
+            {
+                enemydata1.x = (int)pos.X;
+                enemydata1.y = (int)pos.Y;
+
+                Enemy p = new Enemy(enemydata1);
+
+                m_enemyList.Add(p);
+            }
+            List<Vector2> enemies2 = GetPosList(m_directory + fileName, "enemies2");
+            foreach (Vector2 pos in enemies2)
+            {
+                enemydata2.x = (int)pos.X;
+                enemydata2.y = (int)pos.Y;
+
+                Enemy p = new Enemy(enemydata2);
+
+                m_enemyList.Add(p);
+            }
             List<Vector2> coinblocks = GetPosList(m_directory + fileName, "coinblocks");
             foreach (Vector2 pos in coinblocks)
             {
@@ -147,7 +173,9 @@ namespace Supermario
         private void WriteJsonToFile(string filename,
         List<GameObject> gList)
         {
-            JArray enemyArray = new JArray();
+            JArray enemyArray0 = new JArray();
+            JArray enemyArray1 = new JArray();
+            JArray enemyArray2 = new JArray();
             JArray blockarray = new JArray();
             JArray coinblockarray = new JArray();
             JArray backgroundarray = new JArray();
@@ -158,7 +186,26 @@ namespace Supermario
                 if (gList[i] is Enemy)
                 {
                     JObject obj = CreateObject(gList[i]);
-                    enemyArray.Add(obj);
+                    
+                    switch (gList[i].GetSpriteType())
+                    {
+                        case SPRITE_TYPE.ENEMY0:
+                            {
+                                enemyArray0.Add(obj);
+                                break;
+                            }
+                        case SPRITE_TYPE.ENEMY1:
+                            {
+                                enemyArray1.Add(obj);
+                                break;
+                            }
+                        case SPRITE_TYPE.ENEMY2:
+                            {
+                                enemyArray2.Add(obj);
+                                break;
+                            }
+                    }
+                    
                 }
                 else if (gList[i] is StaticObject)
                 {
@@ -191,7 +238,9 @@ namespace Supermario
             }
             JObject objp = CreateObject(new Player(ResourceManager.GetSpritedata(SPRITE_TYPE.PLAYER)));
             bigobj.Add("player", objp);
-            bigobj.Add("enemies", enemyArray);
+            bigobj.Add("enemies0", enemyArray0);
+            bigobj.Add("enemies1", enemyArray1);
+            bigobj.Add("enemies2", enemyArray2);
             bigobj.Add("blocks", blockarray);
             bigobj.Add("coinblocks", coinblockarray);
             bigobj.Add("backgrounds", backgroundarray);

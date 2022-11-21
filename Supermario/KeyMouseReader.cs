@@ -11,6 +11,10 @@ static class KeyMouseReader
 	public static bool KeyPressed(Keys key) {
 		return keyState.IsKeyDown(key) && oldKeyState.IsKeyUp(key);
 	}
+	public static bool KeyHeld(Keys key)
+	{
+		return keyState.IsKeyDown(key);
+	}
 	public static bool LeftClick() {
 		return mouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton == ButtonState.Released;
 	}

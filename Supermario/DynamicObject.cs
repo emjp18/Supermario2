@@ -1,4 +1,5 @@
-﻿using SuperMario;
+﻿using Microsoft.Xna.Framework;
+using SuperMario;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,11 @@ namespace Supermario
     {
         public DynamicObject(OBJECT_CONSTRUCTION_DATA constructiondata) : base(constructiondata)
         {
+          
+        }
+        public override void Update(GameTime gametime)
+        {
+            base.Update(gametime);
         }
     }
 }

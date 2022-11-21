@@ -142,18 +142,26 @@ namespace Supermario
                 }
                 if(m_currentState == GAME_STATE.EDITOR)
                 {
-                    foreach (Player obj in ResourceManager.GetObjects())
+                    foreach (GameObject obj in ResourceManager.GetObjects())
                     {
-                        obj.SetShouldUpdate(false);
-                        break;
+                        if(obj is Player)
+                        {
+                            obj.SetShouldUpdate(false);
+                            break;
+                        }
+                       
                     }
                 }
                 else
                 {
-                    foreach (Player obj in ResourceManager.GetObjects())
+                    foreach (GameObject obj in ResourceManager.GetObjects())
                     {
-                        obj.SetShouldUpdate(true);
-                        break;
+                        if (obj is Player)
+                        {
+                            obj.SetShouldUpdate(true);
+                            break;
+                        }
+
                     }
 
                 }

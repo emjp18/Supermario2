@@ -3,7 +3,18 @@
     "positionX": 0.0,
     "positionY": 0.0
   },
-  "enemies": [],
+  "enemies0": [],
+  "enemies1": [
+    {
+      "positionX": 225.0,
+      "positionY": 500.0
+    },
+    {
+      "positionX": 350.0,
+      "positionY": 500.0
+    }
+  ],
+  "enemies2": [],
   "blocks": [
     {
       "positionX": 25.0,
@@ -296,26 +307,6 @@
     {
       "positionX": 700.0,
       "positionY": 475.0
-    },
-    {
-      "positionX": 725.0,
-      "positionY": 475.0
-    },
-    {
-      "positionX": 750.0,
-      "positionY": 475.0
-    },
-    {
-      "positionX": 750.0,
-      "positionY": 450.0
-    },
-    {
-      "positionX": 750.0,
-      "positionY": 425.0
-    },
-    {
-      "positionX": 775.0,
-      "positionY": 425.0
     },
     {
       "positionX": 25.0,
@@ -728,6 +719,198 @@
     {
       "positionX": 600.0,
       "positionY": 325.0
+    },
+    {
+      "positionX": 75.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 100.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 125.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 150.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 175.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 200.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 225.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 250.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 275.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 225.0,
+      "positionY": 100.0
+    },
+    {
+      "positionX": 225.0,
+      "positionY": 125.0
+    },
+    {
+      "positionX": 225.0,
+      "positionY": 150.0
+    },
+    {
+      "positionX": 225.0,
+      "positionY": 175.0
+    },
+    {
+      "positionX": 225.0,
+      "positionY": 200.0
+    },
+    {
+      "positionX": 250.0,
+      "positionY": 225.0
+    },
+    {
+      "positionX": 250.0,
+      "positionY": 250.0
+    },
+    {
+      "positionX": 275.0,
+      "positionY": 250.0
+    },
+    {
+      "positionX": 300.0,
+      "positionY": 250.0
+    },
+    {
+      "positionX": 325.0,
+      "positionY": 275.0
+    },
+    {
+      "positionX": 350.0,
+      "positionY": 275.0
+    },
+    {
+      "positionX": 375.0,
+      "positionY": 275.0
+    },
+    {
+      "positionX": 400.0,
+      "positionY": 275.0
+    },
+    {
+      "positionX": 400.0,
+      "positionY": 250.0
+    },
+    {
+      "positionX": 425.0,
+      "positionY": 250.0
+    },
+    {
+      "positionX": 425.0,
+      "positionY": 225.0
+    },
+    {
+      "positionX": 450.0,
+      "positionY": 225.0
+    },
+    {
+      "positionX": 450.0,
+      "positionY": 200.0
+    },
+    {
+      "positionX": 450.0,
+      "positionY": 175.0
+    },
+    {
+      "positionX": 450.0,
+      "positionY": 150.0
+    },
+    {
+      "positionX": 450.0,
+      "positionY": 125.0
+    },
+    {
+      "positionX": 450.0,
+      "positionY": 100.0
+    },
+    {
+      "positionX": 425.0,
+      "positionY": 100.0
+    },
+    {
+      "positionX": 425.0,
+      "positionY": 75.0
+    },
+    {
+      "positionX": 400.0,
+      "positionY": 75.0
+    },
+    {
+      "positionX": 375.0,
+      "positionY": 75.0
+    },
+    {
+      "positionX": 375.0,
+      "positionY": 50.0
+    },
+    {
+      "positionX": 350.0,
+      "positionY": 50.0
+    },
+    {
+      "positionX": 325.0,
+      "positionY": 50.0
+    },
+    {
+      "positionX": 300.0,
+      "positionY": 50.0
+    },
+    {
+      "positionX": 275.0,
+      "positionY": 50.0
+    },
+    {
+      "positionX": 275.0,
+      "positionY": 75.0
+    },
+    {
+      "positionX": 250.0,
+      "positionY": 75.0
+    },
+    {
+      "positionX": 300.0,
+      "positionY": 150.0
+    },
+    {
+      "positionX": 400.0,
+      "positionY": 150.0
+    },
+    {
+      "positionX": 325.0,
+      "positionY": 200.0
+    },
+    {
+      "positionX": 350.0,
+      "positionY": 200.0
+    },
+    {
+      "positionX": 375.0,
+      "positionY": 200.0
+    },
+    {
+      "positionX": 375.0,
+      "positionY": 175.0
     }
   ],
   "coinblocks": [],

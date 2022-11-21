@@ -69,12 +69,26 @@ namespace Supermario
             }
             else if(GameManager.GetState() == GAME_STATE.EDITOR)
             {
+                foreach (KeyValuePair<MENU_TYPE, GameObject> sprite in ResourceManager.GetMenuObjects())
+                {
+                    if (sprite.Key == MENU_TYPE.START)
+                    {
+                        if (sprite.Value.GetShouldDraw())
+                        {
+                            sprite.Value.Draw(m_spriteBatch);
+                        }
+                        break;
+                    }
+
+                }
                 foreach (GameObject sprite in ResourceManager.GetObjects())
                 {
                     if (sprite.GetShouldDraw())
                     {
                         sprite.Draw(m_spriteBatch);
+                        
                     }
+                   
                 }
                 m_spriteBatch.DrawString(m_font, "Press E to switch", Vector2.Zero, Color.Black);
                 Vector2 vec2 = Vector2.Zero;
@@ -99,6 +113,18 @@ namespace Supermario
             }
             else if(GameManager.GetState() == GAME_STATE.GAME)
             {
+                foreach (KeyValuePair<MENU_TYPE, GameObject> sprite in ResourceManager.GetMenuObjects())
+                {
+                    if (sprite.Key == MENU_TYPE.START)
+                    {
+                        if (sprite.Value.GetShouldDraw())
+                        {
+                            sprite.Value.Draw(m_spriteBatch);
+                        }
+                        break;
+                    }
+
+                }
                 foreach (GameObject sprite in ResourceManager.GetObjects())
                 {
                     if (sprite.GetShouldDraw())
@@ -161,7 +187,7 @@ namespace Supermario
                     (ResourceManager.GetButtons()[(int)BUTTON_TYPE.HS] as Button).SetPressed(false);
                 }
             }
-            else
+            else if(GameManager.GetState() == GAME_STATE.GAME)
             {
                 foreach (GameObject sprite in ResourceManager.GetObjects())
                 {
@@ -181,7 +207,9 @@ namespace Supermario
             m_font = Game.Content.Load<SpriteFont>("font");
             m_spriteBatch = new SpriteBatch(Game.GraphicsDevice);
        
-            //m_editorSprites.Add(new Enemy(ResourceManager.GetSpritedata(SuperMario.SPRITE_TYPE.ENEMY)));
+            m_editorSprites.Add(new Enemy(ResourceManager.GetSpritedata(SuperMario.SPRITE_TYPE.ENEMY0)));
+            m_editorSprites.Add(new Enemy(ResourceManager.GetSpritedata(SuperMario.SPRITE_TYPE.ENEMY1)));
+            m_editorSprites.Add(new Enemy(ResourceManager.GetSpritedata(SuperMario.SPRITE_TYPE.ENEMY2)));
             m_editorSprites.Add(new StaticObject(ResourceManager.GetSpritedata(SuperMario.SPRITE_TYPE.COINBLOCK)));
             m_editorSprites.Add(new StaticObject(ResourceManager.GetSpritedata(SuperMario.SPRITE_TYPE.BLOCK)));
             
