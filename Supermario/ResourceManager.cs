@@ -37,6 +37,9 @@ namespace Supermario
         static Dictionary<SPRITE_TYPE, OBJECT_CONSTRUCTION_DATA> m_objectData = new Dictionary<SPRITE_TYPE, OBJECT_CONSTRUCTION_DATA>();
         static Dictionary<string, Texture2D> m_textures = new Dictionary<string, Texture2D>();
         static Dictionary<MENU_TYPE, GameObject> m_menuObjects = new Dictionary<MENU_TYPE, GameObject>();
+        static Dictionary<Point, StaticObject> m_tileMap = new Dictionary<Point, StaticObject>();
+        static Player m_player;
+        static List<Enemy> m_enemies = new List<Enemy>();
         public ResourceManager(Game game) : base(game)
         {
             m_spritedata.mass = 1;
@@ -67,7 +70,7 @@ namespace Supermario
 
             
             m_spritedata.texture = m_marioTinyPath;
-            m_spritedata.fullsheetsizeX = 10;
+            m_spritedata.fullsheetsizeX = 100;
             m_spritedata.fullSheetsizeY = 2;
             m_spritedata.usedsheetMaxX = 6;
             m_spritedata.usedSheetMaxY = 0;
@@ -75,11 +78,11 @@ namespace Supermario
             m_spritedata.usedSheetMinY = 0;
             m_spritedata.width = 300;
             m_spritedata.height = 44;
-            m_spritedata.speed = 1000000;
+            m_spritedata.speed = 10;
             m_spritedata.type = SPRITE_TYPE.PLAYER;
             m_objectData.Add(SPRITE_TYPE.PLAYER, m_spritedata);
 
-            m_spritedata.speed = 500000;
+            m_spritedata.speed = 50;
             m_spritedata.texture = m_enemiespath;
             m_spritedata.fullsheetsizeX = 9;
             m_spritedata.fullSheetsizeY = 3;
@@ -140,8 +143,8 @@ namespace Supermario
             m_textures.Add(m_enemiespath, m_enemiesTex);
             base.LoadContent();
         }
-
-       
+        public static ref Player GetPlayer() { return ref m_player; }
+       public static ref Dictionary<Point, StaticObject> GetTiles() { return ref m_tileMap; }
         public static Texture2D GetTexture(string name) { return m_textures[name]; }
         public static OBJECT_CONSTRUCTION_DATA GetSpritedata(SPRITE_TYPE type) { return m_objectData[type]; }
         public static Dictionary<string, Texture2D> GetTexture() { return m_textures; }
@@ -151,8 +154,25 @@ namespace Supermario
         {
             m_objectData[type] = data;
         }
-        public static void AddObject(GameObject s) { m_objects.Add(s); }
+        public static void AddObject(GameObject s) { 
+            if(!m_objects.Contains(s))
+                m_objects.Add(s);
+            if (s is Player)
+                m_player = s as Player;
+            if (s is Enemy)
+                m_enemies.Add(s as Enemy);
+        if (s.GetSpriteType()==SPRITE_TYPE.BLOCK||s.GetSpriteType()==SPRITE_TYPE.COINBLOCK)
+            {
+                
+                Point gridindex = new Point((int)(s.GetCurrentPos().X / GameManager.GetTileSize()),
+                    (int)(s.GetCurrentPos().Y / GameManager.GetTileSize()));
+                if(!m_tileMap.ContainsKey(gridindex))
+                    m_tileMap.Add(gridindex, s as StaticObject);
+                
+            }
+        }
         public static ref List<GameObject> GetObjects() { return ref m_objects; }
+        public static ref List<Enemy> GetEnemies() { return ref m_enemies; }
         public static ref List<GameObject> GetButtons() { return ref m_buttons; }
         public static void AddMenuObject( GameObject s, MENU_TYPE type) { s.SetIsEditable(false);
             switch (type)
@@ -189,5 +209,7 @@ namespace Supermario
             
         }
         public static ref Dictionary<MENU_TYPE, GameObject> GetMenuObjects() { return ref m_menuObjects; }
+        public static bool PosHasTile(Point gridindex) { return m_tileMap.ContainsKey(gridindex); }
+        public static StaticObject GetTile(Point gridindex) { return m_tileMap[gridindex]; }
     }
 }

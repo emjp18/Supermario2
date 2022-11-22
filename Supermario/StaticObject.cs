@@ -12,6 +12,7 @@ namespace Supermario
     {
         public StaticObject(OBJECT_CONSTRUCTION_DATA constructiondata) : base(constructiondata)
         {
+            m_update = false;
         }
     }
 }

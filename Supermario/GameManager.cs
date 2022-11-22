@@ -28,6 +28,7 @@ namespace Supermario
         string m_levelEditor = "levelE.json";
         string m_level0 = "level1.json";
         string m_level1 = "level2.json";
+        static Vector2[,] m_grid;
         Dictionary<LEVEL_TYPE, string> m_levels = new Dictionary<LEVEL_TYPE, string>();
         public GameManager(Game game)
         {
@@ -42,7 +43,19 @@ namespace Supermario
            
             m_currentLevel = LEVEL_TYPE.NONE;
             m_oldLevel = LEVEL_TYPE.NONE;
+            int gridSquareCountX = m_resX / m_tileSize; //32
+            int gridSquareCountY = m_resY / m_tileSize; //24
+
+            m_grid = new Vector2[gridSquareCountX, gridSquareCountY];
+            for(int i=0; i<gridSquareCountX; i++)
+            {
+                for(int j=0; j<gridSquareCountY; j++)
+                {
+                    m_grid[i, j] = new Vector2(i * m_tileSize, j * m_tileSize);
+                }
+            }
         }
+        public static Vector2[,] GetGrid() { return m_grid; }
         public static int GetTileSize() { return m_tileSize; }
         public static int GetRes(bool x) { if (x) return m_resX; else return m_resY; }
         public GameObjectManager GetGameObjectManager() { return m_gameobjectManager; }
@@ -67,9 +80,10 @@ namespace Supermario
         public void LoadLevel(LEVEL_TYPE level)
         {
             
-            m_currentLevel = level;
+           
             m_filemanager.ReadFromFile(m_levels[level]);
             ResourceManager.GetObjects().Clear();
+            ResourceManager.GetTiles().Clear();
             foreach (GameObject s in m_filemanager.GetBackground())
             {
                 ResourceManager.AddObject(s);
@@ -100,21 +114,20 @@ namespace Supermario
         public static bool IsWithinWindowBounds(Rectangle rect)
         {
             if ((rect.X + rect.Width <= m_resX) && (rect.Y + rect.Height <= m_resY)
-                && (rect.X > 0) && (rect.Y > 0))
+                && (rect.X >= 0) && (rect.Y >= 0))
                 return true;
             else
                 return false;
         }
-        public static void ModTileWithRes(ref Point p)
+        public static void ModWithRes(ref Point p)
         {
-
-
-            int rest = m_resX % p.X;
+            
+            int rest = m_resX % (p.X+1);
             if (rest != 0)
             {
                 p.X = (p.X / m_tileSize) * m_tileSize;
             }
-            rest = m_resY % p.Y;
+            rest = m_resY % (p.Y + 1);
             if (rest != 0)
             {
                 p.Y = (p.Y / m_tileSize) * m_tileSize;
@@ -140,31 +153,7 @@ namespace Supermario
                     LoadLevel(m_currentLevel);
                     m_oldLevel = m_currentLevel;
                 }
-                if(m_currentState == GAME_STATE.EDITOR)
-                {
-                    foreach (GameObject obj in ResourceManager.GetObjects())
-                    {
-                        if(obj is Player)
-                        {
-                            obj.SetShouldUpdate(false);
-                            break;
-                        }
-                       
-                    }
-                }
-                else
-                {
-                    foreach (GameObject obj in ResourceManager.GetObjects())
-                    {
-                        if (obj is Player)
-                        {
-                            obj.SetShouldUpdate(true);
-                            break;
-                        }
-
-                    }
-
-                }
+              
             }
            
             if(m_oldState != m_currentState)

@@ -25,12 +25,12 @@ namespace Supermario
         {
             if(GameManager.GetState()==GAME_STATE.GAME)
             {
-                switch (m_currentLevel)
+                foreach (Enemy e in ResourceManager.GetEnemies())
                 {
-                    case LEVEL_TYPE.LEVEL1:
-                        {
-                            break;
-                        }
+                    if(ResourceManager.GetPlayer().PixelIntersects(e))
+                    {
+                        ResourceManager.GetPlayer().Knocback(e);
+                    }
                 }
             }
             else if(GameManager.GetState()==GAME_STATE.EDITOR)
@@ -45,7 +45,7 @@ namespace Supermario
                             {
                                 Point mp = KeyMouseReader.mouseState.Position;
                                 Point p = new Point(mp.X, mp.Y);
-                                GameManager.ModTileWithRes(ref p);
+                                GameManager.ModWithRes(ref p);
                                 if (GameManager.IsWithinWindowBounds(new Rectangle(mp, new Point(0, 0))))
                                 {
                                     foreach (GameObject sprite in ResourceManager.GetObjects())
@@ -122,7 +122,7 @@ namespace Supermario
                             {
                                 Point mp = KeyMouseReader.mouseState.Position;
                                 Point p = new Point(mp.X, mp.Y);
-                                GameManager.ModTileWithRes(ref p);
+                                GameManager.ModWithRes(ref p);
                                 if (GameManager.IsWithinWindowBounds(new Rectangle(mp, new Point(0, 0))))
                                 {
                                     foreach (GameObject sprite in ResourceManager.GetObjects())

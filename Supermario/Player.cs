@@ -11,6 +11,7 @@ namespace Supermario
 {
     internal class Player : DynamicObject
     {
+        
         public Player(OBJECT_CONSTRUCTION_DATA constructiondata) : base(constructiondata)
         {
             m_isEditable = false;
@@ -19,6 +20,7 @@ namespace Supermario
         }
         public override void Update(GameTime gametime)
         {
+            //AddForce(new Vector2(0, m_gravity));
             m_direction = Vector2.Zero;
             if (KeyMouseReader.KeyHeld(Microsoft.Xna.Framework.Input.Keys.Left))
             {
@@ -33,20 +35,24 @@ namespace Supermario
                 m_direction.X = 1;
                 m_effect = SpriteEffects.FlipHorizontally;
             }
-
-            if (KeyMouseReader.KeyHeld(Microsoft.Xna.Framework.Input.Keys.Up))
+            if(KeyMouseReader.KeyPressed(Keys.Space))
             {
-                m_direction = Vector2.Zero;
-                m_direction.Y = -1;
-                m_effect = SpriteEffects.None;
+                AddForce(new Vector2(0, -m_gravity * m_speed));
             }
 
-            if (KeyMouseReader.KeyHeld(Microsoft.Xna.Framework.Input.Keys.Down))
-            {
-                m_direction = Vector2.Zero;
-                m_direction.Y = 1;
-                m_effect = SpriteEffects.None;
-            }
+            //if (KeyMouseReader.KeyHeld(Microsoft.Xna.Framework.Input.Keys.Up))
+            //{
+            //    m_direction = Vector2.Zero;
+            //    m_direction.Y = -1;
+            //    m_effect = SpriteEffects.None;
+            //}
+
+            //if (KeyMouseReader.KeyHeld(Microsoft.Xna.Framework.Input.Keys.Down))
+            //{
+            //    m_direction = Vector2.Zero;
+            //    m_direction.Y = 1;
+            //    m_effect = SpriteEffects.None;
+            //}
            
             base.Update(gametime);
         }

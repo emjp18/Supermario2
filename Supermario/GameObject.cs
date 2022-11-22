@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SharpDX.Direct2D1.Effects;
 using SuperMario;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Supermario
 {
@@ -43,6 +46,7 @@ namespace Supermario
         protected float m_speed;
         protected int m_currentFrameX = 0;
         protected int m_currentFrameY = 0;
+        public Texture2D GetTexture() { return m_texture; }
         public bool GetIsEditable() { return m_isEditable; }
         public int GetCurrentFrameX() { return m_currentFrameX; }
         public int GetCurrentFrameY() { return m_currentFrameY; }
@@ -118,11 +122,58 @@ namespace Supermario
                 }
             }
         }
+        public bool CanMove(Vector2 pos)
+        {
+            //If the next position intersects with a tile or the window bounds dont move.
+
+            Point p = new Point((int)pos.X, (int)pos.Y);
+            
+            Rectangle bounds = new Rectangle(p.X, p.Y, m_frameSize.X, m_frameSize.Y);
+            bool a = GameManager.IsWithinWindowBounds(bounds);
+            bool b = false;
+
+            //Look up if there is a tile where you are going. instead of looping all the tiles.
+            //Round the pos to the nearest gridpoint
+            float pX = pos.X;
+            float pY = pos.Y;
+            if (m_direction.X > 0)
+            {
+                pX = pos.X + m_frameSize.X*0.5f;
+            }
+            else if (m_direction.X < 0)
+            {
+                pX = pos.X - m_frameSize.X*0.5f;
+            }
+            if (m_direction.Y > 0)
+            {
+                pY = pos.Y + m_frameSize.Y * 0.5f;
+            }
+            else if(m_direction.Y<0)
+            {
+                pY = pos.Y - m_frameSize.Y*0.5f;
+            }
+
+            int x = (int)MathF.Round((pX / GameManager.GetTileSize()));
+            int y = (int)MathF.Round((pY / GameManager.GetTileSize()));
+
+            if (ResourceManager.PosHasTile(new Point(x, y)))
+                b = bounds.Intersects(ResourceManager.GetTile(new Point(x,y)).GetBounds());
+           
+
+            if ( b || !a)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
         public virtual void Update(GameTime gametime)
         {
-            m_F += m_direction * m_speed * (float)gametime.ElapsedGameTime.TotalSeconds;
-            m_velocity = m_F/m_mass* (float)gametime.ElapsedGameTime.TotalSeconds;
-            
+            m_F += m_direction * m_speed;
+            m_velocity = m_F / m_mass;
+            m_canmove = CanMove(m_position + m_velocity * (float)gametime.ElapsedGameTime.TotalSeconds);
             if (m_canmove)
                 m_position += m_velocity * (float)gametime.ElapsedGameTime.TotalSeconds;
 
@@ -143,10 +194,13 @@ namespace Supermario
         {
             return new Rectangle(
             (int)m_position.X,
-            (int)m_position.Y,
+             (int)m_position.Y,
             m_frameSize.X,
             m_frameSize.Y);
+
+            
         }
+     
     }
 }
 
