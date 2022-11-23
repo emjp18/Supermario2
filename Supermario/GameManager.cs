@@ -84,6 +84,7 @@ namespace Supermario
             m_filemanager.ReadFromFile(m_levels[level]);
             ResourceManager.GetObjects().Clear();
             ResourceManager.GetTiles().Clear();
+            ResourceManager.GetEnemies().Clear();
             foreach (GameObject s in m_filemanager.GetBackground())
             {
                 ResourceManager.AddObject(s);
@@ -131,6 +132,21 @@ namespace Supermario
             if (rest != 0)
             {
                 p.Y = (p.Y / m_tileSize) * m_tileSize;
+
+            }
+        }
+        public static void ModWithRes(ref Point p, int w, int h)
+        {
+
+            int rest = m_resX % (p.X + 1);
+            if (rest != 0)
+            {
+                p.X = (p.X / w) * w;
+            }
+            rest = m_resY % (p.Y + 1);
+            if (rest != 0)
+            {
+                p.Y = (p.Y / h) * h;
 
             }
         }

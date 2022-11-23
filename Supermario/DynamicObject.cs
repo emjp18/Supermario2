@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Supermario
 {
@@ -26,19 +27,43 @@ namespace Supermario
             return GetBounds().Intersects(other.GetBounds());
             
         }
-        public void Knocback(GameObject other)
+        public void Knocback(GameObject other, GameTime gametime)
         {
-            int e = 1;
-            Vector2 WA = m_mass * m_direction + other.GetMass() * other.GetDirection()
-                + e * other.GetMass() * (other.GetDirection() - m_direction) / (m_mass + other.GetMass());
+            float DistanceNow = Vector2.Distance(m_position
+            , other.GetCurrentPos());
+            float DistanceNext = Vector2.Distance(
+            m_position + m_velocity / 100
+            , other.GetCurrentPos() + other.GetVelocity() / 100);
 
-            AddForce(WA);
-            if (other is DynamicObject)
+            if (DistanceNext< DistanceNow)
             {
-                Vector2 WB = m_mass * m_direction + other.GetMass() * other.GetDirection()
-               + e * m_mass * (m_direction - other.GetDirection()) / (m_mass + other.GetMass());
-                other.AddForce(WB);
+                Vector2 collisionNormal = Vector2.Normalize(m_position
+               - other.GetCurrentPos());
+                ////split a1's velocity into parallel and right-angled components
+                Vector2 u1Orthogonal = Vector2.Dot(m_velocity, collisionNormal)
+                * collisionNormal;
+                Vector2 u1Parallel = m_velocity - u1Orthogonal;
+                Vector2 u2Orthogonal = Vector2.Dot(other.GetVelocity(), collisionNormal)
+                * collisionNormal;
+                Vector2 u2Parallel = other.GetVelocity() - u2Orthogonal;
+                float elasticity = 1.1f;
+                //Update the right-angled components of the asteroids' hastigheterna
+                // and add back the parallel components 
+                AddForce(((u1Orthogonal + u2Orthogonal
+                + elasticity * (u2Orthogonal - u1Orthogonal)) / 2 + u1Parallel)
+                , gametime);
+
+
+                if (other is DynamicObject)
+                {
+                    other.AddForce(((u1Orthogonal + u2Orthogonal
+                + elasticity * (u1Orthogonal - u2Orthogonal)) / 2 + u2Parallel)
+                , gametime);
+
+                }
             }
+
+           
         }
         public bool CircleIntersects(GameObject other)
         {
@@ -67,12 +92,18 @@ namespace Supermario
         }
         public bool PixelIntersects(GameObject other)
         {
+           Rectangle textureBoundsA =  new Rectangle(0,0,
+            m_frameSize.X,
+            m_frameSize.Y);
+            Rectangle textureBoundsB = new Rectangle(0, 0,
+            other.GetFrameSize().X,
+            other.GetFrameSize().Y);
             Rectangle hitBox = GetBounds();
             Rectangle otherHitBox = other.GetBounds();
             Color[] dataA = new Color[m_frameSize.X * m_frameSize.Y];
-            m_texture.GetData(dataA);
+            m_texture.GetData(0, textureBoundsA, dataA, 0, dataA.Length);
             Color[] dataB = new Color[other.GetFrameSize().X * other.GetFrameSize().Y];
-            other.GetTexture().GetData(dataB);
+            other.GetTexture().GetData(0, textureBoundsB, dataB, 0, dataB.Length);
             int top = Math.Max(hitBox.Top, otherHitBox.Top);
             int bottom = Math.Min(hitBox.Bottom, otherHitBox.Bottom);
             int left = Math.Max(hitBox.Left, otherHitBox.Left);

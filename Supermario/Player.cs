@@ -20,7 +20,7 @@ namespace Supermario
         }
         public override void Update(GameTime gametime)
         {
-            //AddForce(new Vector2(0, m_gravity));
+            
             m_direction = Vector2.Zero;
             if (KeyMouseReader.KeyHeld(Microsoft.Xna.Framework.Input.Keys.Left))
             {
@@ -37,23 +37,12 @@ namespace Supermario
             }
             if(KeyMouseReader.KeyPressed(Keys.Space))
             {
-                AddForce(new Vector2(0, -m_gravity * m_speed));
+                AddForce(new Vector2(0, -m_gravity*2*m_speed*(float)gametime.ElapsedGameTime.TotalSeconds), gametime);
             }
-
-            //if (KeyMouseReader.KeyHeld(Microsoft.Xna.Framework.Input.Keys.Up))
-            //{
-            //    m_direction = Vector2.Zero;
-            //    m_direction.Y = -1;
-            //    m_effect = SpriteEffects.None;
-            //}
-
-            //if (KeyMouseReader.KeyHeld(Microsoft.Xna.Framework.Input.Keys.Down))
-            //{
-            //    m_direction = Vector2.Zero;
-            //    m_direction.Y = 1;
-            //    m_effect = SpriteEffects.None;
-            //}
+            AddForce(m_direction * m_speed * (float)gametime.ElapsedGameTime.TotalSeconds, gametime);
+            AddForce(new Vector2(0, m_gravity * m_speed * 0.5f * (float)gametime.ElapsedGameTime.TotalSeconds), gametime);
            
+
             base.Update(gametime);
         }
     }

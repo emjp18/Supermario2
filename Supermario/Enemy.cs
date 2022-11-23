@@ -15,6 +15,11 @@ namespace Supermario
         {
         
         }
+        public override void Update(GameTime gametime)
+        {
+            AddForce(new Vector2(0, m_gravity * m_speed * 0.5f * (float)gametime.ElapsedGameTime.TotalSeconds), gametime);
+            base.Update(gametime);
+        }
         public override void Draw(SpriteBatch batch)
         {
             base.Draw(batch);

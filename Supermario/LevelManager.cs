@@ -27,9 +27,9 @@ namespace Supermario
             {
                 foreach (Enemy e in ResourceManager.GetEnemies())
                 {
-                    if(ResourceManager.GetPlayer().PixelIntersects(e))
+                    if (ResourceManager.GetPlayer().PixelIntersects(e))
                     {
-                        ResourceManager.GetPlayer().Knocback(e);
+                        ResourceManager.GetPlayer().Knocback(e, gameTime);
                     }
                 }
             }
@@ -73,7 +73,7 @@ namespace Supermario
                                             {
                                                 OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY0);
 
-
+                                                GameManager.ModWithRes(ref p, data.width / data.fullsheetsizeX, data.height / data.fullSheetsizeY);
                                                 data.x = p.X; data.y = p.Y;
                                                 
                                                 GameObject s = new Enemy(data);
@@ -83,7 +83,7 @@ namespace Supermario
                                         case SPRITE_TYPE.ENEMY1:
                                             {
                                                 OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY1);
-
+                                                GameManager.ModWithRes(ref p, data.width/data.fullsheetsizeX, data.height/ data.fullSheetsizeY);
 
                                                 data.x = p.X; data.y = p.Y;
                                                 
@@ -94,7 +94,7 @@ namespace Supermario
                                         case SPRITE_TYPE.ENEMY2:
                                             {
                                                 OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY2);
-
+                                                GameManager.ModWithRes(ref p, data.width / data.fullsheetsizeX, data.height / data.fullSheetsizeY);
 
                                                 data.x = p.X; data.y = p.Y;
                                                 
@@ -149,7 +149,7 @@ namespace Supermario
         {
             if (KeyMouseReader.KeyPressed(Microsoft.Xna.Framework.Input.Keys.E))
             {
-                if ((int)m_sprite < m_spriteTypeCount - 1)
+                if ((int)m_sprite < m_spriteTypeCount)
                 {
                     m_sprite++;
 

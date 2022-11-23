@@ -100,9 +100,20 @@ namespace Supermario
             m_type = constructiondata.type;
         }
         
-        public virtual void AddForce(Vector2 force)
+        public virtual void AddForce(Vector2 force, GameTime gametime)
         {
-            m_F += force;
+            if (this is Enemy)
+                {
+                int x = 1;
+                }
+            if (this is Player)
+            {
+                int x = 1;
+            }
+
+            m_canmove = CanMove(m_position + (m_F+force / m_mass)*(float)gametime.ElapsedGameTime.TotalSeconds);
+            if(m_canmove)
+                m_F += force;
         }
         public virtual void UpdateAnimation(GameTime gametime)
         {
@@ -138,19 +149,19 @@ namespace Supermario
             float pY = pos.Y;
             if (m_direction.X > 0)
             {
-                pX = pos.X + m_frameSize.X*0.5f;
+                pX = pos.X + m_frameSize.X *0.5f;
             }
             else if (m_direction.X < 0)
             {
-                pX = pos.X - m_frameSize.X*0.5f;
+                pX = pos.X;// - m_frameSize.X*0.5f;
             }
             if (m_direction.Y > 0)
             {
-                pY = pos.Y + m_frameSize.Y * 0.5f;
+                pY = pos.Y + m_frameSize.Y* 0.5f;
             }
             else if(m_direction.Y<0)
             {
-                pY = pos.Y - m_frameSize.Y*0.5f;
+                pY = pos.Y;// - m_frameSize.Y*0.5f;
             }
 
             int x = (int)MathF.Round((pX / GameManager.GetTileSize()));
@@ -171,13 +182,14 @@ namespace Supermario
         }
         public virtual void Update(GameTime gametime)
         {
-            m_F += m_direction * m_speed;
-            m_velocity = m_F / m_mass;
-            m_canmove = CanMove(m_position + m_velocity * (float)gametime.ElapsedGameTime.TotalSeconds);
-            if (m_canmove)
-                m_position += m_velocity * (float)gametime.ElapsedGameTime.TotalSeconds;
-
+           
             
+            m_velocity = m_F / m_mass;
+
+            m_position += m_velocity * (float)gametime.ElapsedGameTime.TotalSeconds;
+
+
+
             m_F = Vector2.Zero;
         }
         public virtual void Draw(SpriteBatch batch)

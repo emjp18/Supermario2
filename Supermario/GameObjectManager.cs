@@ -113,24 +113,19 @@ namespace Supermario
             }
             else if(GameManager.GetState() == GAME_STATE.GAME)
             {
-                foreach (KeyValuePair<MENU_TYPE, GameObject> sprite in ResourceManager.GetMenuObjects())
-                {
-                    if (sprite.Key == MENU_TYPE.START)
-                    {
-                        if (sprite.Value.GetShouldDraw())
-                        {
-                            sprite.Value.Draw(m_spriteBatch);
-                        }
-                        break;
-                    }
+                if (ResourceManager.GetMenuObjects()[MENU_TYPE.START].GetShouldDraw())
+                    ResourceManager.GetMenuObjects()[MENU_TYPE.START].Draw(m_spriteBatch);
 
-                }
+
+
                 foreach (GameObject sprite in ResourceManager.GetObjects())
                 {
+                    
                     if (sprite.GetShouldDraw())
                     {
                         sprite.Draw(m_spriteBatch);
                     }
+                    
                 }
 
                 
