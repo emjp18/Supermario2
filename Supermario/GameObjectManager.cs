@@ -14,17 +14,19 @@ namespace Supermario
     {
         SpriteBatch m_spriteBatch;
         SpriteFont m_font;
-        
+        Camera m_camera;
         List<GameObject> m_editorSprites = new List<GameObject>();
-        public GameObjectManager(Game game) : base(game)
+        public GameObjectManager(Game game, Viewport view) : base(game)
         {
+            m_camera = new Camera(view);
         }
 
         public override void Draw(GameTime gameTime)
         {
-            m_spriteBatch.Begin();
+            
             if (GameManager.GetState() == GAME_STATE.MENU)
             {
+                m_spriteBatch.Begin();
                 foreach (KeyValuePair<MENU_TYPE,GameObject> sprite in ResourceManager.GetMenuObjects())
                 {
                     if(sprite.Key==MENU_TYPE.START)
@@ -69,6 +71,7 @@ namespace Supermario
             }
             else if(GameManager.GetState() == GAME_STATE.EDITOR)
             {
+                m_spriteBatch.Begin();
                 foreach (KeyValuePair<MENU_TYPE, GameObject> sprite in ResourceManager.GetMenuObjects())
                 {
                     if (sprite.Key == MENU_TYPE.START)
@@ -113,6 +116,7 @@ namespace Supermario
             }
             else if(GameManager.GetState() == GAME_STATE.GAME)
             {
+                m_spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, m_camera.Transform);
                 if (ResourceManager.GetMenuObjects()[MENU_TYPE.START].GetShouldDraw())
                     ResourceManager.GetMenuObjects()[MENU_TYPE.START].Draw(m_spriteBatch);
 
@@ -146,41 +150,8 @@ namespace Supermario
                     if(sprite.GetShouldUpdate())
                         sprite.Update(gameTime);
                 }
-                if((ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL1] as Button).GetPressed())
-                {
-                    GameManager.SetLevel(LEVEL_TYPE.LEVEL1);
-                    GameManager.SetState(GAME_STATE.GAME);
-                    (ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL1] as Button).SetPressed(false);
-                }
-                else if ((ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL2] as Button).GetPressed())
-                {
-                    GameManager.SetLevel(LEVEL_TYPE.LEVEL2);
-                    GameManager.SetState(GAME_STATE.GAME);
-                    (ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL2] as Button).SetPressed(false);
-                }
-                else if ((ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL3] as Button).GetPressed())
-                {
-                    GameManager.SetLevel(LEVEL_TYPE.LEVEL3);
-                    GameManager.SetState(GAME_STATE.GAME);
-                    (ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL3] as Button).SetPressed(false);
-                }
-                else if ((ResourceManager.GetButtons()[(int)BUTTON_TYPE.EDITOR] as Button).GetPressed())
-                {
-                    GameManager.SetLevel(LEVEL_TYPE.LEVELE);
-                    GameManager.SetState(GAME_STATE.EDITOR);
-                    (ResourceManager.GetButtons()[(int)BUTTON_TYPE.EDITOR] as Button).SetPressed(false);
-                }
-                else if ((ResourceManager.GetButtons()[(int)BUTTON_TYPE.CUSTOM] as Button).GetPressed())
-                {
-                    GameManager.SetLevel(LEVEL_TYPE.LEVELE);
-                    GameManager.SetState(GAME_STATE.GAME);
-                    (ResourceManager.GetButtons()[(int)BUTTON_TYPE.CUSTOM] as Button).SetPressed(false);
-                }
-                else if ((ResourceManager.GetButtons()[(int)BUTTON_TYPE.HS] as Button).GetPressed())
-                {
-                    GameManager.SetState(GAME_STATE.HIGHSCORE);
-                    (ResourceManager.GetButtons()[(int)BUTTON_TYPE.HS] as Button).SetPressed(false);
-                }
+                
+                
             }
             else if(GameManager.GetState() == GAME_STATE.GAME)
             {
@@ -202,6 +173,7 @@ namespace Supermario
                     
                     
                 }
+                m_camera.SetPosition(ResourceManager.GetPlayer().GetCurrentPos());
             }
             
             base.Update(gameTime);

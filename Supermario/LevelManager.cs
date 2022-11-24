@@ -14,7 +14,7 @@ namespace Supermario
     {
         LEVEL_TYPE m_currentLevel;
         static SPRITE_TYPE m_sprite = SPRITE_TYPE.BLOCK;
-        const int m_spriteTypeCount = 5;
+        const int m_spriteTypeCount = 7;
         public LevelManager(Game game, LEVEL_TYPE currentLevel) : base(game)
         {
             m_currentLevel = currentLevel;
@@ -23,9 +23,43 @@ namespace Supermario
         public static SPRITE_TYPE GetSelection() { return m_sprite; }
         public override void Update(GameTime gameTime)
         {
-            if(GameManager.GetState()==GAME_STATE.GAME)
+            if(GameManager.GetState()==GAME_STATE.MENU)
             {
-                
+                if ((ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL1] as Button).GetPressed())
+                {
+                    GameManager.SetLevel(LEVEL_TYPE.LEVEL1);
+                    GameManager.SetState(GAME_STATE.GAME);
+                    (ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL1] as Button).SetPressed(false);
+                }
+                else if ((ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL2] as Button).GetPressed())
+                {
+                    GameManager.SetLevel(LEVEL_TYPE.LEVEL2);
+                    GameManager.SetState(GAME_STATE.GAME);
+                    (ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL2] as Button).SetPressed(false);
+                }
+                else if ((ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL3] as Button).GetPressed())
+                {
+                    GameManager.SetLevel(LEVEL_TYPE.LEVEL3);
+                    GameManager.SetState(GAME_STATE.GAME);
+                    (ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL3] as Button).SetPressed(false);
+                }
+                else if ((ResourceManager.GetButtons()[(int)BUTTON_TYPE.EDITOR] as Button).GetPressed())
+                {
+                    GameManager.SetLevel(LEVEL_TYPE.LEVELE);
+                    GameManager.SetState(GAME_STATE.EDITOR);
+                    (ResourceManager.GetButtons()[(int)BUTTON_TYPE.EDITOR] as Button).SetPressed(false);
+                }
+                else if ((ResourceManager.GetButtons()[(int)BUTTON_TYPE.CUSTOM] as Button).GetPressed())
+                {
+                    GameManager.SetLevel(LEVEL_TYPE.LEVELE);
+                    GameManager.SetState(GAME_STATE.GAME);
+                    (ResourceManager.GetButtons()[(int)BUTTON_TYPE.CUSTOM] as Button).SetPressed(false);
+                }
+                else if ((ResourceManager.GetButtons()[(int)BUTTON_TYPE.HS] as Button).GetPressed())
+                {
+                    GameManager.SetState(GAME_STATE.HIGHSCORE);
+                    (ResourceManager.GetButtons()[(int)BUTTON_TYPE.HS] as Button).SetPressed(false);
+                }
             }
             else if(GameManager.GetState()==GAME_STATE.EDITOR)
             {

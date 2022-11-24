@@ -50,14 +50,14 @@ namespace Supermario
             m_spritedata.usedSheetMaxY = 0;
             m_spritedata.usedsheetMinX = 0;
             m_spritedata.usedSheetMinY = 0;
-            m_spritedata.width = m_spritedata.height = GameManager.GetTileSize();
+            m_spritedata.width = m_spritedata.height = 25;
             m_spritedata.type = SPRITE_TYPE.BLOCK;
             m_objectData.Add(SPRITE_TYPE.BLOCK, m_spritedata);
             m_spritedata.texture = m_coinblockpath;
             m_spritedata.type = SPRITE_TYPE.COINBLOCK;
             m_objectData.Add(SPRITE_TYPE.COINBLOCK, m_spritedata);
-            m_spritedata.width = GameManager.GetRes(true);
-            m_spritedata.height = GameManager.GetRes(false);
+            m_spritedata.width = 1200;
+            m_spritedata.height = 900;
             m_spritedata.texture = m_backgroundpath;
             m_spritedata.fullsheetsizeX = 1;
             m_spritedata.fullSheetsizeY = 1;

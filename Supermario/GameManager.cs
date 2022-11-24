@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using SharpDX.Direct3D9;
 using SuperMario;
 using System;
@@ -13,7 +14,7 @@ namespace Supermario
     {
         Vector2 m_playerStart;
         LEVEL_TYPE m_oldLevel;
-        GAME_STATE m_oldState = GAME_STATE.MENU;
+        static GAME_STATE m_oldState = GAME_STATE.MENU;
         static GAME_STATE m_currentState = GAME_STATE.MENU;
         static LEVEL_TYPE m_currentLevel;
         FileManager m_filemanager;
@@ -22,8 +23,10 @@ namespace Supermario
         ResourceManager m_resourcemanager;
         LevelManager m_levelmanager;
         const string m_directory = "../../../";
-        const int m_resX = 800;
-        const int m_resY = 600;
+        static int m_resX;
+        static int m_resY;
+        static int m_windowSizeX;
+        static int m_windowSizeY;
         const int m_tileSize = 25;
         static int m_tileCountX;
         static int m_tileCountY;
@@ -33,28 +36,32 @@ namespace Supermario
         string m_level3 = "level3.json";
         static A_STAR_NODE[,] m_grid;
         Dictionary<LEVEL_TYPE, string> m_levels = new Dictionary<LEVEL_TYPE, string>();
-        public GameManager(Game game)
+        public GameManager(Game game, Viewport view, int resX, int resY)
         {
             m_resourcemanager = new ResourceManager(game);
             m_filemanager = new FileManager(m_directory);
             //m_soundmanager = new SoundManager(game);
-            m_gameobjectManager = new GameObjectManager(game);
+            m_gameobjectManager = new GameObjectManager(game, view);
             m_levelmanager = new LevelManager(game, LEVEL_TYPE.LEVELE);
             m_levels.Add(LEVEL_TYPE.LEVELE, m_levelEditor);
             m_levels.Add(LEVEL_TYPE.LEVEL1, m_level1);
-          
-           
+            m_resX = resX;
+            m_resY = resY;
             m_currentLevel = LEVEL_TYPE.NONE;
             m_oldLevel = LEVEL_TYPE.NONE;
-            m_tileCountX = m_resX / m_tileSize; //32
-            m_tileCountY = m_resY / m_tileSize; //24
+            
 
+            m_windowSizeX = (int)(resX * 1.5f);
+            m_windowSizeY = (int)(resY * 1.5f);
 
+            m_tileCountX = m_windowSizeX / m_tileSize;
+            m_tileCountY = m_windowSizeY / m_tileSize;
         }
         public static A_STAR_NODE[,] GetGrid() { return m_grid; }
         public static int GetTileSize() { return m_tileSize; }
         public static int GetTileCount(bool x) { if (x) return m_tileCountX; else return m_tileCountY; }
         public static int GetRes(bool x) { if (x) return m_resX; else return m_resY; }
+        public static int GetWindowSize(bool x) { if (x) return m_windowSizeX; else return m_windowSizeY; }
         public GameObjectManager GetGameObjectManager() { return m_gameobjectManager; }
         //public SoundManager GetSoundManager() { return m_soundmanager; }
         public FileManager GetFileManager() { return m_filemanager; }
@@ -102,7 +109,7 @@ namespace Supermario
                 ResourceManager.AddObject(s);
 
             }
-            m_playerStart = new Vector2(0, m_resY - (m_tileSize * 2));
+            m_playerStart = new Vector2(0, m_windowSizeY - (m_tileSize * 2));
             Player p = m_filemanager.GetPlayer();
             p.SetPos(m_playerStart);
             ResourceManager.AddObject(p);
@@ -114,7 +121,7 @@ namespace Supermario
         
         public static bool IsWithinWindowBounds(Rectangle rect)
         {
-            if ((rect.X + rect.Width <= m_resX) && (rect.Y + rect.Height <= m_resY)
+            if ((rect.X + rect.Width <= m_windowSizeX) && (rect.Y + rect.Height <= m_windowSizeY)
                 && (rect.X >= 0) && (rect.Y >= 0))
                 return true;
             else
@@ -123,12 +130,12 @@ namespace Supermario
         public static void ModWithRes(ref Point p)
         {
             
-            int rest = m_resX % (p.X+1);
+            int rest = m_windowSizeX % (p.X+1);
             if (rest != 0)
             {
                 p.X = (p.X / m_tileSize) * m_tileSize;
             }
-            rest = m_resY % (p.Y + 1);
+            rest = m_windowSizeY % (p.Y + 1);
             if (rest != 0)
             {
                 p.Y = (p.Y / m_tileSize) * m_tileSize;
@@ -138,12 +145,12 @@ namespace Supermario
         public static void ModWithRes(ref Point p, int w, int h)
         {
 
-            int rest = m_resX % (p.X + 1);
+            int rest = m_windowSizeX % (p.X + 1);
             if (rest != 0)
             {
                 p.X = (p.X / w) * w;
             }
-            rest = m_resY % (p.Y + 1);
+            rest = m_windowSizeY % (p.Y + 1);
             if (rest != 0)
             {
                 p.Y = (p.Y / h) * h;
@@ -157,6 +164,8 @@ namespace Supermario
             m_filemanager.WriteToFile("levelE.json", ResourceManager.GetObjects());
         }
         public static GAME_STATE GetState() { return m_currentState; }
+        public static GAME_STATE GetOldState() { return m_oldState; }
+        public static void SetOldState(GAME_STATE s) { m_oldState = s; }
         public static void SetState(GAME_STATE state) { m_currentState = state; }
         public static void SetLevel(LEVEL_TYPE level) { m_currentLevel = level; }
         private void AddNeighbours(A_STAR_NODE node)
@@ -214,10 +223,7 @@ namespace Supermario
               
             }
            
-            if(m_oldState != m_currentState)
-            {
-                m_oldState = m_currentState;
-            }
+            
            
         }
     }

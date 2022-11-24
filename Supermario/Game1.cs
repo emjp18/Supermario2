@@ -2,11 +2,14 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SuperMario;
+using System.Resources;
 
 namespace Supermario
 {
     public class Game1 : Game
     {
+        const int m_resX = 800;
+        const int m_resY = 600;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         GameManager m_gamemanager;
@@ -15,17 +18,19 @@ namespace Supermario
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            m_gamemanager = new GameManager(this);
+            
         }
 
         protected override void Initialize()
         {
+            _graphics.PreferredBackBufferWidth = m_resX;
+            _graphics.PreferredBackBufferHeight = m_resY;
+            _graphics.ApplyChanges();
+            m_gamemanager = new GameManager(this, GraphicsDevice.Viewport, m_resX, m_resY);
             Components.Add(m_gamemanager.GetResourceManager());
             Components.Add(m_gamemanager.GetGameObjectManager());
             Components.Add(m_gamemanager.GetLevelManager());
-            _graphics.PreferredBackBufferWidth = GameManager.GetRes(true);
-            _graphics.PreferredBackBufferHeight = GameManager.GetRes(false);
-            _graphics.ApplyChanges();
+            
 
             base.Initialize();
         }
@@ -34,7 +39,7 @@ namespace Supermario
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             m_gamemanager.LoadMenuObjects();
-            //m_gamemanager.LoadLevel(GameManager.GetCurrentLevel());
+            
         }
 
         protected override void Update(GameTime gameTime)
@@ -73,7 +78,22 @@ namespace Supermario
             }
             
             
-            
+            if(GameManager.GetState()!=GameManager.GetOldState())
+            {
+                if(GameManager.GetState()== GAME_STATE.EDITOR)
+                {
+                    _graphics.PreferredBackBufferWidth = (int)(m_resX*1.5f);
+                    _graphics.PreferredBackBufferHeight = (int)(m_resY*1.5f);
+                    _graphics.ApplyChanges();
+                }
+                else
+                {
+                    _graphics.PreferredBackBufferWidth = m_resX;
+                    _graphics.PreferredBackBufferHeight = m_resY;
+                    _graphics.ApplyChanges();
+                }
+                GameManager.SetOldState(GameManager.GetState());
+            }
 
 
             KeyMouseReader.Update();

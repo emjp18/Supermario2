@@ -150,7 +150,7 @@ namespace Supermario
             }
             if (m_direction.Y >= 0 )
             {
-                pY = pos.Y + m_frameSize.Y * 0.5f; ;
+                pY = pos.Y + m_frameSize.Y* 0.5f; ;
             }
             else if(m_direction.Y<0)
             {

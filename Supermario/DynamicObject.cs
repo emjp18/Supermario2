@@ -36,8 +36,8 @@ namespace Supermario
         public void SwapDestination()
         {
             if (m_destination.X == 0)
-                m_destination.X = GameManager.GetRes(true);
-            else if (m_destination.X == GameManager.GetRes(true))
+                m_destination.X = GameManager.GetWindowSize(true);
+            else if (m_destination.X == GameManager.GetWindowSize(true))
                 m_destination.X = 0;
         }
         public override void Update(GameTime gametime)
