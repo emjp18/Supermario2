@@ -25,10 +25,13 @@ namespace Supermario
         const int m_resX = 800;
         const int m_resY = 600;
         const int m_tileSize = 25;
+        static int m_tileCountX;
+        static int m_tileCountY;
         string m_levelEditor = "levelE.json";
-        string m_level0 = "level1.json";
-        string m_level1 = "level2.json";
-        static Vector2[,] m_grid;
+        string m_level1 = "level1.json";
+        string m_level2 = "level2.json";
+        string m_level3 = "level3.json";
+        static A_STAR_NODE[,] m_grid;
         Dictionary<LEVEL_TYPE, string> m_levels = new Dictionary<LEVEL_TYPE, string>();
         public GameManager(Game game)
         {
@@ -38,25 +41,19 @@ namespace Supermario
             m_gameobjectManager = new GameObjectManager(game);
             m_levelmanager = new LevelManager(game, LEVEL_TYPE.LEVELE);
             m_levels.Add(LEVEL_TYPE.LEVELE, m_levelEditor);
-            m_levels.Add(LEVEL_TYPE.LEVEL1, m_level0);
-            m_levels.Add(LEVEL_TYPE.LEVEL2, m_level1);
+            m_levels.Add(LEVEL_TYPE.LEVEL1, m_level1);
+          
            
             m_currentLevel = LEVEL_TYPE.NONE;
             m_oldLevel = LEVEL_TYPE.NONE;
-            int gridSquareCountX = m_resX / m_tileSize; //32
-            int gridSquareCountY = m_resY / m_tileSize; //24
+            m_tileCountX = m_resX / m_tileSize; //32
+            m_tileCountY = m_resY / m_tileSize; //24
 
-            m_grid = new Vector2[gridSquareCountX, gridSquareCountY];
-            for(int i=0; i<gridSquareCountX; i++)
-            {
-                for(int j=0; j<gridSquareCountY; j++)
-                {
-                    m_grid[i, j] = new Vector2(i * m_tileSize, j * m_tileSize);
-                }
-            }
+
         }
-        public static Vector2[,] GetGrid() { return m_grid; }
+        public static A_STAR_NODE[,] GetGrid() { return m_grid; }
         public static int GetTileSize() { return m_tileSize; }
+        public static int GetTileCount(bool x) { if (x) return m_tileCountX; else return m_tileCountY; }
         public static int GetRes(bool x) { if (x) return m_resX; else return m_resY; }
         public GameObjectManager GetGameObjectManager() { return m_gameobjectManager; }
         //public SoundManager GetSoundManager() { return m_soundmanager; }
@@ -109,6 +106,9 @@ namespace Supermario
             Player p = m_filemanager.GetPlayer();
             p.SetPos(m_playerStart);
             ResourceManager.AddObject(p);
+
+            GenerateGrid();
+
             m_levelmanager.SetLevelType(level);
         }
         
@@ -159,6 +159,48 @@ namespace Supermario
         public static GAME_STATE GetState() { return m_currentState; }
         public static void SetState(GAME_STATE state) { m_currentState = state; }
         public static void SetLevel(LEVEL_TYPE level) { m_currentLevel = level; }
+        private void AddNeighbours(A_STAR_NODE node)
+        {
+            int x = (int)node.pos.X / m_tileCountX;
+            int y = (int)node.pos.Y / m_tileCountY;
+
+            if (x < (m_tileCountX - 1)) //Precomputed since the map doesnt change.
+                node.neighbours.Add(GetGrid()[x + 1, y]);
+            if (x > 0)
+                node.neighbours.Add(GetGrid()[x - 1, y]);
+            if (y < (m_tileCountY - 1))
+                node.neighbours.Add(GetGrid()[x, y + 1]);
+            if (y > 0)
+                node.neighbours.Add(GetGrid()[x, y - 1]);
+        }
+        private void GenerateGrid()
+        {
+            
+            m_grid = new A_STAR_NODE[m_tileCountX, m_tileCountY];
+            for (int i = 0; i < m_tileCountX; i++)
+            {
+                for (int j = 0; j < m_tileCountY; j++)
+                {
+                    m_grid[i, j] = new A_STAR_NODE();
+                    m_grid[i, j].pos = new Vector2(i * m_tileSize, j * m_tileSize);
+                    m_grid[i, j].obstacle = ResourceManager.PosHasTile(new Point(i * m_tileSize, j * m_tileSize));
+                    m_grid[i, j].previous = new A_STAR_NODE[1];
+                    m_grid[i, j].neighbours = new List<A_STAR_NODE>();
+                    m_grid[i, j].isActive = true;
+                    m_grid[i, j].previous[0] = new A_STAR_NODE();
+                    m_grid[i, j].previous[0].isActive = false;
+                    m_grid[i, j].gridpos = new Point(i, j);
+
+                }
+            }
+            for (int i = 0; i < m_tileCountX; i++)
+            {
+                for (int j = 0; j < m_tileCountY; j++)
+                {
+                    AddNeighbours(m_grid[i, j]);
+                }
+            }
+        }
         public void Update()
         {
             

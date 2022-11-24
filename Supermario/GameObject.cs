@@ -102,15 +102,7 @@ namespace Supermario
         
         public virtual void AddForce(Vector2 force, GameTime gametime)
         {
-            if (this is Enemy)
-                {
-                int x = 1;
-                }
-            if (this is Player)
-            {
-                int x = 1;
-            }
-
+            
             m_canmove = CanMove(m_position + (m_F+force / m_mass)*(float)gametime.ElapsedGameTime.TotalSeconds);
             if(m_canmove)
                 m_F += force;
@@ -147,23 +139,23 @@ namespace Supermario
             //Round the pos to the nearest gridpoint
             float pX = pos.X;
             float pY = pos.Y;
-            if (m_direction.X > 0)
+            if (m_direction.X >= 0 )
             {
-                pX = pos.X + m_frameSize.X *0.5f;
+                pX = pos.X + m_frameSize.X*0.5f;
             }
-            else if (m_direction.X < 0)
+            else if (m_direction.X < 0 )
             {
-                pX = pos.X;// - m_frameSize.X*0.5f;
+                pX = pos.X;
             }
-            if (m_direction.Y > 0)
+            if (m_direction.Y >= 0 )
             {
-                pY = pos.Y + m_frameSize.Y* 0.5f;
+                pY = pos.Y + m_frameSize.Y * 0.5f; ;
             }
             else if(m_direction.Y<0)
             {
-                pY = pos.Y;// - m_frameSize.Y*0.5f;
+                pY = pos.Y;
             }
-
+           
             int x = (int)MathF.Round((pX / GameManager.GetTileSize()));
             int y = (int)MathF.Round((pY / GameManager.GetTileSize()));
 

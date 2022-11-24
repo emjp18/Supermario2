@@ -124,5 +124,41 @@ namespace Supermario
             }
             return false;
         }
+        protected void ClampDirection(ref Vector2 dir, bool onlyUseX=false)
+        {
+            if (MathF.Abs(dir.X) > MathF.Abs(dir.Y))
+            {
+                dir.Y = 0;
+                if (dir.X > 0)
+                {
+                    dir.X = 1;
+                }
+                else
+                {
+                    dir.X = -1;
+                }
+            }
+            else if (MathF.Abs(dir.X) == MathF.Abs(dir.Y))
+            {
+                dir.Y = 0;
+                dir.X = 0;
+            }
+            else
+            {
+                dir.X = 0;
+                if (dir.Y > 0)
+                {
+                    dir.Y = 1;
+                }
+                else
+                {
+                    dir.Y = -1;
+                }
+            }
+            if(onlyUseX)
+            {
+                dir.Y = 0;
+            }
+        }
     }
 }

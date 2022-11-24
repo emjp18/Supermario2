@@ -29,6 +29,7 @@ namespace SuperMario
     }
     public struct A_STAR_NODE
     {
+        public Point gridpos;
         public bool isActive;
         public A_STAR_NODE[] previous;
         public Vector2 pos;

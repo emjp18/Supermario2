@@ -73,7 +73,7 @@ namespace Supermario
                                             {
                                                 OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY0);
 
-                                                GameManager.ModWithRes(ref p, data.width / data.fullsheetsizeX, data.height / data.fullSheetsizeY);
+                                                //GameManager.ModWithRes(ref p, data.width / data.fullsheetsizeX, data.height / data.fullSheetsizeY);
                                                 data.x = p.X; data.y = p.Y;
                                                 
                                                 GameObject s = new Enemy(data);
@@ -83,7 +83,7 @@ namespace Supermario
                                         case SPRITE_TYPE.ENEMY1:
                                             {
                                                 OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY1);
-                                                GameManager.ModWithRes(ref p, data.width/data.fullsheetsizeX, data.height/ data.fullSheetsizeY);
+                                                //GameManager.ModWithRes(ref p, data.width/data.fullsheetsizeX, data.height/ data.fullSheetsizeY);
 
                                                 data.x = p.X; data.y = p.Y;
                                                 
@@ -94,7 +94,7 @@ namespace Supermario
                                         case SPRITE_TYPE.ENEMY2:
                                             {
                                                 OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY2);
-                                                GameManager.ModWithRes(ref p, data.width / data.fullsheetsizeX, data.height / data.fullSheetsizeY);
+                                                //GameManager.ModWithRes(ref p, data.width / data.fullsheetsizeX, data.height / data.fullSheetsizeY);
 
                                                 data.x = p.X; data.y = p.Y;
                                                 
