@@ -79,6 +79,7 @@ namespace Supermario
         public void SetTexture(string tex) { m_textureName = tex; m_texture = ResourceManager.GetTexture(m_textureName); }
         public  void SetColor(Color c) { m_color = c; }
         public void SetShouldUpdate(bool update) { m_update = update; }
+        public void SwapDirection() { m_direction *= -1; }
         protected GameObject(OBJECT_CONSTRUCTION_DATA constructiondata)
         {
             m_fullsheetSize = new Point(constructiondata.fullsheetsizeX, constructiondata.fullSheetsizeY);
@@ -184,6 +185,7 @@ namespace Supermario
 
             m_F = Vector2.Zero;
         }
+        
         public virtual void Draw(SpriteBatch batch)
         {
             batch.Draw(m_texture,
@@ -204,6 +206,7 @@ namespace Supermario
 
             
         }
+
      
     }
 }

@@ -192,6 +192,16 @@ namespace Supermario
                         sprite.Update(gameTime);
                     }
                 }
+                
+                foreach (Enemy e in ResourceManager.GetEnemies())
+                {
+                    if (ResourceManager.GetPlayer().PixelIntersects(e))
+                    {
+                        ResourceManager.GetPlayer().Knocback(e, gameTime);
+                    }
+                    
+                    
+                }
             }
             
             base.Update(gameTime);

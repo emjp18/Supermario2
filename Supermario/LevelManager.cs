@@ -25,13 +25,7 @@ namespace Supermario
         {
             if(GameManager.GetState()==GAME_STATE.GAME)
             {
-                foreach (Enemy e in ResourceManager.GetEnemies())
-                {
-                    if (ResourceManager.GetPlayer().PixelIntersects(e))
-                    {
-                        ResourceManager.GetPlayer().Knocback(e, gameTime);
-                    }
-                }
+                
             }
             else if(GameManager.GetState()==GAME_STATE.EDITOR)
             {

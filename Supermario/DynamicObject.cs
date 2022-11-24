@@ -6,17 +6,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+
 using static System.Net.Mime.MediaTypeNames;
 
 namespace Supermario
 {
     internal class DynamicObject : GameObject
     {
+        protected float m_minPlayerDistance = 200;
+        protected Random m_random = new Random();
+        protected Point m_gridposition = new Point();
+        protected new Point m_destination = new Point();
+        protected const double m_resetDelay = 2.0;
+        protected Timer m_pathTimer = new Timer();
+        protected A_STAR_NODEComparer m_comp = new A_STAR_NODEComparer();
+        protected bool m_pathFound = false;
+        protected A_STAR_NODE m_start;
+        protected A_STAR_NODE m_end;
+        protected int m_pathElement = 0;
+        protected List<A_STAR_NODE> m_open = new List<A_STAR_NODE>();
+        protected List<A_STAR_NODE> m_closed = new List<A_STAR_NODE>();
+        protected List<A_STAR_NODE> m_path = new List<A_STAR_NODE>();
         protected float m_gravity = 9.8f;
+        
         public DynamicObject(OBJECT_CONSTRUCTION_DATA constructiondata) : base(constructiondata)
         {
           
+        }
+        public void SwapDestination()
+        {
+            if (m_destination.X == 0)
+                m_destination.X = GameManager.GetRes(true);
+            else if (m_destination.X == GameManager.GetRes(true))
+                m_destination.X = 0;
         }
         public override void Update(GameTime gametime)
         {
@@ -88,6 +110,138 @@ namespace Supermario
             else
             {
                 return false;
+            }
+        }
+        protected int GetDistance(A_STAR_NODE nodeA, A_STAR_NODE nodeB)
+        {
+            return (int)MathF.Abs(nodeA.pos.X - nodeB.pos.X) + (int)MathF.Abs(nodeA.pos.Y - nodeB.pos.Y);
+        }
+        protected void AStarSearch()
+        {
+            m_gridposition.X = (int)m_position.X;
+            m_gridposition.Y = (int)m_position.Y;
+
+            GameManager.ModWithRes(ref m_gridposition);
+            m_gridposition.X /= GameManager.GetTileCount(true);
+            m_gridposition.Y /= GameManager.GetTileCount(false);
+            GameManager.ModWithRes(ref m_destination);
+            m_destination.X /= GameManager.GetTileCount(true);
+            m_destination.Y /= GameManager.GetTileCount(false);
+            m_start = GameManager.GetGrid()[m_gridposition.X, m_gridposition.Y];
+            m_end = GameManager.GetGrid()[m_destination.X, m_destination.Y];
+
+
+            m_open.Clear();
+            m_closed.Clear();
+            m_open.Add(m_start);
+
+            GameManager.GetGrid()[(int)m_start.gridpos.X, (int)m_start.gridpos.Y].openSet = true;
+            while (m_open.Count > 0 && !m_pathFound)
+            {
+                if (m_open.Count > 1)
+                {
+                    m_open.Sort(m_comp);
+
+                }
+
+                A_STAR_NODE current = m_open[0];
+                if (current.pos.X == m_end.pos.X && current.pos.Y == m_end.pos.Y)     //if current is end, save the correct path and end loop
+                {
+                    m_pathFound = true;
+                    A_STAR_NODE temp = current;
+                    GameManager.GetGrid()[(int)temp.gridpos.X, (int)temp.gridpos.Y].correctPath = true;
+                    m_path.Add(GameManager.GetGrid()[(int)temp.gridpos.X, (int)temp.gridpos.Y]);
+                    while (temp.previous[0].isActive)
+                    {
+                        temp = temp.previous[0];
+                        GameManager.GetGrid()[(int)temp.gridpos.X, (int)temp.gridpos.Y].correctPath = true;
+                        m_path.Add(GameManager.GetGrid()[(int)temp.gridpos.X, (int)temp.gridpos.Y]);
+                    }
+                    m_path.Reverse();
+                }
+                else
+                {
+                    m_open.Remove(m_open.First());
+
+                    GameManager.GetGrid()[(int)current.gridpos.X, (int)current.gridpos.Y].openSet = false;                //Add best choice to closedSet
+                    m_closed.Add(current);
+                    GameManager.GetGrid()[(int)current.gridpos.X, (int)current.gridpos.Y].closedSet = true;
+
+                    for (int i = 0; i < current.neighbours.Count; i++)                             //Check all neighbors to current
+                    {
+                        if ((!m_closed.Any() || !m_closed.Contains(current.neighbours[i]))
+                            && !current.neighbours[i].obstacle)        //if currents neighbor isn't in closedSet, update costs
+                        {
+                            float tempG = current.g + 1;
+
+                            bool newPath = false;
+                            if (m_open.Contains(current.neighbours[i]))
+                            {
+                                if (tempG < current.neighbours[i].g)
+                                {
+                                    A_STAR_NODE a_STAR_NODE = current.neighbours[i];
+                                    a_STAR_NODE.g = tempG;
+                                    current.neighbours[i] = a_STAR_NODE;
+                                    newPath = true;
+                                }
+                            }
+                            else
+                            {
+                                A_STAR_NODE a_STAR_NODE = current.neighbours[i];
+                                a_STAR_NODE.g = tempG;
+                                current.neighbours[i] = a_STAR_NODE;
+                                m_open.Add(current.neighbours[i]);
+                                GameManager.GetGrid()[(int)current.neighbours[i].gridpos.X,
+                                    (int)current.neighbours[i].gridpos.Y].openSet = true;
+                                newPath = true;
+                            }
+                            if (newPath)
+                            {
+                                A_STAR_NODE a_STAR_NODE = current.neighbours[i];
+                                a_STAR_NODE.h = GetDistance(current.neighbours[i], m_end);
+                                a_STAR_NODE.f = current.neighbours[i].g + current.neighbours[i].h;
+                                a_STAR_NODE.previous[0] = current;
+                                current.neighbours[i] = a_STAR_NODE;
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        protected void ResetPath()
+        {
+            m_pathElement = 0;
+            m_pathFound = false;
+            m_path.Clear();
+            for (int x = 0; x < GameManager.GetTileCount(true); x++)
+            {
+                for (int y = 0; y < GameManager.GetTileCount(false); y++)
+                {
+
+                    GameManager.GetGrid()[x, y].g = 0;
+                    GameManager.GetGrid()[x, y].h = 0;
+                    GameManager.GetGrid()[x, y].f = 0;
+                    GameManager.GetGrid()[x, y].openSet = false;
+                    GameManager.GetGrid()[x, y].closedSet = false;
+                    GameManager.GetGrid()[x, y].correctPath = false;
+                    GameManager.GetGrid()[x, y].isActive = true;
+                    GameManager.GetGrid()[x, y].previous[0].isActive = false;
+                    for (int z = 0; z < GameManager.GetGrid()[x, y].neighbours.Count; z++)
+                    {
+                        A_STAR_NODE temp = GameManager.GetGrid()[x, y].neighbours[z];
+                        temp.g = 0;
+                        temp.h = 0;
+                        temp.f = 0;
+                        temp.openSet = false;
+                        temp.closedSet = false;
+                        temp.correctPath = false;
+                        temp.isActive = true;
+                        temp.previous[0].isActive = false;
+                        GameManager.GetGrid()[x, y].neighbours[z] = temp;
+                    }
+
+                }
             }
         }
         public bool PixelIntersects(GameObject other)
