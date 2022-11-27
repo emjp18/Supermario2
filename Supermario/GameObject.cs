@@ -14,6 +14,7 @@ namespace Supermario
 {
     internal abstract class GameObject
     {
+        protected bool m_grounded = true;
         protected SPRITE_TYPE m_type;
         protected Texture2D m_texture;
         protected Vector2 m_F = Vector2.Zero;
@@ -142,7 +143,7 @@ namespace Supermario
             float pY = pos.Y;
             if (m_direction.X >= 0 )
             {
-                pX = pos.X + m_frameSize.X*0.5f;
+                pX = pos.X + m_frameSize.X;// * 0.5f;
             }
             else if (m_direction.X < 0 )
             {
@@ -150,7 +151,7 @@ namespace Supermario
             }
             if (m_direction.Y >= 0 )
             {
-                pY = pos.Y + m_frameSize.Y* 0.5f; ;
+                pY = pos.Y + m_frameSize.Y;// * 0.5f;
             }
             else if(m_direction.Y<0)
             {
@@ -160,12 +161,29 @@ namespace Supermario
             int x = (int)MathF.Round((pX / GameManager.GetTileSize()));
             int y = (int)MathF.Round((pY / GameManager.GetTileSize()));
 
+            
             if (ResourceManager.PosHasTile(new Point(x, y)))
-                b = bounds.Intersects(ResourceManager.GetTile(new Point(x,y)).GetBounds());
-           
+            {
+                b = bounds.Intersects(ResourceManager.GetTile(new Point(x, y)).GetBounds());
+                if (this is DynamicObject)
+                {
+                    m_grounded = (this as DynamicObject).IsGrounded(ResourceManager.GetTile(new Point(x, y)));
+
+                }
+                else
+                {
+                    m_grounded = false;
+                }
+            }
+               
+
+            
 
             if ( b || !a)
             {
+               
+                
+                
                 return false;
             }
             else

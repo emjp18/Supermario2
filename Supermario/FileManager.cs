@@ -15,7 +15,7 @@ namespace Supermario
     internal class FileManager
     {
 
-        Player m_player;
+ 
         List<StaticObject> m_blockList = new List<StaticObject>();
         List<StaticObject> m_coinblockList = new List<StaticObject>();
         List<Enemy> m_enemyList = new List<Enemy>();
@@ -28,7 +28,7 @@ namespace Supermario
         {
             m_directory = directory;
         }
-        public Player GetPlayer() { return m_player; }
+  
         public List<StaticObject> GetBlocks() { return m_blockList; }
         public List<StaticObject> GetCoinBlocks() { return m_coinblockList; }
         public List<Enemy> GetEnemies() { return m_enemyList; }
@@ -108,10 +108,7 @@ namespace Supermario
                 n.SetIsEditable(false);
                 m_backgroundObjects.Add(n);
             }
-            Vector2 playerpos = GetPos(m_directory + fileName, "player");
-            playerdata.x = (int)playerpos.X;
-            playerdata.y = (int)playerpos.Y;
-            m_player = new Player(playerdata);
+            
         }
         public void WriteToFile(string fileName, List<GameObject> gameObjectList)
         {
@@ -236,8 +233,7 @@ namespace Supermario
                 
 
             }
-            JObject objp = CreateObject(new Player(ResourceManager.GetSpritedata(SPRITE_TYPE.PLAYER)));
-            bigobj.Add("player", objp);
+          
             bigobj.Add("enemies0", enemyArray0);
             bigobj.Add("enemies1", enemyArray1);
             bigobj.Add("enemies2", enemyArray2);

@@ -23,12 +23,16 @@ namespace Supermario
         public void SetPosition(Vector2 position)
         {
             m_position = position;
-            float offset = GameManager.GetTileSize()*2;
-            m_position.Y -= m_view.Height- offset;
-            if (GameManager.IsWithinWindowBounds(new Rectangle(m_view.X+(int)position.X,m_view.Y+(int)m_position.Y
+            float offset =GameManager.GetWindowSize(false)-GameManager.GetPlayerStart().Y;
+            m_position.Y -= m_view.Height - offset;
+            if (GameManager.IsWithinWindowBounds(new Rectangle((int)position.X,(int)m_position.Y
                 ,m_view.Width,
                 m_view.Height)))
+            {
+                
                 m_transform = Matrix.CreateTranslation(-m_position.X, -m_position.Y, 0);
+            }
+                
             
                    
         }

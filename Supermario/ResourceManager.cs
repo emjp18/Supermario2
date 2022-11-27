@@ -200,7 +200,7 @@ namespace Supermario
                 case MENU_TYPE.BUTTON:
                     {
                         s.SetTexture(m_buttonpath);
-                        s.SetColor(Color.DarkGreen);
+                        s.SetColor(Color.DarkGoldenrod);
                         m_buttons.Add(s);
 
 

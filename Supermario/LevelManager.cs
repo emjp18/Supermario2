@@ -61,6 +61,18 @@ namespace Supermario
                     (ResourceManager.GetButtons()[(int)BUTTON_TYPE.HS] as Button).SetPressed(false);
                 }
             }
+            else if (GameManager.GetState()==GAME_STATE.GAME)
+            {
+                foreach (Enemy e in ResourceManager.GetEnemies())
+                {
+                    if (ResourceManager.GetPlayer().PixelIntersects(e))
+                    {
+                        ResourceManager.GetPlayer().Knocback(e, gameTime);
+                    }
+
+
+                }
+            }
             else if(GameManager.GetState()==GAME_STATE.EDITOR)
             {
                 switch (m_currentLevel)
@@ -101,7 +113,7 @@ namespace Supermario
                                             {
                                                 OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY0);
 
-                                                //GameManager.ModWithRes(ref p, data.width / data.fullsheetsizeX, data.height / data.fullSheetsizeY);
+                                                GameManager.ModWithRes(ref p, data.width / data.fullsheetsizeX, data.height / data.fullSheetsizeY);
                                                 data.x = p.X; data.y = p.Y;
                                                 
                                                 GameObject s = new Enemy(data);
@@ -111,7 +123,7 @@ namespace Supermario
                                         case SPRITE_TYPE.ENEMY1:
                                             {
                                                 OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY1);
-                                                //GameManager.ModWithRes(ref p, data.width/data.fullsheetsizeX, data.height/ data.fullSheetsizeY);
+                                                GameManager.ModWithRes(ref p, data.width/data.fullsheetsizeX, data.height/ data.fullSheetsizeY);
 
                                                 data.x = p.X; data.y = p.Y;
                                                 
@@ -122,7 +134,7 @@ namespace Supermario
                                         case SPRITE_TYPE.ENEMY2:
                                             {
                                                 OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY2);
-                                                //GameManager.ModWithRes(ref p, data.width / data.fullsheetsizeX, data.height / data.fullSheetsizeY);
+                                                GameManager.ModWithRes(ref p, data.width / data.fullsheetsizeX, data.height / data.fullSheetsizeY);
 
                                                 data.x = p.X; data.y = p.Y;
                                                 

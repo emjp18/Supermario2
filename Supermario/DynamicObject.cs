@@ -13,6 +13,7 @@ namespace Supermario
 {
     internal class DynamicObject : GameObject
     {
+        
         protected float m_minPlayerDistance = 200;
         protected Random m_random = new Random();
         protected Point m_gridposition = new Point();
@@ -48,6 +49,54 @@ namespace Supermario
         {
             return GetBounds().Intersects(other.GetBounds());
             
+        }
+        public bool IsGrounded(GameObject other)
+        {
+            Rectangle bounds = GetBounds();
+            Rectangle otherbounds = other.GetBounds();
+            int up = Math.Abs(otherbounds.Top - bounds.Bottom);
+            int down = Math.Abs(otherbounds.Bottom - bounds.Top);
+
+            return up < down;
+        }
+        public Vector2 KnockbackRectangle(GameObject other)
+        {
+            Rectangle bounds = GetBounds();
+            Rectangle otherbounds = other.GetBounds();
+
+            int up = Math.Abs(otherbounds.Top - bounds.Bottom);
+            int down = Math.Abs(otherbounds.Bottom - bounds.Top);
+            int left = Math.Abs(otherbounds.Left - bounds.Right);
+            int right = Math.Abs(otherbounds.Right - bounds.Left);
+
+            int min = int.MaxValue;
+
+            if(up<min)
+                min = up;
+            if(down<min)
+                min = down;
+            if(left<min)
+                min = left;
+            if(right<min)
+                min = right;
+
+            if(min==up)
+            {
+                return new Vector2(0, -min);
+            }
+            else if(min==down)
+            {
+                return new Vector2(0, min);
+            }
+            else if(min == left)
+            {
+                return new Vector2(-min, 0);
+            }
+            else
+            {
+                return new Vector2(min, 0);
+            }
+
         }
         public void Knocback(GameObject other, GameTime gametime)
         {

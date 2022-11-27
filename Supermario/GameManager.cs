@@ -12,8 +12,8 @@ namespace Supermario
 {
     internal class GameManager
     {
-        Vector2 m_playerStart;
-        LEVEL_TYPE m_oldLevel;
+        static Vector2 m_playerStart;
+        static LEVEL_TYPE m_oldLevel;
         static GAME_STATE m_oldState = GAME_STATE.MENU;
         static GAME_STATE m_currentState = GAME_STATE.MENU;
         static LEVEL_TYPE m_currentLevel;
@@ -36,12 +36,12 @@ namespace Supermario
         string m_level3 = "level3.json";
         static A_STAR_NODE[,] m_grid;
         Dictionary<LEVEL_TYPE, string> m_levels = new Dictionary<LEVEL_TYPE, string>();
-        public GameManager(Game game, Viewport view, int resX, int resY)
+        public GameManager(Game game, int resX, int resY)
         {
             m_resourcemanager = new ResourceManager(game);
             m_filemanager = new FileManager(m_directory);
             //m_soundmanager = new SoundManager(game);
-            m_gameobjectManager = new GameObjectManager(game, view);
+            m_gameobjectManager = new GameObjectManager(game);
             m_levelmanager = new LevelManager(game, LEVEL_TYPE.LEVELE);
             m_levels.Add(LEVEL_TYPE.LEVELE, m_levelEditor);
             m_levels.Add(LEVEL_TYPE.LEVEL1, m_level1);
@@ -67,6 +67,7 @@ namespace Supermario
         public FileManager GetFileManager() { return m_filemanager; }
         public ResourceManager GetResourceManager() { return m_resourcemanager; }
         public LevelManager GetLevelManager() { return m_levelmanager; }
+        public static Vector2 GetPlayerStart() { return m_playerStart; }
         public void LoadMenuObjects()
         {
            
@@ -81,7 +82,7 @@ namespace Supermario
             ResourceManager.AddMenuObject(new Button(ResourceManager.GetSpritedata(SPRITE_TYPE.BACKGROUND)), MENU_TYPE.BUTTON);
             ResourceManager.AddMenuObject(new Button(ResourceManager.GetSpritedata(SPRITE_TYPE.BACKGROUND)), MENU_TYPE.BUTTON);
         }
-        public void LoadLevel(LEVEL_TYPE level)
+        public void LoadLevel(LEVEL_TYPE level, Viewport viewport)
         {
             
            
@@ -109,9 +110,13 @@ namespace Supermario
                 ResourceManager.AddObject(s);
 
             }
-            m_playerStart = new Vector2(0, m_windowSizeY - (m_tileSize * 2));
-            Player p = m_filemanager.GetPlayer();
-            p.SetPos(m_playerStart);
+            
+            var data = ResourceManager.GetSpritedata(SPRITE_TYPE.PLAYER);
+            m_playerStart = new Vector2(0, m_windowSizeY - (m_tileSize+(data.height / data.fullSheetsizeY)));
+            data.x = (int)m_playerStart.X;
+            data.y = (int)m_playerStart.Y;
+            Player p = new Player(data, viewport);
+           
             ResourceManager.AddObject(p);
 
             GenerateGrid();
@@ -158,6 +163,8 @@ namespace Supermario
             }
         }
         public static LEVEL_TYPE GetCurrentLevel() { return m_currentLevel; }
+        public static LEVEL_TYPE GetOldLevel() { return m_oldLevel; }
+        public static void SetOldLevel(LEVEL_TYPE level) { m_oldLevel = level; }
         public void SaveLevel()
         {
 
@@ -193,6 +200,20 @@ namespace Supermario
                     m_grid[i, j] = new A_STAR_NODE();
                     m_grid[i, j].pos = new Vector2(i * m_tileSize, j * m_tileSize);
                     m_grid[i, j].obstacle = ResourceManager.PosHasTile(new Point(i * m_tileSize, j * m_tileSize));
+                    if(m_grid[i, j].obstacle)
+                    {
+                        if (!ResourceManager.PosHasTile(new Point(i * m_tileSize, j+1 * m_tileSize)))
+                            m_grid[i, j].obstacle = false;
+                      
+                    }
+                    else
+                    {
+                        if (!ResourceManager.PosHasTile(new Point(i+1 * m_tileSize, j* m_tileSize))
+                            || !ResourceManager.PosHasTile(new Point(i - 1 * m_tileSize, j * m_tileSize)))
+                        {
+                            m_grid[i, j].obstacle = true;
+                        }
+                    }
                     m_grid[i, j].previous = new A_STAR_NODE[1];
                     m_grid[i, j].neighbours = new List<A_STAR_NODE>();
                     m_grid[i, j].isActive = true;
@@ -210,22 +231,7 @@ namespace Supermario
                 }
             }
         }
-        public void Update()
-        {
-            
-            if(m_currentState == GAME_STATE.GAME||m_currentState == GAME_STATE.EDITOR)
-            {
-                if (m_oldLevel != m_currentLevel)
-                {
-                    LoadLevel(m_currentLevel);
-                    m_oldLevel = m_currentLevel;
-                }
-              
-            }
-           
-            
-           
-        }
+        
     }
 }
 

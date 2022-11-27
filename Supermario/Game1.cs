@@ -26,7 +26,7 @@ namespace Supermario
             _graphics.PreferredBackBufferWidth = m_resX;
             _graphics.PreferredBackBufferHeight = m_resY;
             _graphics.ApplyChanges();
-            m_gamemanager = new GameManager(this, GraphicsDevice.Viewport, m_resX, m_resY);
+            m_gamemanager = new GameManager(this, m_resX, m_resY);
             Components.Add(m_gamemanager.GetResourceManager());
             Components.Add(m_gamemanager.GetGameObjectManager());
             Components.Add(m_gamemanager.GetLevelManager());
@@ -55,6 +55,11 @@ namespace Supermario
                     }
                 case GAME_STATE.GAME:
                     {
+                        if (GameManager.GetOldLevel() != GameManager.GetCurrentLevel())
+                        {
+                            m_gamemanager.LoadLevel(GameManager.GetCurrentLevel(), GraphicsDevice.Viewport);
+                            GameManager.SetOldLevel(GameManager.GetCurrentLevel());
+                        }
                         if (KeyMouseReader.KeyPressed(Keys.Escape))
                             GameManager.SetState(GAME_STATE.MENU);
                         break;
@@ -67,6 +72,11 @@ namespace Supermario
                     }
                 case GAME_STATE.EDITOR:
                     {
+                        if (GameManager.GetOldLevel() != GameManager.GetCurrentLevel())
+                        {
+                            m_gamemanager.LoadLevel(GameManager.GetCurrentLevel(), GraphicsDevice.Viewport);
+                            GameManager.SetOldLevel(GameManager.GetCurrentLevel());
+                        }
                         if (KeyMouseReader.KeyPressed(Keys.Escape))
                         {
                             m_gamemanager.SaveLevel();
@@ -92,12 +102,19 @@ namespace Supermario
                     _graphics.PreferredBackBufferHeight = m_resY;
                     _graphics.ApplyChanges();
                 }
+                if(GameManager.GetState()!=GAME_STATE.GAME)
+                {
+                    GameManager.SetLevel(LEVEL_TYPE.NONE);
+                    GameManager.SetOldLevel(LEVEL_TYPE.NONE);
+                }
+
                 GameManager.SetOldState(GameManager.GetState());
             }
+            
 
 
             KeyMouseReader.Update();
-            m_gamemanager.Update();
+          
             base.Update(gameTime);
         }
 

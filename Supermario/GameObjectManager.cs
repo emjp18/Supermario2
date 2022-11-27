@@ -14,11 +14,11 @@ namespace Supermario
     {
         SpriteBatch m_spriteBatch;
         SpriteFont m_font;
-        Camera m_camera;
+       
         List<GameObject> m_editorSprites = new List<GameObject>();
-        public GameObjectManager(Game game, Viewport view) : base(game)
+        public GameObjectManager(Game game) : base(game)
         {
-            m_camera = new Camera(view);
+            
         }
 
         public override void Draw(GameTime gameTime)
@@ -41,6 +41,8 @@ namespace Supermario
                 }
                 
                 Vector2 pos = Vector2.Zero;
+                pos.X = GameManager.GetRes(true) / 2;
+                pos.Y = GameManager.GetRes(false) / 2;
                 ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL1].SetPos(pos);
                 (ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL1] as Button).SetText("LEVEL 1");
                 (ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL1] as Button).Draw(m_spriteBatch, m_font);
@@ -58,7 +60,7 @@ namespace Supermario
                 (ResourceManager.GetButtons()[(int)BUTTON_TYPE.CUSTOM] as Button).SetText("Custom Level");
                 (ResourceManager.GetButtons()[(int)BUTTON_TYPE.CUSTOM] as Button).Draw(m_spriteBatch, m_font);
                 offset = m_font.MeasureString("Custom Level");
-                pos.Y = 0;
+                pos.Y = GameManager.GetRes(true) / 2;
                 pos.X += offset.X;
                 ResourceManager.GetButtons()[(int)BUTTON_TYPE.HS].SetPos(pos);
                 (ResourceManager.GetButtons()[(int)BUTTON_TYPE.HS] as Button).SetText("High Score");
@@ -116,7 +118,16 @@ namespace Supermario
             }
             else if(GameManager.GetState() == GAME_STATE.GAME)
             {
-                m_spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, m_camera.Transform);
+                if(ResourceManager.GetPlayer()!= null)
+                {
+                    m_spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null,
+                    ResourceManager.GetPlayer().GetCamera().Transform);
+                }
+                else
+                {
+                    m_spriteBatch.Begin();
+                }
+                
                 if (ResourceManager.GetMenuObjects()[MENU_TYPE.START].GetShouldDraw())
                     ResourceManager.GetMenuObjects()[MENU_TYPE.START].Draw(m_spriteBatch);
 
@@ -164,16 +175,8 @@ namespace Supermario
                     }
                 }
                 
-                foreach (Enemy e in ResourceManager.GetEnemies())
-                {
-                    if (ResourceManager.GetPlayer().PixelIntersects(e))
-                    {
-                        ResourceManager.GetPlayer().Knocback(e, gameTime);
-                    }
-                    
-                    
-                }
-                m_camera.SetPosition(ResourceManager.GetPlayer().GetCurrentPos());
+                
+                
             }
             
             base.Update(gameTime);
