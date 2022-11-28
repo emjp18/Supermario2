@@ -95,8 +95,22 @@ namespace Supermario
                 m_effect = SpriteEffects.None;
             }
 
-            AddForce(m_direction * m_speed * (float)gametime.ElapsedGameTime.TotalSeconds, gametime);
-            AddForce(new Vector2(0, m_gravity * m_speed * 0.5f * (float)gametime.ElapsedGameTime.TotalSeconds), gametime);
+            AddForce(m_direction * m_speed, gametime);
+
+            if(m_grounded)
+                AddForce(new Vector2(0, m_gravity * m_speed), gametime);
+
+            Point gp = GetGridPoint(m_position);
+
+            if (ResourceManager.PosHasTile(gp))
+            {
+                if(Intersects(ResourceManager.GetTile(gp)))
+                {
+                    AddForce(KnockbackRectangle(ResourceManager.GetTile(gp)), gametime);
+                }
+            }
+
+
             base.Update(gametime);
 
         }

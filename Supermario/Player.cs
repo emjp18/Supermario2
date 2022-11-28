@@ -12,7 +12,7 @@ namespace Supermario
     internal class Player : DynamicObject
     {
         Camera m_camera;
-        float m_jumpforce = 30;
+        float m_jumpforce = 5;
         public Player(OBJECT_CONSTRUCTION_DATA constructiondata, Viewport viewport) : base(constructiondata)
         {
             m_isEditable = false;
@@ -38,22 +38,27 @@ namespace Supermario
                 m_direction.X = 1;
                 m_effect = SpriteEffects.FlipHorizontally;
             }
-            AddForce(m_direction * m_speed *(float)gametime.ElapsedGameTime.TotalSeconds, gametime);
-            AddForce(new Vector2(0, m_gravity * m_speed * (float)gametime.ElapsedGameTime.TotalSeconds), gametime);
-
-            if (KeyMouseReader.KeyPressed(Keys.Space))
-            {
-                AddForce(new Vector2(0, -m_speed *2* m_gravity* m_jumpforce * (float)gametime.ElapsedGameTime.TotalSeconds), gametime);
-            }
+           
+            
             if(m_grounded)
             {
                 m_camera.SetPosition(m_position);
+                if (KeyMouseReader.KeyPressed(Keys.Space))
+                {
+                    AddForce(new Vector2(0, -m_speed * m_gravity * m_jumpforce), gametime);
+                }
             }
-            
-            
+            else
+            {
+                AddForce(new Vector2(0, m_gravity * m_speed), gametime);
+            }
+
+            AddForce(m_direction * m_speed, gametime);
             
 
-            
+
+
+
 
             base.Update(gametime);
         }

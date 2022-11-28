@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using SharpDX.Direct2D1.Effects;
+using SharpDX.Direct3D9;
 using SuperMario;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -127,6 +129,31 @@ namespace Supermario
                 }
             }
         }
+        public Point GetGridPoint(Vector2 pos)
+        {
+            float pX = pos.X;
+            float pY = pos.Y;
+            if (m_direction.X >= 0)
+            {
+                pX = pos.X + m_frameSize.X * 0.5f;
+            }
+            else if (m_direction.X < 0)
+            {
+                pX = pos.X;
+            }
+            if (m_direction.Y >= 0)
+            {
+                pY = pos.Y + m_frameSize.Y * 0.5f;
+            }
+            else if (m_direction.Y < 0)
+            {
+                pY = pos.Y;
+            }
+
+            int x = (int)MathF.Round((pX / GameManager.GetTileSize()));
+            int y = (int)MathF.Round((pY / GameManager.GetTileSize()));
+            return new Point(x, y);
+        }
         public bool CanMove(Vector2 pos)
         {
             //If the next position intersects with a tile or the window bounds dont move.
@@ -139,41 +166,22 @@ namespace Supermario
 
             //Look up if there is a tile where you are going. instead of looping all the tiles.
             //Round the pos to the nearest gridpoint
-            float pX = pos.X;
-            float pY = pos.Y;
-            if (m_direction.X >= 0 )
-            {
-                pX = pos.X + m_frameSize.X;// * 0.5f;
-            }
-            else if (m_direction.X < 0 )
-            {
-                pX = pos.X;
-            }
-            if (m_direction.Y >= 0 )
-            {
-                pY = pos.Y + m_frameSize.Y;// * 0.5f;
-            }
-            else if(m_direction.Y<0)
-            {
-                pY = pos.Y;
-            }
-           
-            int x = (int)MathF.Round((pX / GameManager.GetTileSize()));
-            int y = (int)MathF.Round((pY / GameManager.GetTileSize()));
 
-            
-            if (ResourceManager.PosHasTile(new Point(x, y)))
+            Point gp = GetGridPoint(pos);
+
+            if (ResourceManager.PosHasTile(gp))
             {
-                b = bounds.Intersects(ResourceManager.GetTile(new Point(x, y)).GetBounds());
+                b = bounds.Intersects(ResourceManager.GetTile(gp).GetBounds());
                 if (this is DynamicObject)
                 {
-                    m_grounded = (this as DynamicObject).IsGrounded(ResourceManager.GetTile(new Point(x, y)));
+                    m_grounded = (this as DynamicObject).IsGrounded(ResourceManager.GetTile(gp));
 
                 }
-                else
-                {
-                    m_grounded = false;
-                }
+                
+            }
+            else
+            {
+                m_grounded = false;
             }
                
 
@@ -194,11 +202,11 @@ namespace Supermario
         public virtual void Update(GameTime gametime)
         {
            
-            
+
             m_velocity = m_F / m_mass;
-
+           
             m_position += m_velocity * (float)gametime.ElapsedGameTime.TotalSeconds;
-
+           
 
 
             m_F = Vector2.Zero;

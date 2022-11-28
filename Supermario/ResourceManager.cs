@@ -78,12 +78,12 @@ namespace Supermario
             m_spritedata.usedSheetMinY = 0;
             m_spritedata.width = 300;
             m_spritedata.height = 44;
-            m_spritedata.speed = 9999;
+            m_spritedata.speed = 99;
             m_spritedata.type = SPRITE_TYPE.PLAYER;
             //m_spritedata.mass = 60;
             m_objectData.Add(SPRITE_TYPE.PLAYER, m_spritedata);
 
-            m_spritedata.speed = 4444;
+            m_spritedata.speed = 44;
             m_spritedata.texture = m_enemiespath;
             m_spritedata.fullsheetsizeX = 9;
             m_spritedata.fullSheetsizeY = 3;
