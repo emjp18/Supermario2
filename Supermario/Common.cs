@@ -27,6 +27,13 @@ namespace SuperMario
         public float mass;
         public SPRITE_TYPE type;
     }
+    public struct QUAD_NODE
+    {
+        public QUAD_NODE[] children;
+        public List<Point> gridpoints;
+        public Rectangle bounds;
+        public bool leaf;
+    }
     public struct A_STAR_NODE
     {
         public Point gridpos;

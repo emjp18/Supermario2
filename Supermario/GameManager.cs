@@ -12,6 +12,8 @@ namespace Supermario
 {
     internal class GameManager
     {
+        QUAD_NODE m_root;
+        const int m_maxGridPoints = 50;
         static Vector2 m_playerStart;
         static LEVEL_TYPE m_oldLevel;
         static GAME_STATE m_oldState = GAME_STATE.MENU;
@@ -56,6 +58,14 @@ namespace Supermario
 
             m_tileCountX = m_windowSizeX / m_tileSize;
             m_tileCountY = m_windowSizeY / m_tileSize;
+
+            m_root = new QUAD_NODE();
+            
+            m_root.bounds = new Rectangle(0, 0, m_windowSizeX, m_windowSizeY);
+            m_root.leaf = false;
+
+            GenerateQuadTree(m_root);
+
         }
         public static A_STAR_NODE[,] GetGrid() { return m_grid; }
         public static int GetTileSize() { return m_tileSize; }
@@ -162,6 +172,31 @@ namespace Supermario
 
             }
         }
+        public Point FindGridPoint(Vector2 pos, QUAD_NODE node)
+        {
+            if(node.bounds.Contains(pos))
+            {
+                if(node.leaf)
+                {
+                    foreach(Point p in node.gridpoints)
+                    {
+                        Rectangle gridBounds = new Rectangle(p.X, p.Y, m_tileSize, m_tileSize);
+                        if(gridBounds.Contains(pos))
+                        {
+                            return p;
+                        }
+                    }
+                }
+                else
+                {
+                    for(int i=0; i<4; i ++)
+                    {
+                        FindGridPoint(pos, node.children[i]);
+                    }
+                }
+            }
+            return new Point(0, 0);
+        }
         public static LEVEL_TYPE GetCurrentLevel() { return m_currentLevel; }
         public static LEVEL_TYPE GetOldLevel() { return m_oldLevel; }
         public static void SetOldLevel(LEVEL_TYPE level) { m_oldLevel = level; }
@@ -188,6 +223,66 @@ namespace Supermario
                 node.neighbours.Add(GetGrid()[x, y + 1]);
             if (y > 0)
                 node.neighbours.Add(GetGrid()[x, y - 1]);
+        }
+        private void GenerateQuadTree(QUAD_NODE node)
+        {
+            int gpCount = 0;
+            node.leaf = false;
+ 
+            for (int i = 0; i < m_tileCountX; i++)
+            {
+                for (int j = 0; j < m_tileCountY; j++)
+                {
+                    Point gp = new Point(i * m_tileSize, j * m_tileSize);
+                    if(node.bounds.Contains(gp))
+                    {
+                        gpCount++;
+                        if(gpCount > m_maxGridPoints)
+                        {
+                            node.children = new QUAD_NODE[4];
+                            node.children[0] = new QUAD_NODE();
+                       
+                            node.children[1] = new QUAD_NODE();
+                       
+                            node.children[2] = new QUAD_NODE();
+                      
+                            node.children[3] = new QUAD_NODE();
+                         
+                            
+                            node.children[0].bounds = new Rectangle(node.bounds.X, node.bounds.Y,
+                                    node.bounds.Width / 2, node.bounds.Height / 2);
+                            node.children[1].bounds = new Rectangle(node.bounds.X+ node.bounds.Width / 2, node.bounds.Y,
+                                    node.bounds.Width / 2, node.bounds.Height / 2);
+                            node.children[2].bounds = new Rectangle(node.bounds.X+ node.bounds.Width / 2, node.bounds.Y+ node.bounds.Height / 2,
+                                    node.bounds.Width / 2, node.bounds.Height / 2);
+                            node.children[3].bounds = new Rectangle(node.bounds.X, node.bounds.Y+ node.bounds.Height / 2,
+                                    node.bounds.Width / 2, node.bounds.Height / 2);
+
+                            GenerateQuadTree(node.children[0]);
+                            GenerateQuadTree(node.children[1]);
+                            GenerateQuadTree(node.children[2]);
+                            GenerateQuadTree(node.children[3]);
+                            return;
+                        }
+                    }
+                }
+
+            }
+            node.leaf = true;
+            node.gridpoints = new List<Point>();
+            for (int i = 0; i < m_tileCountX; i++)
+            {
+                for (int j = 0; j < m_tileCountY; j++)
+                {
+                    Point gp = new Point(i * m_tileSize, j * m_tileSize);
+                    if (node.bounds.Contains(gp))
+                    {
+                        node.gridpoints.Add(gp);
+                    }
+                }
+
+            }
+
         }
         private void GenerateGrid()
         {
