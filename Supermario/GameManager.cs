@@ -12,8 +12,8 @@ namespace Supermario
 {
     internal class GameManager
     {
-        QUAD_NODE m_root;
-        const int m_maxGridPoints = 50;
+        static QUAD_NODE m_root;
+        const int m_maxGridPoints = 10;
         static Vector2 m_playerStart;
         static LEVEL_TYPE m_oldLevel;
         static GAME_STATE m_oldState = GAME_STATE.MENU;
@@ -64,9 +64,10 @@ namespace Supermario
             m_root.bounds = new Rectangle(0, 0, m_windowSizeX, m_windowSizeY);
             m_root.leaf = false;
 
-            GenerateQuadTree(m_root);
+           
 
         }
+        public static QUAD_NODE GetRootNode() { return m_root; }
         public static A_STAR_NODE[,] GetGrid() { return m_grid; }
         public static int GetTileSize() { return m_tileSize; }
         public static int GetTileCount(bool x) { if (x) return m_tileCountX; else return m_tileCountY; }
@@ -94,29 +95,32 @@ namespace Supermario
         }
         public void LoadLevel(LEVEL_TYPE level, Viewport viewport)
         {
-            
-           
+
+         
             m_filemanager.ReadFromFile(m_levels[level]);
             ResourceManager.GetObjects().Clear();
-            ResourceManager.GetTiles().Clear();
             ResourceManager.GetEnemies().Clear();
             foreach (GameObject s in m_filemanager.GetBackground())
             {
+                
                 ResourceManager.AddObject(s);
 
             }
             foreach (GameObject s in m_filemanager.GetBlocks())
             {
+                
                 ResourceManager.AddObject(s);
 
             }
             foreach (GameObject s in m_filemanager.GetCoinBlocks())
             {
+                
                 ResourceManager.AddObject(s);
 
             }
             foreach (GameObject s in m_filemanager.GetEnemies())
             {
+                
                 ResourceManager.AddObject(s);
 
             }
@@ -126,11 +130,11 @@ namespace Supermario
             data.x = (int)m_playerStart.X;
             data.y = (int)m_playerStart.Y;
             Player p = new Player(data, viewport);
-           
+          
             ResourceManager.AddObject(p);
-
+          
             GenerateGrid();
-
+            GenerateQuadTree(ref m_root);
             m_levelmanager.SetLevelType(level);
         }
         
@@ -172,30 +176,31 @@ namespace Supermario
 
             }
         }
-        public Point FindGridPoint(Vector2 pos, QUAD_NODE node)
+       
+        public static void GetGridPoint(Vector2 pos, QUAD_NODE node, ref QUAD_NODE outNode)
         {
-            if(node.bounds.Contains(pos))
+
+            if (node.bounds.Contains(pos))
             {
-                if(node.leaf)
+                if (node.leaf)
                 {
-                    foreach(Point p in node.gridpoints)
-                    {
-                        Rectangle gridBounds = new Rectangle(p.X, p.Y, m_tileSize, m_tileSize);
-                        if(gridBounds.Contains(pos))
-                        {
-                            return p;
-                        }
-                    }
+                    outNode = node;
+                    return;
+                    
                 }
                 else
                 {
-                    for(int i=0; i<4; i ++)
+                    if (node.children != null)
                     {
-                        FindGridPoint(pos, node.children[i]);
+                        for (int i = 0; i < 4; i++)
+                        {
+                            GetGridPoint(pos, node.children[i], ref outNode);
+                        }
                     }
+
                 }
             }
-            return new Point(0, 0);
+            return;
         }
         public static LEVEL_TYPE GetCurrentLevel() { return m_currentLevel; }
         public static LEVEL_TYPE GetOldLevel() { return m_oldLevel; }
@@ -224,7 +229,7 @@ namespace Supermario
             if (y > 0)
                 node.neighbours.Add(GetGrid()[x, y - 1]);
         }
-        private void GenerateQuadTree(QUAD_NODE node)
+        private void GenerateQuadTree(ref QUAD_NODE node)
         {
             int gpCount = 0;
             node.leaf = false;
@@ -258,10 +263,10 @@ namespace Supermario
                             node.children[3].bounds = new Rectangle(node.bounds.X, node.bounds.Y+ node.bounds.Height / 2,
                                     node.bounds.Width / 2, node.bounds.Height / 2);
 
-                            GenerateQuadTree(node.children[0]);
-                            GenerateQuadTree(node.children[1]);
-                            GenerateQuadTree(node.children[2]);
-                            GenerateQuadTree(node.children[3]);
+                            GenerateQuadTree(ref node.children[0]);
+                            GenerateQuadTree(ref node.children[1]);
+                            GenerateQuadTree(ref node.children[2]);
+                            GenerateQuadTree(ref node.children[3]);
                             return;
                         }
                     }
@@ -270,6 +275,7 @@ namespace Supermario
             }
             node.leaf = true;
             node.gridpoints = new List<Point>();
+            node.tiles = new List<StaticObject>();
             for (int i = 0; i < m_tileCountX; i++)
             {
                 for (int j = 0; j < m_tileCountY; j++)
@@ -278,6 +284,19 @@ namespace Supermario
                     if (node.bounds.Contains(gp))
                     {
                         node.gridpoints.Add(gp);
+                        
+                    }
+                    
+                }
+
+            }
+            foreach (GameObject obj in ResourceManager.GetObjects())
+            {
+                if (obj is StaticObject)
+                {
+                    if (node.bounds.Contains(obj.GetCurrentPos()))
+                    {
+                        node.tiles.Add(obj as StaticObject);
                     }
                 }
 
@@ -294,21 +313,23 @@ namespace Supermario
                 {
                     m_grid[i, j] = new A_STAR_NODE();
                     m_grid[i, j].pos = new Vector2(i * m_tileSize, j * m_tileSize);
-                    m_grid[i, j].obstacle = ResourceManager.PosHasTile(new Point(i * m_tileSize, j * m_tileSize));
-                    if(m_grid[i, j].obstacle)
+                    QUAD_NODE node = new QUAD_NODE();
+                    Vector2 pos = new Vector2(i * m_tileSize, j * m_tileSize);
+                    GetGridPoint(pos, m_root, ref node);
+                    bool poshastile = false;
+                    if(node.tiles!=null)
                     {
-                        if (!ResourceManager.PosHasTile(new Point(i * m_tileSize, j+1 * m_tileSize)))
-                            m_grid[i, j].obstacle = false;
-                      
-                    }
-                    else
-                    {
-                        if (!ResourceManager.PosHasTile(new Point(i+1 * m_tileSize, j* m_tileSize))
-                            || !ResourceManager.PosHasTile(new Point(i - 1 * m_tileSize, j * m_tileSize)))
+                        foreach(StaticObject obj in node.tiles)
                         {
-                            m_grid[i, j].obstacle = true;
+                            if(obj.GetBounds().Contains(pos))
+                            {
+                                poshastile = true;
+                                break;
+                            }
                         }
                     }
+                    m_grid[i, j].obstacle = poshastile;
+                   
                     m_grid[i, j].previous = new A_STAR_NODE[1];
                     m_grid[i, j].neighbours = new List<A_STAR_NODE>();
                     m_grid[i, j].isActive = true;

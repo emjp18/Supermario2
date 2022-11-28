@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-namespace SuperMario
+namespace Supermario
 {
     public enum GAME_STATE { GAME, MENU,EDITOR, HIGHSCORE};
     public enum LEVEL_TYPE { LEVEL1, LEVEL2, LEVEL3, LEVELE, NONE };
@@ -31,6 +31,7 @@ namespace SuperMario
     {
         public QUAD_NODE[] children;
         public List<Point> gridpoints;
+        public List<StaticObject> tiles;
         public Rectangle bounds;
         public bool leaf;
     }

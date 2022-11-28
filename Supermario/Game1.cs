@@ -61,7 +61,12 @@ namespace Supermario
                             GameManager.SetOldLevel(GameManager.GetCurrentLevel());
                         }
                         if (KeyMouseReader.KeyPressed(Keys.Escape))
+                        {
+                            GameManager.SetLevel(LEVEL_TYPE.NONE);
+                            GameManager.SetOldLevel(LEVEL_TYPE.NONE);
                             GameManager.SetState(GAME_STATE.MENU);
+                        }
+                            
                         break;
 
                     }
@@ -77,8 +82,11 @@ namespace Supermario
                             m_gamemanager.LoadLevel(GameManager.GetCurrentLevel(), GraphicsDevice.Viewport);
                             GameManager.SetOldLevel(GameManager.GetCurrentLevel());
                         }
+                        
                         if (KeyMouseReader.KeyPressed(Keys.Escape))
                         {
+                            GameManager.SetLevel(LEVEL_TYPE.NONE);
+                            GameManager.SetOldLevel(LEVEL_TYPE.NONE);
                             m_gamemanager.SaveLevel();
                             GameManager.SetState(GAME_STATE.MENU);
                         }
@@ -102,11 +110,7 @@ namespace Supermario
                     _graphics.PreferredBackBufferHeight = m_resY;
                     _graphics.ApplyChanges();
                 }
-                if(GameManager.GetState()!=GAME_STATE.GAME)
-                {
-                    GameManager.SetLevel(LEVEL_TYPE.NONE);
-                    GameManager.SetOldLevel(LEVEL_TYPE.NONE);
-                }
+               
 
                 GameManager.SetOldState(GameManager.GetState());
             }

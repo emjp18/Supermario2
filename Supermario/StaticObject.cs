@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Supermario
 {
-    internal class StaticObject : GameObject
+    public  class StaticObject : GameObject
     {
         public StaticObject(OBJECT_CONSTRUCTION_DATA constructiondata) : base(constructiondata)
         {

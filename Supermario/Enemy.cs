@@ -18,28 +18,7 @@ namespace Supermario
             m_speed = m_random.Next((int)(m_speed * 0.75f), (int)(m_speed * 1.25f));
         }
         
-        private bool FindDestination(ref Point current, Point old) //recursively change Y so that there is no obstacle
-        {
-            
-            if (current.Y>old.Y+GameManager.GetTileSize()|| current.Y < old.Y - GameManager.GetTileSize())
-            {
-                return false;
-            }
-            else
-            {
-                if (ResourceManager.PosHasTile(current))
-                {
-                    old = new Point(current.X, current.Y);
-                    current.Y += GameManager.GetTileSize();
-                    FindDestination(ref current, old);
-                    current.Y -= GameManager.GetTileSize() * 2;
-                    FindDestination(ref current, old);
-                }
-                return true;
-            }
-           
-            
-        }
+        
         public override void Update(GameTime gametime)
         {
             m_pathTimer.Update(gametime.ElapsedGameTime.TotalSeconds);
@@ -100,15 +79,15 @@ namespace Supermario
             if(m_grounded)
                 AddForce(new Vector2(0, m_gravity * m_speed), gametime);
 
-            Point gp = GetGridPoint(m_position);
+            //Point gp = GameManager.GetGridPoint(m_position, GameManager.GetRootNode());
 
-            if (ResourceManager.PosHasTile(gp))
-            {
-                if(Intersects(ResourceManager.GetTile(gp)))
-                {
-                    AddForce(KnockbackRectangle(ResourceManager.GetTile(gp)), gametime);
-                }
-            }
+            //if (ResourceManager.PosHasTile(gp))
+            //{
+            //    if(Intersects(ResourceManager.GetTile(gp)))
+            //    {
+            //        AddForce(KnockbackRectangle(ResourceManager.GetTile(gp)), gametime);
+            //    }
+            //}
 
 
             base.Update(gametime);

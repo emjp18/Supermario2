@@ -187,11 +187,11 @@ namespace Supermario
             m_font = Game.Content.Load<SpriteFont>("font");
             m_spriteBatch = new SpriteBatch(Game.GraphicsDevice);
        
-            m_editorSprites.Add(new Enemy(ResourceManager.GetSpritedata(SuperMario.SPRITE_TYPE.ENEMY0)));
-            m_editorSprites.Add(new Enemy(ResourceManager.GetSpritedata(SuperMario.SPRITE_TYPE.ENEMY1)));
-            m_editorSprites.Add(new Enemy(ResourceManager.GetSpritedata(SuperMario.SPRITE_TYPE.ENEMY2)));
-            m_editorSprites.Add(new StaticObject(ResourceManager.GetSpritedata(SuperMario.SPRITE_TYPE.COINBLOCK)));
-            m_editorSprites.Add(new StaticObject(ResourceManager.GetSpritedata(SuperMario.SPRITE_TYPE.BLOCK)));
+            m_editorSprites.Add(new Enemy(ResourceManager.GetSpritedata(Supermario.SPRITE_TYPE.ENEMY0)));
+            m_editorSprites.Add(new Enemy(ResourceManager.GetSpritedata(Supermario.SPRITE_TYPE.ENEMY1)));
+            m_editorSprites.Add(new Enemy(ResourceManager.GetSpritedata(Supermario.SPRITE_TYPE.ENEMY2)));
+            m_editorSprites.Add(new StaticObject(ResourceManager.GetSpritedata(Supermario.SPRITE_TYPE.COINBLOCK)));
+            m_editorSprites.Add(new StaticObject(ResourceManager.GetSpritedata(Supermario.SPRITE_TYPE.BLOCK)));
             
             
 

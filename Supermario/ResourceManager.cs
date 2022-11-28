@@ -37,7 +37,6 @@ namespace Supermario
         static Dictionary<SPRITE_TYPE, OBJECT_CONSTRUCTION_DATA> m_objectData = new Dictionary<SPRITE_TYPE, OBJECT_CONSTRUCTION_DATA>();
         static Dictionary<string, Texture2D> m_textures = new Dictionary<string, Texture2D>();
         static Dictionary<MENU_TYPE, GameObject> m_menuObjects = new Dictionary<MENU_TYPE, GameObject>();
-        static Dictionary<Point, StaticObject> m_tileMap = new Dictionary<Point, StaticObject>();
         static Player m_player;
         static List<Enemy> m_enemies = new List<Enemy>();
         public ResourceManager(Game game) : base(game)
@@ -146,7 +145,7 @@ namespace Supermario
             base.LoadContent();
         }
         public static ref Player GetPlayer() { return ref m_player; }
-       public static ref Dictionary<Point, StaticObject> GetTiles() { return ref m_tileMap; }
+     
         public static Texture2D GetTexture(string name) { return m_textures[name]; }
         public static OBJECT_CONSTRUCTION_DATA GetSpritedata(SPRITE_TYPE type) { return m_objectData[type]; }
         public static Dictionary<string, Texture2D> GetTexture() { return m_textures; }
@@ -163,15 +162,7 @@ namespace Supermario
                 m_player = s as Player;
             if (s is Enemy)
                 m_enemies.Add(s as Enemy);
-        if (s.GetSpriteType()==SPRITE_TYPE.BLOCK||s.GetSpriteType()==SPRITE_TYPE.COINBLOCK)
-            {
-                
-                Point gridindex = new Point((int)(s.GetCurrentPos().X / GameManager.GetTileSize()),
-                    (int)(s.GetCurrentPos().Y / GameManager.GetTileSize()));
-                if(!m_tileMap.ContainsKey(gridindex))
-                    m_tileMap.Add(gridindex, s as StaticObject);
-                
-            }
+        
         }
         public static ref List<GameObject> GetObjects() { return ref m_objects; }
         public static ref List<Enemy> GetEnemies() { return ref m_enemies; }
@@ -211,7 +202,6 @@ namespace Supermario
             
         }
         public static ref Dictionary<MENU_TYPE, GameObject> GetMenuObjects() { return ref m_menuObjects; }
-        public static bool PosHasTile(Point gridindex) { return m_tileMap.ContainsKey(gridindex); }
-        public static StaticObject GetTile(Point gridindex) { return m_tileMap[gridindex]; }
+        
     }
 }

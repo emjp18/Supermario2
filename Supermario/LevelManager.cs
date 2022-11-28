@@ -85,8 +85,9 @@ namespace Supermario
                             {
                                 Point mp = KeyMouseReader.mouseState.Position;
                                 Point p = new Point(mp.X, mp.Y);
+                                //GameManager.GetGridPoint(new Vector2(p.X, p.Y), GameManager.GetRootNode(), ref p);
                                 GameManager.ModWithRes(ref p);
-                                if (GameManager.IsWithinWindowBounds(new Rectangle(mp, new Point(0, 0))))
+                                if (GameManager.IsWithinWindowBounds(new Rectangle(p, new Point(1, 1))))
                                 {
                                     foreach (GameObject sprite in ResourceManager.GetObjects())
                                     {
@@ -105,6 +106,7 @@ namespace Supermario
                                                 data.x = p.X; data.y = p.Y;
                                                 int size = GameManager.GetTileSize();
                                                 data.height = data.width = size;
+                                                
                                                 GameObject s = new StaticObject(data);
                                                 ResourceManager.AddObject(s);
                                                 break;
@@ -115,6 +117,8 @@ namespace Supermario
 
                                                 GameManager.ModWithRes(ref p, data.width / data.fullsheetsizeX, data.height / data.fullSheetsizeY);
                                                 data.x = p.X; data.y = p.Y;
+
+
                                                 
                                                 GameObject s = new Enemy(data);
                                                 ResourceManager.AddObject(s);
@@ -126,7 +130,7 @@ namespace Supermario
                                                 GameManager.ModWithRes(ref p, data.width/data.fullsheetsizeX, data.height/ data.fullSheetsizeY);
 
                                                 data.x = p.X; data.y = p.Y;
-                                                
+                                               
                                                 GameObject s = new Enemy(data);
                                                 ResourceManager.AddObject(s);
                                                 break;
@@ -137,7 +141,7 @@ namespace Supermario
                                                 GameManager.ModWithRes(ref p, data.width / data.fullsheetsizeX, data.height / data.fullSheetsizeY);
 
                                                 data.x = p.X; data.y = p.Y;
-                                                
+                                              
                                                 GameObject s = new Enemy(data);
                                                 ResourceManager.AddObject(s);
                                                 break;
@@ -150,6 +154,7 @@ namespace Supermario
                                                 data.x = p.X; data.y = p.Y;
                                                 int size = GameManager.GetTileSize();
                                                 data.height = data.width = size;
+                                                
                                                 GameObject s = new StaticObject(data);
                                                 ResourceManager.AddObject(s);
                                                 break;

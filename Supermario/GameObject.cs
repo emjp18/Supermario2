@@ -14,7 +14,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Supermario
 {
-    internal abstract class GameObject
+     public abstract class GameObject
     {
         protected bool m_grounded = true;
         protected SPRITE_TYPE m_type;
@@ -83,7 +83,7 @@ namespace Supermario
         public  void SetColor(Color c) { m_color = c; }
         public void SetShouldUpdate(bool update) { m_update = update; }
         public void SwapDirection() { m_direction *= -1; }
-        protected GameObject(OBJECT_CONSTRUCTION_DATA constructiondata)
+        public GameObject(OBJECT_CONSTRUCTION_DATA constructiondata)
         {
             m_fullsheetSize = new Point(constructiondata.fullsheetsizeX, constructiondata.fullSheetsizeY);
             m_textureName = constructiondata.texture;
@@ -129,7 +129,7 @@ namespace Supermario
                 }
             }
         }
-        public Point GetGridPoint(Vector2 pos)
+        protected Point GetGridPoint(Vector2 pos)
         {
             float pX = pos.X;
             float pY = pos.Y;
@@ -167,25 +167,32 @@ namespace Supermario
             //Look up if there is a tile where you are going. instead of looping all the tiles.
             //Round the pos to the nearest gridpoint
 
-            Point gp = GetGridPoint(pos);
 
-            if (ResourceManager.PosHasTile(gp))
+            Point gp = new Point(-1, -1);
+            QUAD_NODE node = new QUAD_NODE();
+            GameManager.GetGridPoint(pos, GameManager.GetRootNode(), ref node);
+            m_grounded = false;
+            if (node.tiles != null)
             {
-                b = bounds.Intersects(ResourceManager.GetTile(gp).GetBounds());
-                if (this is DynamicObject)
+                foreach (StaticObject obj in node.tiles)
                 {
-                    m_grounded = (this as DynamicObject).IsGrounded(ResourceManager.GetTile(gp));
+                    if (obj.GetBounds().Intersects(bounds))
+                    {
+                        b = true;
+                        if (this is DynamicObject)
+                        {
+                            m_grounded = (this as DynamicObject).IsGrounded(obj);
 
+
+                        }
+                        break;
+                    }
                 }
-                
             }
-            else
-            {
-                m_grounded = false;
-            }
-               
-
             
+
+
+
 
             if ( b || !a)
             {
@@ -201,7 +208,7 @@ namespace Supermario
         }
         public virtual void Update(GameTime gametime)
         {
-           
+           m_position.Round();
 
             m_velocity = m_F / m_mass;
            
