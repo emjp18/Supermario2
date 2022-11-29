@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Microsoft.VisualBasic.Devices;
+using Microsoft.Xna.Framework;
 using SharpDX.Direct3D11;
 using SharpDX.Direct3D9;
 using SuperMario;
@@ -14,7 +15,8 @@ namespace Supermario
     {
         LEVEL_TYPE m_currentLevel;
         static SPRITE_TYPE m_sprite = SPRITE_TYPE.BLOCK;
-        const int m_spriteTypeCount = 7;
+        const int m_spriteTypeCount = 8;
+        const int m_pipedistance = 10;
         public LevelManager(Game game, LEVEL_TYPE currentLevel) : base(game)
         {
             m_currentLevel = currentLevel;
@@ -67,10 +69,51 @@ namespace Supermario
                 {
                     if (ResourceManager.GetPlayer().PixelIntersects(e))
                     {
-                        ResourceManager.GetPlayer().Knocback(e, gameTime);
+                        Vector2 dir = ResourceManager.GetPlayer().KnockbackRectangle(ResourceManager.GetPlayer().GetBounds()
+                            , e);
+                        if (dir.Y<0)
+                        {
+                            e.SetShouldUpdate(false);
+                            e.SetShouldDraw(false);
+                            //Death animation
+                        }
+                        else
+                        {
+                            ResourceManager.GetPlayer().Knocback(e);
+                            //lose life
+                        }
                     }
 
 
+                }
+                foreach (StaticObject p in ResourceManager.GetPipes())
+                {
+                    Rectangle rect = p.GetBounds();
+                    if (rect.Y > ResourceManager.GetPlayer().GetCurrentPos().Y)
+                        rect.Y -= m_pipedistance;
+                    else
+                        rect.Y += m_pipedistance;
+                    Rectangle rect2 = ResourceManager.GetPlayer().GetBounds();
+                    if (rect2.Intersects(rect))
+                    {
+                        Vector2 dir =  ResourceManager.GetPlayer().KnockbackRectangle(ResourceManager.GetPlayer().GetBounds()
+                          , p);
+                        dir.Normalize();
+                        if (dir.Y < 0)
+                            dir.Y -= GameManager.GetGravity() * 2;
+                        else
+                        {
+                            
+                            break;
+                        }
+                           
+                        Vector2 posCorrection = ResourceManager.GetPlayer().GetCurrentPos();
+                        posCorrection.X = p.GetCurrentPos().X;
+                        ResourceManager.GetPlayer().SetPos(posCorrection);//prevents shaking if you end up in between blocks.
+                        ResourceManager.GetPlayer().AddForce(dir * ResourceManager.GetPlayer().GetSpeed()*4);
+                        //play sound effect
+                        
+                    }
                 }
             }
             else if(GameManager.GetState()==GAME_STATE.EDITOR)
@@ -91,7 +134,10 @@ namespace Supermario
                                 {
                                     foreach (GameObject sprite in ResourceManager.GetObjects())
                                     {
-                                        if (sprite.GetBounds().Contains(p) && sprite.GetIsEditable())
+                                        OBJECT_CONSTRUCTION_DATA selectiondata = ResourceManager.GetSpritedata(m_sprite);
+
+                                        Rectangle rect = new Rectangle(p.X, p.Y, selectiondata.width, selectiondata.height);
+                                        if (sprite.GetBounds().Intersects(rect) && sprite.GetIsEditable())
                                         {
                                             return;
                                         }
@@ -155,6 +201,19 @@ namespace Supermario
                                                 int size = GameManager.GetTileSize();
                                                 data.height = data.width = size;
                                                 
+                                                GameObject s = new StaticObject(data);
+                                                ResourceManager.AddObject(s);
+                                                break;
+                                            }
+                                        case SPRITE_TYPE.PIPE:
+                                            {
+                                                OBJECT_CONSTRUCTION_DATA data = ResourceManager.GetSpritedata(SPRITE_TYPE.PIPE);
+                                                GameManager.ModWithRes(ref p, data.width / data.fullsheetsizeX, data.height / data.fullSheetsizeY);
+
+
+                                                data.x = p.X; data.y = p.Y;
+                                                
+
                                                 GameObject s = new StaticObject(data);
                                                 ResourceManager.AddObject(s);
                                                 break;

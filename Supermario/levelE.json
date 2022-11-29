@@ -395,8 +395,34 @@
     {
       "positionX": 1175.0,
       "positionY": 775.0
+    },
+    {
+      "positionX": 75.0,
+      "positionY": 775.0
+    },
+    {
+      "positionX": 75.0,
+      "positionY": 750.0
+    },
+    {
+      "positionX": 75.0,
+      "positionY": 725.0
+    },
+    {
+      "positionX": 25.0,
+      "positionY": 750.0
     }
   ],
   "coinblocks": [],
+  "pipes": [
+    {
+      "positionX": 50.0,
+      "positionY": 750.0
+    },
+    {
+      "positionX": 50.0,
+      "positionY": 700.0
+    }
+  ],
   "backgrounds": []
 }

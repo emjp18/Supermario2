@@ -16,7 +16,9 @@ namespace Supermario
 {
      public abstract class GameObject
     {
-        protected bool m_grounded = true;
+        protected float m_mingrounddistance = 1.0f;
+        protected Point m_groundpos = new Point(-1, -1);
+        protected bool m_grounded = false;
         protected SPRITE_TYPE m_type;
         protected Texture2D m_texture;
         protected Vector2 m_F = Vector2.Zero;
@@ -83,6 +85,7 @@ namespace Supermario
         public  void SetColor(Color c) { m_color = c; }
         public void SetShouldUpdate(bool update) { m_update = update; }
         public void SwapDirection() { m_direction *= -1; }
+        public void SetShouldDraw(bool draw) { m_draw = draw; }
         public GameObject(OBJECT_CONSTRUCTION_DATA constructiondata)
         {
             m_fullsheetSize = new Point(constructiondata.fullsheetsizeX, constructiondata.fullSheetsizeY);
@@ -103,13 +106,61 @@ namespace Supermario
             m_prevPos = m_position;
             m_type = constructiondata.type;
         }
-        
-        public virtual void AddForce(Vector2 force, GameTime gametime)
+        public Vector2 KnockbackRectangle(Rectangle bounds, GameObject other)
         {
             
-            m_canmove = CanMove(m_position + (m_F+force / m_mass)*(float)gametime.ElapsedGameTime.TotalSeconds);
-            if(m_canmove)
-                m_F += force;
+            Rectangle otherbounds = other.GetBounds();
+
+
+            int up = Math.Abs(otherbounds.Top - bounds.Bottom);
+            int down = Math.Abs(otherbounds.Bottom - bounds.Top);
+            int left = Math.Abs(otherbounds.Left - bounds.Right);
+            int right = Math.Abs(otherbounds.Right - bounds.Left);
+
+            int min = int.MaxValue;
+
+            if (up < min)
+                min = up;
+            if (down < min)
+                min = down;
+            if (left < min)
+                min = left;
+            if (right < min)
+                min = right;
+
+
+            //if (collisionVector.Y != 0)
+            //{
+            //    collisionVector.Y += m_frameSize.Y;
+            //}
+            //else
+            //{
+            //    collisionVector.X += m_frameSize.X;
+            //}
+
+            if (min == up)
+            {
+                return new Vector2(0, min);
+            }
+            else if (min == down)
+            {
+                return new Vector2(0, -min);
+            }
+            else if (min == left)
+            {
+                return new Vector2(min, 0);
+            }
+            else
+            {
+                return new Vector2(-min, 0);
+            }
+
+        }
+        public virtual void AddForce(Vector2 force)
+        {
+            m_F += force;
+
+
         }
         public virtual void UpdateAnimation(GameTime gametime)
         {
@@ -154,66 +205,118 @@ namespace Supermario
             int y = (int)MathF.Round((pY / GameManager.GetTileSize()));
             return new Point(x, y);
         }
-        public bool CanMove(Vector2 pos)
+        public void LimitMovement(ref Vector2 pos)
         {
-            //If the next position intersects with a tile or the window bounds dont move.
-
-            Point p = new Point((int)pos.X, (int)pos.Y);
             
-            Rectangle bounds = new Rectangle(p.X, p.Y, m_frameSize.X, m_frameSize.Y);
-            bool a = GameManager.IsWithinWindowBounds(bounds);
-            bool b = false;
-
-            //Look up if there is a tile where you are going. instead of looping all the tiles.
-            //Round the pos to the nearest gridpoint
-
-
-            Point gp = new Point(-1, -1);
+            Vector2 futurePos = pos + m_position;
             QUAD_NODE node = new QUAD_NODE();
-            GameManager.GetGridPoint(pos, GameManager.GetRootNode(), ref node);
-            m_grounded = false;
-            if (node.tiles != null)
+            GameManager.GetGridPoint(futurePos, GameManager.GetRootNode(), ref node);
+            Rectangle bounds = GetBounds();
+            bounds.X = (int)futurePos.X;
+            bounds.Y = (int)futurePos.Y;
+            if (node.tiles!=null)
             {
-                foreach (StaticObject obj in node.tiles)
+                if(node.tiles.Count>0)
                 {
-                    if (obj.GetBounds().Intersects(bounds))
+                    foreach (StaticObject obj in node.tiles)
                     {
-                        b = true;
-                        if (this is DynamicObject)
+
+                        if (obj.GetBounds().Intersects(bounds))
                         {
-                            m_grounded = (this as DynamicObject).IsGrounded(obj);
 
+                            var collisionVector = KnockbackRectangle(bounds, obj);
 
+                            pos -= collisionVector;
+                            
+                            break;
                         }
-                        break;
+                      
+
+
+
+
                     }
                 }
+               
+
             }
             
 
-
-
-
-            if ( b || !a)
+            if (!GameManager.IsWithinWindowBounds(bounds))
             {
-               
-                
-                
-                return false;
+                GameManager.ClampInWindow(ref pos, bounds);
+            }
+           
+        }
+        public void SetGroundPos(Vector2 pos)
+        {
+            pos.Y += 1;
+            if (pos.Y>GameManager.GetWindowSize(false))
+            {
+                m_groundpos = new Point(int.MaxValue, int.MaxValue);
+                return;
+            }
+            QUAD_NODE node = new QUAD_NODE();
+            GameManager.GetGridPoint(pos, GameManager.GetRootNode(), ref node);
+            Rectangle bounds = GetBounds();
+            bounds.X = (int)pos.X;
+            bounds.Y = (int)pos.Y;
+            if (node.tiles != null)
+            {
+                if (node.tiles.Count > 0)
+                {
+                    foreach (StaticObject obj in node.tiles)
+                    {
+
+                        if (obj.GetBounds().Intersects(bounds))
+                        {
+                            m_groundpos = new Point(obj.GetBounds().Left, obj.GetBounds().Top);
+                           
+                            return;
+
+                        }
+                        
+                    }
+                    SetGroundPos(pos + new Vector2(0, 25));
+                }
+                else
+                {
+                    SetGroundPos(pos + new Vector2(0, 25));
+                }
             }
             else
             {
-                return true;
+                SetGroundPos(pos + new Vector2(0, 25));
             }
         }
+       
         public virtual void Update(GameTime gametime)
         {
            m_position.Round();
 
             m_velocity = m_F / m_mass;
-           
-            m_position += m_velocity * (float)gametime.ElapsedGameTime.TotalSeconds;
-           
+            Vector2 movement = m_velocity * (float)gametime.ElapsedGameTime.TotalSeconds;
+            movement.X = (int)movement.X;
+            movement.Y = (int)movement.Y;
+            LimitMovement(ref movement);
+            
+            m_position += movement;
+
+            SetGroundPos(m_position);
+            if(m_groundpos.Y!=-1)
+            {
+                float length = (m_position + m_frameSize.ToVector2()).Y - m_groundpos.ToVector2().Y;
+                if (length < 0)
+                    length *= -1;
+                m_grounded = length <= m_mingrounddistance;
+            }
+
+            if (this is DynamicObject)
+            {
+                if ((this as DynamicObject).m_jumping)
+                    (this as DynamicObject).m_jumping = false;
+
+            }
 
 
             m_F = Vector2.Zero;

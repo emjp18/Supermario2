@@ -192,8 +192,8 @@ namespace Supermario
             m_editorSprites.Add(new Enemy(ResourceManager.GetSpritedata(Supermario.SPRITE_TYPE.ENEMY2)));
             m_editorSprites.Add(new StaticObject(ResourceManager.GetSpritedata(Supermario.SPRITE_TYPE.COINBLOCK)));
             m_editorSprites.Add(new StaticObject(ResourceManager.GetSpritedata(Supermario.SPRITE_TYPE.BLOCK)));
-            
-            
+            m_editorSprites.Add(new StaticObject(ResourceManager.GetSpritedata(Supermario.SPRITE_TYPE.PIPE)));
+
 
 
 

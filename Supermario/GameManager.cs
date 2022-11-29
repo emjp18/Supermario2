@@ -12,6 +12,7 @@ namespace Supermario
 {
     internal class GameManager
     {
+        const float m_gravity = 9.8f;
         static QUAD_NODE m_root;
         const int m_maxGridPoints = 10;
         static Vector2 m_playerStart;
@@ -79,6 +80,7 @@ namespace Supermario
         public ResourceManager GetResourceManager() { return m_resourcemanager; }
         public LevelManager GetLevelManager() { return m_levelmanager; }
         public static Vector2 GetPlayerStart() { return m_playerStart; }
+        public static float GetGravity() { return m_gravity; }
         public void LoadMenuObjects()
         {
            
@@ -93,6 +95,28 @@ namespace Supermario
             ResourceManager.AddMenuObject(new Button(ResourceManager.GetSpritedata(SPRITE_TYPE.BACKGROUND)), MENU_TYPE.BUTTON);
             ResourceManager.AddMenuObject(new Button(ResourceManager.GetSpritedata(SPRITE_TYPE.BACKGROUND)), MENU_TYPE.BUTTON);
         }
+        public static void ClampInWindow(ref Vector2 pos, Rectangle rect)
+        {
+            if (rect.X + rect.Width >= GameManager.GetWindowSize(true))
+            {
+                pos.X -= (rect.X + rect.Width) - GameManager.GetWindowSize(true);
+            }
+            else if (rect.X <= 0)
+            {
+                pos.X -= (rect.X + GameManager.GetWindowSize(true)) - GameManager.GetWindowSize(true);
+            }
+            else if (rect.Y + rect.Height >= GameManager.GetWindowSize(false))
+            {
+                pos.Y -= (rect.Y + rect.Height) - GameManager.GetWindowSize(false);
+            }
+            else if (rect.Y <= 0)
+            {
+                pos.Y -= (rect.Y + GameManager.GetWindowSize(false)) - GameManager.GetWindowSize(false);
+            }
+
+
+
+        }
         public void LoadLevel(LEVEL_TYPE level, Viewport viewport)
         {
 
@@ -100,6 +124,7 @@ namespace Supermario
             m_filemanager.ReadFromFile(m_levels[level]);
             ResourceManager.GetObjects().Clear();
             ResourceManager.GetEnemies().Clear();
+            ResourceManager.GetPipes().Clear();
             foreach (GameObject s in m_filemanager.GetBackground())
             {
                 
@@ -132,7 +157,14 @@ namespace Supermario
             Player p = new Player(data, viewport);
           
             ResourceManager.AddObject(p);
-          
+
+            foreach (GameObject s in m_filemanager.GetPipes())
+            {
+
+                ResourceManager.AddObject(s);
+
+            }
+
             GenerateGrid();
             GenerateQuadTree(ref m_root);
             m_levelmanager.SetLevelType(level);
@@ -292,7 +324,7 @@ namespace Supermario
             }
             foreach (GameObject obj in ResourceManager.GetObjects())
             {
-                if (obj is StaticObject)
+                if (obj is StaticObject) //obj.GetSpriteType()==SPRITE_TYPE.BLOCK|| obj.GetSpriteType() == SPRITE_TYPE.COINBLOCK
                 {
                     if (node.bounds.Contains(obj.GetCurrentPos()))
                     {

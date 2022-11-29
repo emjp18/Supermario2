@@ -15,7 +15,7 @@ namespace Supermario
     internal class FileManager
     {
 
- 
+        List<StaticObject> m_pipeList = new List<StaticObject>();
         List<StaticObject> m_blockList = new List<StaticObject>();
         List<StaticObject> m_coinblockList = new List<StaticObject>();
         List<Enemy> m_enemyList = new List<Enemy>();
@@ -28,7 +28,7 @@ namespace Supermario
         {
             m_directory = directory;
         }
-  
+        public List<StaticObject> GetPipes() { return m_pipeList; }
         public List<StaticObject> GetBlocks() { return m_blockList; }
         public List<StaticObject> GetCoinBlocks() { return m_coinblockList; }
         public List<Enemy> GetEnemies() { return m_enemyList; }
@@ -40,7 +40,8 @@ namespace Supermario
             m_coinblockList.Clear();
             m_enemyList.Clear();
             m_backgroundObjects.Clear();
-            OBJECT_CONSTRUCTION_DATA playerdata = ResourceManager.GetSpritedata(SPRITE_TYPE.PLAYER);
+            m_pipeList.Clear();
+            OBJECT_CONSTRUCTION_DATA pipeData = ResourceManager.GetSpritedata(SPRITE_TYPE.PIPE);
             OBJECT_CONSTRUCTION_DATA enemydata0 = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY0);
             OBJECT_CONSTRUCTION_DATA enemydata1 = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY1);
             OBJECT_CONSTRUCTION_DATA enemydata2 = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY2);
@@ -108,7 +109,17 @@ namespace Supermario
                 n.SetIsEditable(false);
                 m_backgroundObjects.Add(n);
             }
-            
+            List<Vector2> pipes = GetPosList(m_directory + fileName, "pipes");
+            foreach (Vector2 pos in pipes)
+            {
+                pipeData.x = (int)pos.X;
+                pipeData.y = (int)pos.Y;
+
+                StaticObject n = new StaticObject(pipeData);
+
+               
+                m_pipeList.Add(n);
+            }
         }
         public void WriteToFile(string fileName, List<GameObject> gameObjectList)
         {
@@ -170,6 +181,7 @@ namespace Supermario
         private void WriteJsonToFile(string filename,
         List<GameObject> gList)
         {
+            JArray pipeArray0 = new JArray();
             JArray enemyArray0 = new JArray();
             JArray enemyArray1 = new JArray();
             JArray enemyArray2 = new JArray();
@@ -224,6 +236,11 @@ namespace Supermario
                                 coinblockarray.Add(obj);
                                 break;
                             }
+                        case SPRITE_TYPE.PIPE:
+                            {
+                                pipeArray0.Add(obj);
+                                break;
+                            }
                     }
                    
 
@@ -239,6 +256,7 @@ namespace Supermario
             bigobj.Add("enemies2", enemyArray2);
             bigobj.Add("blocks", blockarray);
             bigobj.Add("coinblocks", coinblockarray);
+            bigobj.Add("pipes", pipeArray0);
             bigobj.Add("backgrounds", backgroundarray);
             //System.Diagnostics.Debug.WriteLine(bigobj.ToString());
             File.WriteAllText(filename, bigobj.ToString());

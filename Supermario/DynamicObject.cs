@@ -13,7 +13,9 @@ namespace Supermario
 {
     internal class DynamicObject : GameObject
     {
-        
+        protected bool m_isjumping = false;
+        protected int m_endXLeft;
+        protected int m_endXRight;
         protected float m_minPlayerDistance = 200;
         protected Random m_random = new Random();
         protected Point m_gridposition = new Point();
@@ -28,19 +30,13 @@ namespace Supermario
         protected List<A_STAR_NODE> m_open = new List<A_STAR_NODE>();
         protected List<A_STAR_NODE> m_closed = new List<A_STAR_NODE>();
         protected List<A_STAR_NODE> m_path = new List<A_STAR_NODE>();
-        protected float m_gravity = 9.8f;
+        
         
         public DynamicObject(OBJECT_CONSTRUCTION_DATA constructiondata) : base(constructiondata)
         {
-          
+            
         }
-        public void SwapDestination()
-        {
-            if (m_destination.X == 0)
-                m_destination.X = GameManager.GetWindowSize(true);
-            else if (m_destination.X == GameManager.GetWindowSize(true))
-                m_destination.X = 0;
-        }
+      
         public override void Update(GameTime gametime)
         {
             base.Update(gametime);
@@ -50,55 +46,17 @@ namespace Supermario
             return GetBounds().Intersects(other.GetBounds());
             
         }
-        public bool IsGrounded(GameObject other)
+        public bool IsGrounded(Rectangle bounds, GameObject other)
         {
-            Rectangle bounds = GetBounds();
+            
             Rectangle otherbounds = other.GetBounds();
             int up = Math.Abs(otherbounds.Top - bounds.Bottom);
             int down = Math.Abs(otherbounds.Bottom - bounds.Top);
 
             return up < down;
         }
-        public Vector2 KnockbackRectangle(GameObject other)
-        {
-            Rectangle bounds = GetBounds();
-            Rectangle otherbounds = other.GetBounds();
-
-            int up = Math.Abs(otherbounds.Top - bounds.Bottom);
-            int down = Math.Abs(otherbounds.Bottom - bounds.Top);
-            int left = Math.Abs(otherbounds.Left - bounds.Right);
-            int right = Math.Abs(otherbounds.Right - bounds.Left);
-
-            int min = int.MaxValue;
-
-            if(up<min)
-                min = up;
-            if(down<min)
-                min = down;
-            if(left<min)
-                min = left;
-            if(right<min)
-                min = right;
-
-            if(min==up)
-            {
-                return new Vector2(0, -min);
-            }
-            else if(min==down)
-            {
-                return new Vector2(0, min);
-            }
-            else if(min == left)
-            {
-                return new Vector2(-min, 0);
-            }
-            else
-            {
-                return new Vector2(min, 0);
-            }
-
-        }
-        public void Knocback(GameObject other, GameTime gametime)
+        
+        public void Knocback(GameObject other)
         {
             float DistanceNow = Vector2.Distance(m_position
             , other.GetCurrentPos());
@@ -122,14 +80,14 @@ namespace Supermario
                 // and add back the parallel components 
                 AddForce(((u1Orthogonal + u2Orthogonal
                 + elasticity * (u2Orthogonal - u1Orthogonal)) / 2 + u1Parallel)
-                , gametime);
+                );
 
 
                 if (other is DynamicObject)
                 {
                     other.AddForce(((u1Orthogonal + u2Orthogonal
                 + elasticity * (u1Orthogonal - u2Orthogonal)) / 2 + u2Parallel)
-                , gametime);
+                );
 
                 }
             }

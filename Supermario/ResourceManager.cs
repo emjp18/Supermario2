@@ -14,7 +14,7 @@ namespace Supermario
     internal class ResourceManager : Microsoft.Xna.Framework.DrawableGameComponent
     {
         OBJECT_CONSTRUCTION_DATA m_spritedata;
-       static string m_cloudpath;
+        static string m_pipepath = "pipe";
        static string m_coinblockpath = "coinblock";
        static string m_backgroundpath = "background";
        static string m_platformpath = "block";
@@ -24,7 +24,7 @@ namespace Supermario
         static string m_gameoverpath = "gameover";
         static string m_buttonpath = "button";
         Texture2D m_coinblockTex;
-        Texture2D m_cointex;
+        Texture2D m_pipeTex;
         Texture2D m_enemiesTex;
         Texture2D m_backrgoundTex;
         Texture2D m_platformtex;
@@ -34,6 +34,7 @@ namespace Supermario
         Texture2D m_buttonTex;
         static List<GameObject> m_buttons = new List<GameObject>();
         static List<GameObject> m_objects = new List<GameObject>();
+        static List<StaticObject> m_pipes = new List<StaticObject>();
         static Dictionary<SPRITE_TYPE, OBJECT_CONSTRUCTION_DATA> m_objectData = new Dictionary<SPRITE_TYPE, OBJECT_CONSTRUCTION_DATA>();
         static Dictionary<string, Texture2D> m_textures = new Dictionary<string, Texture2D>();
         static Dictionary<MENU_TYPE, GameObject> m_menuObjects = new Dictionary<MENU_TYPE, GameObject>();
@@ -77,12 +78,12 @@ namespace Supermario
             m_spritedata.usedSheetMinY = 0;
             m_spritedata.width = 300;
             m_spritedata.height = 44;
-            m_spritedata.speed = 99;
+            m_spritedata.speed = 990;
             m_spritedata.type = SPRITE_TYPE.PLAYER;
-            //m_spritedata.mass = 60;
+            m_spritedata.mass = 10;
             m_objectData.Add(SPRITE_TYPE.PLAYER, m_spritedata);
 
-            m_spritedata.speed = 44;
+            m_spritedata.speed = 4400;
             m_spritedata.texture = m_enemiespath;
             m_spritedata.fullsheetsizeX = 9;
             m_spritedata.fullSheetsizeY = 3;
@@ -92,7 +93,7 @@ namespace Supermario
             m_spritedata.usedSheetMinY = 0;
             m_spritedata.width = 261;
             m_spritedata.height = 90;
-            m_spritedata.mass = 1;
+            m_spritedata.mass = 100;
             m_spritedata.type = SPRITE_TYPE.ENEMY0;
             m_objectData.Add(SPRITE_TYPE.ENEMY0, m_spritedata);
 
@@ -119,6 +120,19 @@ namespace Supermario
             m_spritedata.height = 90;
             m_spritedata.type = SPRITE_TYPE.ENEMY2;
             m_objectData.Add(SPRITE_TYPE.ENEMY2, m_spritedata);
+
+            m_spritedata.texture = m_pipepath;
+            m_spritedata.fullsheetsizeX = 1;
+            m_spritedata.fullSheetsizeY = 1;
+            m_spritedata.usedsheetMaxX = 0;
+            m_spritedata.usedSheetMaxY = 0;
+            m_spritedata.usedsheetMinX = 0;
+            m_spritedata.usedSheetMinY = 0;
+            m_spritedata.width = 25;
+            m_spritedata.height = 50;
+            m_spritedata.mass = 1;
+            m_spritedata.type = SPRITE_TYPE.PIPE;
+            m_objectData.Add(SPRITE_TYPE.PIPE, m_spritedata);
         }
 
         
@@ -134,6 +148,7 @@ namespace Supermario
             m_coinblockTex = Game.Content.Load<Texture2D>(m_coinblockpath);
             m_backrgoundTex = Game.Content.Load<Texture2D>(m_backgroundpath);
             m_enemiesTex = Game.Content.Load<Texture2D>(m_enemiespath);
+            m_pipeTex = Game.Content.Load<Texture2D>(m_pipepath);
             m_textures.Add(m_platformpath, m_platformtex);
             m_textures.Add(m_coinblockpath, m_coinblockTex);
             m_textures.Add(m_backgroundpath, m_backrgoundTex);
@@ -142,6 +157,7 @@ namespace Supermario
             m_textures.Add(m_gameoverpath, m_gameoverTex);
             m_textures.Add(m_buttonpath, m_buttonTex);
             m_textures.Add(m_enemiespath, m_enemiesTex);
+            m_textures.Add(m_pipepath, m_pipeTex);
             base.LoadContent();
         }
         public static ref Player GetPlayer() { return ref m_player; }
@@ -162,8 +178,13 @@ namespace Supermario
                 m_player = s as Player;
             if (s is Enemy)
                 m_enemies.Add(s as Enemy);
+            if(s.GetSpriteType()==SPRITE_TYPE.PIPE)
+            {
+                m_pipes.Add(s as StaticObject);
+            }
         
         }
+        public static ref List<StaticObject> GetPipes() { return ref m_pipes; }
         public static ref List<GameObject> GetObjects() { return ref m_objects; }
         public static ref List<Enemy> GetEnemies() { return ref m_enemies; }
         public static ref List<GameObject> GetButtons() { return ref m_buttons; }
