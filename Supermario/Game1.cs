@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+
 using SuperMario;
 using System.Resources;
 
@@ -30,7 +31,7 @@ namespace Supermario
             Components.Add(m_gamemanager.GetResourceManager());
             Components.Add(m_gamemanager.GetGameObjectManager());
             Components.Add(m_gamemanager.GetLevelManager());
-            
+            GameManager.GetSetEditorCamera() = new Camera(GraphicsDevice.Viewport);
 
             base.Initialize();
         }
@@ -90,6 +91,9 @@ namespace Supermario
                             m_gamemanager.SaveLevel();
                             GameManager.SetState(GAME_STATE.MENU);
                         }
+
+                        
+
                         break;
 
                     }
@@ -98,18 +102,18 @@ namespace Supermario
             
             if(GameManager.GetState()!=GameManager.GetOldState())
             {
-                if(GameManager.GetState()== GAME_STATE.EDITOR)
-                {
-                    _graphics.PreferredBackBufferWidth = (int)(m_resX*1.5f);
-                    _graphics.PreferredBackBufferHeight = (int)(m_resY*1.5f);
-                    _graphics.ApplyChanges();
-                }
-                else
-                {
-                    _graphics.PreferredBackBufferWidth = m_resX;
-                    _graphics.PreferredBackBufferHeight = m_resY;
-                    _graphics.ApplyChanges();
-                }
+                //if(GameManager.GetState()== GAME_STATE.EDITOR)
+                //{
+                //    _graphics.PreferredBackBufferWidth = (int)(m_resX*1.5f);
+                //    _graphics.PreferredBackBufferHeight = (int)(m_resY*1.5f);
+                //    _graphics.ApplyChanges();
+                //}
+                //else
+                //{
+                //    _graphics.PreferredBackBufferWidth = m_resX;
+                //    _graphics.PreferredBackBufferHeight = m_resY;
+                //    _graphics.ApplyChanges();
+                //}
                
 
                 GameManager.SetOldState(GameManager.GetState());
@@ -125,8 +129,7 @@ namespace Supermario
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-          
+            
 
             base.Draw(gameTime);
         }

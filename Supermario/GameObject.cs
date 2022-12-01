@@ -16,7 +16,7 @@ namespace Supermario
 {
      public abstract class GameObject
     {
-        protected float m_mingrounddistance = 1.0f;
+        protected float m_mingrounddistance = 5.0f;
         protected Point m_groundpos = new Point(-1, -1);
         protected bool m_grounded = false;
         protected SPRITE_TYPE m_type;
@@ -25,7 +25,6 @@ namespace Supermario
         protected bool m_isEditable = true;
         protected bool m_canmove;
         protected SpriteEffects m_effect = SpriteEffects.None;
-        protected bool m_jumping = false;
         protected Vector2 m_prevPos;
         protected Color m_color = Color.White;
         protected Vector2 m_tempDir = Vector2.Zero;
@@ -66,7 +65,7 @@ namespace Supermario
         public Vector2 GetVelocity() { return m_velocity; }
         public Vector2 GetDirection() { return m_direction; }
         public Vector2 GetDestination() { return m_destination; }
-        public bool GetIsJumping() { return m_jumping; }
+        
         public Vector2 GetPreviousPos() { return m_prevPos; }
         public Vector2 GetCurrentPos() { return m_position; }
         public Color GetColor() { return m_color; }
@@ -209,18 +208,33 @@ namespace Supermario
         {
             
             Vector2 futurePos = pos + m_position;
-            QUAD_NODE node = new QUAD_NODE();
-            GameManager.GetGridPoint(futurePos, GameManager.GetRootNode(), ref node);
+
+           
             Rectangle bounds = GetBounds();
             bounds.X = (int)futurePos.X;
             bounds.Y = (int)futurePos.Y;
-            if (node.tiles!=null)
+
+            if (!GameManager.IsWithinWindowBounds(bounds))
             {
-                if(node.tiles.Count>0)
+
+                GameManager.ClampInWindow(ref pos, bounds);
+            }
+           
+            //origin += new Vector3(futurePos.X - m_position.X, futurePos.Y - m_position.Y, 0) * step;
+            //bounds.X = (int)origin.X;
+            //bounds.Y = (int)origin.Y;
+            QUAD_NODE node = new QUAD_NODE();
+            GameManager.GetGridPoint(bounds, GameManager.GetRootNode(), ref node);
+            if (node.tiles != null)
+            {
+                if (node.tiles.Count > 0)
                 {
                     foreach (StaticObject obj in node.tiles)
                     {
-
+                        //Vector3 max = new Vector3(obj.GetBounds().Right, obj.GetBounds().Bottom, 0);
+                        //Vector3 min = new Vector3(obj.GetBounds().Left, obj.GetBounds().Top, 0);
+                        //BoundingBox bb = new BoundingBox(min, max);
+                        //var t = ray.Intersects(bb);
                         if (obj.GetBounds().Intersects(bounds))
                         {
 
@@ -228,25 +242,42 @@ namespace Supermario
 
                             pos -= collisionVector;
                             
-                            break;
+                            //return;
                         }
-                      
+
+
+
 
 
 
 
                     }
+
                 }
+
+
+            }
+
+
+
+
+            //Vector3 origin = new Vector3(m_position.X, m_position.Y, 0);
+            //Vector3 dir = new Vector3(futurePos.X-m_position.X, futurePos.Y-m_position.Y, 0);
+            ////dir.Normalize();
+            //Ray ray = new Ray(origin, dir);
+            
+            //float step = 1.0f / 2.0f;
+            //while(origin.Length() < futurePos.Length())
+            //{
                
 
-            }
+            //}
             
 
-            if (!GameManager.IsWithinWindowBounds(bounds))
-            {
-                GameManager.ClampInWindow(ref pos, bounds);
-            }
+
            
+            
+            
         }
         public void SetGroundPos(Vector2 pos)
         {
@@ -256,11 +287,12 @@ namespace Supermario
                 m_groundpos = new Point(int.MaxValue, int.MaxValue);
                 return;
             }
-            QUAD_NODE node = new QUAD_NODE();
-            GameManager.GetGridPoint(pos, GameManager.GetRootNode(), ref node);
+            
             Rectangle bounds = GetBounds();
             bounds.X = (int)pos.X;
             bounds.Y = (int)pos.Y;
+            QUAD_NODE node = new QUAD_NODE();
+            GameManager.GetGridPoint(bounds, GameManager.GetRootNode(), ref node);
             if (node.tiles != null)
             {
                 if (node.tiles.Count > 0)
@@ -293,8 +325,9 @@ namespace Supermario
         public virtual void Update(GameTime gametime)
         {
            m_position.Round();
-
+            
             m_velocity = m_F / m_mass;
+           
             Vector2 movement = m_velocity * (float)gametime.ElapsedGameTime.TotalSeconds;
             movement.X = (int)movement.X;
             movement.Y = (int)movement.Y;
@@ -303,7 +336,7 @@ namespace Supermario
             m_position += movement;
 
             SetGroundPos(m_position);
-            if(m_groundpos.Y!=-1)
+            if (m_groundpos.Y != -1)
             {
                 float length = (m_position + m_frameSize.ToVector2()).Y - m_groundpos.ToVector2().Y;
                 if (length < 0)
@@ -311,12 +344,6 @@ namespace Supermario
                 m_grounded = length <= m_mingrounddistance;
             }
 
-            if (this is DynamicObject)
-            {
-                if ((this as DynamicObject).m_jumping)
-                    (this as DynamicObject).m_jumping = false;
-
-            }
 
 
             m_F = Vector2.Zero;
@@ -324,13 +351,27 @@ namespace Supermario
         
         public virtual void Draw(SpriteBatch batch)
         {
-            batch.Draw(m_texture,
+            if(m_type == SPRITE_TYPE.BACKGROUND)
+            {
+                batch.Draw(m_texture,
+            m_position,
+            new Rectangle(0, 0,
+            GameManager.GetWindowSize(true), GameManager.GetWindowSize(false)),
+            m_color, 0, Vector2.Zero,
+            1f, m_effect, 0);
+             
+            }
+            else
+            {
+                batch.Draw(m_texture,
             m_position,
             new Rectangle(m_currentFrameX * m_frameSize.X,
             m_currentFrameY * m_frameSize.Y,
             m_frameSize.X, m_frameSize.Y),
             m_color, 0, Vector2.Zero,
             1f, m_effect, 0);
+            }
+            
         }
         public  Rectangle GetBounds()
         {

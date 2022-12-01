@@ -14,7 +14,7 @@ namespace Supermario
 {
     internal class FileManager
     {
-
+        List<StaticObject> m_pickups = new List<StaticObject>();
         List<StaticObject> m_pipeList = new List<StaticObject>();
         List<StaticObject> m_blockList = new List<StaticObject>();
         List<StaticObject> m_coinblockList = new List<StaticObject>();
@@ -28,6 +28,7 @@ namespace Supermario
         {
             m_directory = directory;
         }
+        public List<StaticObject> GetPickups() { return m_pickups; }
         public List<StaticObject> GetPipes() { return m_pipeList; }
         public List<StaticObject> GetBlocks() { return m_blockList; }
         public List<StaticObject> GetCoinBlocks() { return m_coinblockList; }
@@ -42,13 +43,13 @@ namespace Supermario
             m_backgroundObjects.Clear();
             m_pipeList.Clear();
             OBJECT_CONSTRUCTION_DATA pipeData = ResourceManager.GetSpritedata(SPRITE_TYPE.PIPE);
-            OBJECT_CONSTRUCTION_DATA enemydata0 = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY0);
-            OBJECT_CONSTRUCTION_DATA enemydata1 = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY1);
-            OBJECT_CONSTRUCTION_DATA enemydata2 = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY2);
+            OBJECT_CONSTRUCTION_DATA enemydata0 = ResourceManager.GetSpritedata(SPRITE_TYPE.ENEMY);
+            OBJECT_CONSTRUCTION_DATA mushroomData = ResourceManager.GetSpritedata(SPRITE_TYPE.MUSHROOM);
+ 
             OBJECT_CONSTRUCTION_DATA coinblockata = ResourceManager.GetSpritedata(SPRITE_TYPE.COINBLOCK);
             OBJECT_CONSTRUCTION_DATA blockata = ResourceManager.GetSpritedata(SPRITE_TYPE.BLOCK);
             OBJECT_CONSTRUCTION_DATA backgroundData = ResourceManager.GetSpritedata(SPRITE_TYPE.BACKGROUND);
-            List<Vector2> enemies = GetPosList(m_directory + fileName, "enemies0");
+            List<Vector2> enemies = GetPosList(m_directory + fileName, "enemies");
             foreach (Vector2 pos in enemies)
             {
                 enemydata0.x = (int)pos.X;
@@ -58,26 +59,17 @@ namespace Supermario
 
                 m_enemyList.Add(p);
             }
-            List<Vector2> enemies1 = GetPosList(m_directory + fileName, "enemies1");
-            foreach (Vector2 pos in enemies1)
+            List<Vector2> mushrooms = GetPosList(m_directory + fileName, "pickups");
+            foreach (Vector2 pos in mushrooms)
             {
-                enemydata1.x = (int)pos.X;
-                enemydata1.y = (int)pos.Y;
+                mushroomData.x = (int)pos.X;
+                mushroomData.y = (int)pos.Y;
 
-                Enemy p = new Enemy(enemydata1);
+                StaticObject p = new StaticObject(mushroomData);
 
-                m_enemyList.Add(p);
+                m_pickups.Add(p);
             }
-            List<Vector2> enemies2 = GetPosList(m_directory + fileName, "enemies2");
-            foreach (Vector2 pos in enemies2)
-            {
-                enemydata2.x = (int)pos.X;
-                enemydata2.y = (int)pos.Y;
-
-                Enemy p = new Enemy(enemydata2);
-
-                m_enemyList.Add(p);
-            }
+            
             List<Vector2> coinblocks = GetPosList(m_directory + fileName, "coinblocks");
             foreach (Vector2 pos in coinblocks)
             {
@@ -181,6 +173,7 @@ namespace Supermario
         private void WriteJsonToFile(string filename,
         List<GameObject> gList)
         {
+            JArray pickups = new JArray();
             JArray pipeArray0 = new JArray();
             JArray enemyArray0 = new JArray();
             JArray enemyArray1 = new JArray();
@@ -195,26 +188,9 @@ namespace Supermario
                 if (gList[i] is Enemy)
                 {
                     JObject obj = CreateObject(gList[i]);
-                    
-                    switch (gList[i].GetSpriteType())
-                    {
-                        case SPRITE_TYPE.ENEMY0:
-                            {
-                                enemyArray0.Add(obj);
-                                break;
-                            }
-                        case SPRITE_TYPE.ENEMY1:
-                            {
-                                enemyArray1.Add(obj);
-                                break;
-                            }
-                        case SPRITE_TYPE.ENEMY2:
-                            {
-                                enemyArray2.Add(obj);
-                                break;
-                            }
-                    }
-                    
+
+                    enemyArray0.Add(obj);
+
                 }
                 else if (gList[i] is StaticObject)
                 {
@@ -241,6 +217,11 @@ namespace Supermario
                                 pipeArray0.Add(obj);
                                 break;
                             }
+                        case SPRITE_TYPE.MUSHROOM:
+                            {
+                                pickups.Add(obj);
+                                break;
+                            }
                     }
                    
 
@@ -251,9 +232,8 @@ namespace Supermario
 
             }
           
-            bigobj.Add("enemies0", enemyArray0);
-            bigobj.Add("enemies1", enemyArray1);
-            bigobj.Add("enemies2", enemyArray2);
+            bigobj.Add("enemies", enemyArray0);
+            bigobj.Add("pickups", pickups);
             bigobj.Add("blocks", blockarray);
             bigobj.Add("coinblocks", coinblockarray);
             bigobj.Add("pipes", pipeArray0);

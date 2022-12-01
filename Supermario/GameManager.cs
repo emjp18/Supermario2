@@ -7,11 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Supermario
 {
     internal class GameManager
     {
+        static Camera m_editorCamera;
         const float m_gravity = 9.8f;
         static QUAD_NODE m_root;
         const int m_maxGridPoints = 10;
@@ -54,8 +56,8 @@ namespace Supermario
             m_oldLevel = LEVEL_TYPE.NONE;
             
 
-            m_windowSizeX = (int)(resX * 1.5f);
-            m_windowSizeY = (int)(resY * 1.5f);
+            m_windowSizeX = (int)(resX * 3.0f);
+            m_windowSizeY = (int)(resY * 1.0f);
 
             m_tileCountX = m_windowSizeX / m_tileSize;
             m_tileCountY = m_windowSizeY / m_tileSize;
@@ -105,7 +107,7 @@ namespace Supermario
             {
                 pos.X -= (rect.X + GameManager.GetWindowSize(true)) - GameManager.GetWindowSize(true);
             }
-            else if (rect.Y + rect.Height >= GameManager.GetWindowSize(false))
+            if (rect.Y + rect.Height >= GameManager.GetWindowSize(false))
             {
                 pos.Y -= (rect.Y + rect.Height) - GameManager.GetWindowSize(false);
             }
@@ -119,21 +121,28 @@ namespace Supermario
         }
         public void LoadLevel(LEVEL_TYPE level, Viewport viewport)
         {
+            
 
-         
             m_filemanager.ReadFromFile(m_levels[level]);
             ResourceManager.GetObjects().Clear();
             ResourceManager.GetEnemies().Clear();
             ResourceManager.GetPipes().Clear();
+            ResourceManager.GetMushrooms().Clear();
             foreach (GameObject s in m_filemanager.GetBackground())
+            {
+                
+                ResourceManager.AddObject(s);
+               
+            }
+            foreach (GameObject s in m_filemanager.GetBlocks())
             {
                 
                 ResourceManager.AddObject(s);
 
             }
-            foreach (GameObject s in m_filemanager.GetBlocks())
+            foreach (GameObject s in m_filemanager.GetPickups())
             {
-                
+
                 ResourceManager.AddObject(s);
 
             }
@@ -168,6 +177,7 @@ namespace Supermario
             GenerateGrid();
             GenerateQuadTree(ref m_root);
             m_levelmanager.SetLevelType(level);
+            
         }
         
         public static bool IsWithinWindowBounds(Rectangle rect)
@@ -178,35 +188,77 @@ namespace Supermario
             else
                 return false;
         }
-        public static void ModWithRes(ref Point p)
+        public static bool ModWithRes(ref Point p)
         {
-            
-            int rest = m_windowSizeX % (p.X+1);
-            if (rest != 0)
-            {
-                p.X = (p.X / m_tileSize) * m_tileSize;
-            }
-            rest = m_windowSizeY % (p.Y + 1);
-            if (rest != 0)
-            {
-                p.Y = (p.Y / m_tileSize) * m_tileSize;
+            QUAD_NODE node = new QUAD_NODE();
+            GetGridPoint(p.ToVector2(), m_root, ref node);
 
+            Point closest = new Point(int.MaxValue, int.MaxValue);
+            float min = float.MaxValue;
+            if(node.gridpoints!=null)
+            {
+                foreach (Point pos in node.gridpoints)
+                {
+                    float d = Vector2.Distance(p.ToVector2(), pos.ToVector2());
+                    if (d< min)
+                    {
+                        min = d;
+                        closest = pos;
+                    }
+                }
+                p = closest;
+                return true;
             }
+            return false;
+
+
+            //int rest = m_windowSizeX % (p.X+1);
+            //if (rest != 0)
+            //{
+            //    p.X = (p.X / m_tileSize) * m_tileSize;
+            //}
+            //rest = m_windowSizeY % (p.Y + 1);
+            //if (rest != 0)
+            //{
+            //    p.Y = (p.Y / m_tileSize) * m_tileSize;
+
+            //}
         }
-        public static void ModWithRes(ref Point p, int w, int h)
+        public static bool ModWithRes(ref Point p, int w, int h)
         {
+            QUAD_NODE node = new QUAD_NODE();
+            GetGridPoint(p.ToVector2(), m_root, ref node);
 
-            int rest = m_windowSizeX % (p.X + 1);
-            if (rest != 0)
+            Point closest = new Point(int.MaxValue, int.MaxValue);
+            float min = float.MaxValue;
+            if (node.gridpoints != null)
             {
-                p.X = (p.X / w) * w;
+                foreach (Point pos in node.gridpoints)
+                {
+                    float d = Vector2.Distance(p.ToVector2(), pos.ToVector2());
+                    if (d < min)
+                    {
+                        min = d;
+                        closest = pos;
+                    }
+                }
+                p = closest;
+                return true;
             }
-            rest = m_windowSizeY % (p.Y + 1);
-            if (rest != 0)
-            {
-                p.Y = (p.Y / h) * h;
+            return false;
 
-            }
+            //p = node.bounds.Center;
+            //int rest = m_windowSizeX % (p.X + 1);
+            //if (rest != 0)
+            //{
+            //    p.X = (p.X / w) * w;
+            //}
+            //rest = m_windowSizeY % (p.Y + 1);
+            //if (rest != 0)
+            //{
+            //    p.Y = (p.Y / h) * h;
+
+            //}
         }
        
         public static void GetGridPoint(Vector2 pos, QUAD_NODE node, ref QUAD_NODE outNode)
@@ -227,6 +279,31 @@ namespace Supermario
                         for (int i = 0; i < 4; i++)
                         {
                             GetGridPoint(pos, node.children[i], ref outNode);
+                        }
+                    }
+
+                }
+            }
+            return;
+        }
+        public static void GetGridPoint(Rectangle bounds, QUAD_NODE node, ref QUAD_NODE outNode)
+        {
+
+            if (node.bounds.Intersects(bounds))
+            {
+                if (node.leaf)
+                {
+                    outNode = node;
+                    return;
+
+                }
+                else
+                {
+                    if (node.children != null)
+                    {
+                        for (int i = 0; i < 4; i++)
+                        {
+                            GetGridPoint(bounds, node.children[i], ref outNode);
                         }
                     }
 
@@ -284,16 +361,23 @@ namespace Supermario
                             node.children[2] = new QUAD_NODE();
                       
                             node.children[3] = new QUAD_NODE();
-                         
-                            
+
+
                             node.children[0].bounds = new Rectangle(node.bounds.X, node.bounds.Y,
-                                    node.bounds.Width / 2, node.bounds.Height / 2);
-                            node.children[1].bounds = new Rectangle(node.bounds.X+ node.bounds.Width / 2, node.bounds.Y,
-                                    node.bounds.Width / 2, node.bounds.Height / 2);
-                            node.children[2].bounds = new Rectangle(node.bounds.X+ node.bounds.Width / 2, node.bounds.Y+ node.bounds.Height / 2,
-                                    node.bounds.Width / 2, node.bounds.Height / 2);
-                            node.children[3].bounds = new Rectangle(node.bounds.X, node.bounds.Y+ node.bounds.Height / 2,
-                                    node.bounds.Width / 2, node.bounds.Height / 2);
+                                    (int)Math.Ceiling((double)node.bounds.Width / 2.0),
+                                    (int)Math.Ceiling((double)node.bounds.Height / 2.0));
+                            node.children[1].bounds = new Rectangle(node.bounds.X+ (int)Math.Ceiling((double)node.bounds.Width / 2.0), 
+                                node.bounds.Y,
+                                    (int)Math.Ceiling((double)node.bounds.Width / 2.0), 
+                                    (int)Math.Ceiling((double)node.bounds.Height / 2.0));
+                            node.children[2].bounds = new Rectangle(node.bounds.X+ (int)Math.Ceiling((double)node.bounds.Width / 2.0),
+                                node.bounds.Y+ (int)Math.Ceiling((double)node.bounds.Height / 2.0),
+                                    (int)Math.Ceiling((double)node.bounds.Width / 2.0), 
+                                    (int)Math.Ceiling((double)node.bounds.Height / 2.0));
+                            node.children[3].bounds = new Rectangle(node.bounds.X, node.bounds.Y+ 
+                                (int)Math.Ceiling((double)node.bounds.Height / 2.0),
+                                    (int)Math.Ceiling((double)node.bounds.Width / 2.0), 
+                                    (int)Math.Ceiling((double)node.bounds.Height / 2.0));
 
                             GenerateQuadTree(ref node.children[0]);
                             GenerateQuadTree(ref node.children[1]);
@@ -324,9 +408,12 @@ namespace Supermario
             }
             foreach (GameObject obj in ResourceManager.GetObjects())
             {
-                if (obj is StaticObject) //obj.GetSpriteType()==SPRITE_TYPE.BLOCK|| obj.GetSpriteType() == SPRITE_TYPE.COINBLOCK
+                
+                if (obj is StaticObject&&obj.GetSpriteType()!=SPRITE_TYPE.MUSHROOM) //obj.GetSpriteType()==SPRITE_TYPE.BLOCK|| obj.GetSpriteType() == SPRITE_TYPE.COINBLOCK
                 {
-                    if (node.bounds.Contains(obj.GetCurrentPos()))
+                    
+                   
+                    if (node.bounds.Intersects(obj.GetBounds()))
                     {
                         node.tiles.Add(obj as StaticObject);
                     }
@@ -335,6 +422,7 @@ namespace Supermario
             }
 
         }
+        public static ref Camera GetSetEditorCamera() { return ref m_editorCamera; }
         private void GenerateGrid()
         {
             

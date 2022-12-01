@@ -12,7 +12,7 @@ namespace Supermario
     internal class Player : DynamicObject
     {
         Camera m_camera;
-        float m_jumpforce = 2;
+        float m_jumpforce = 4;
         public Player(OBJECT_CONSTRUCTION_DATA constructiondata, Viewport viewport) : base(constructiondata)
         {
             m_isEditable = false;
@@ -42,24 +42,26 @@ namespace Supermario
 
             if (m_grounded)
             {
-                
+               
                 m_camera.SetPosition(m_position);
                 if (KeyMouseReader.KeyPressed(Keys.Space))
                 {
                     SwapDirection();
                      m_direction.Y = 1;
                       m_direction.Normalize();
-                    AddForce(m_direction*-GameManager.GetGravity() * 2*m_speed*m_jumpforce);
-                    m_isjumping = true;
+                    AddForce(m_direction*-GameManager.GetGravity() * 2*m_speed);
+                   
                 }
                 AddForce(m_direction * m_speed);
             }
             else
             {
-                if(m_isjumping)
-                    AddForce(new Vector2(0, GameManager.GetGravity() * m_speed*0.5f));
-                else
-                    AddForce(new Vector2(0, GameManager.GetGravity() * m_speed));
+                Vector2 dirGrav = Vector2.Zero;
+                dirGrav.Y += GameManager.GetGravity();
+
+                AddForce(dirGrav * m_speed * 0.25f);
+
+
             }
 
             

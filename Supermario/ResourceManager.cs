@@ -23,6 +23,8 @@ namespace Supermario
         static string m_timeuppath = "timeup";
         static string m_gameoverpath = "gameover";
         static string m_buttonpath = "button";
+        static string m_enemyFire = "enemy";
+        static string m_mushroom = "mushroom";
         Texture2D m_coinblockTex;
         Texture2D m_pipeTex;
         Texture2D m_enemiesTex;
@@ -32,9 +34,12 @@ namespace Supermario
         Texture2D m_timeupTex;
         Texture2D m_gameoverTex;
         Texture2D m_buttonTex;
+        Texture2D m_enemyFireTex;
+        Texture2D m_mushroomTex;
         static List<GameObject> m_buttons = new List<GameObject>();
         static List<GameObject> m_objects = new List<GameObject>();
         static List<StaticObject> m_pipes = new List<StaticObject>();
+        static List<StaticObject> m_pickups = new List<StaticObject>();
         static Dictionary<SPRITE_TYPE, OBJECT_CONSTRUCTION_DATA> m_objectData = new Dictionary<SPRITE_TYPE, OBJECT_CONSTRUCTION_DATA>();
         static Dictionary<string, Texture2D> m_textures = new Dictionary<string, Texture2D>();
         static Dictionary<MENU_TYPE, GameObject> m_menuObjects = new Dictionary<MENU_TYPE, GameObject>();
@@ -56,8 +61,8 @@ namespace Supermario
             m_spritedata.texture = m_coinblockpath;
             m_spritedata.type = SPRITE_TYPE.COINBLOCK;
             m_objectData.Add(SPRITE_TYPE.COINBLOCK, m_spritedata);
-            m_spritedata.width = 1200;
-            m_spritedata.height = 900;
+            m_spritedata.width = 800;
+            m_spritedata.height = 600;
             m_spritedata.texture = m_backgroundpath;
             m_spritedata.fullsheetsizeX = 1;
             m_spritedata.fullSheetsizeY = 1;
@@ -78,48 +83,38 @@ namespace Supermario
             m_spritedata.usedSheetMinY = 0;
             m_spritedata.width = 300;
             m_spritedata.height = 44;
-            m_spritedata.speed = 990;
+            m_spritedata.speed = 1900;
             m_spritedata.type = SPRITE_TYPE.PLAYER;
             m_spritedata.mass = 10;
             m_objectData.Add(SPRITE_TYPE.PLAYER, m_spritedata);
 
             m_spritedata.speed = 4400;
-            m_spritedata.texture = m_enemiespath;
-            m_spritedata.fullsheetsizeX = 9;
-            m_spritedata.fullSheetsizeY = 3;
-            m_spritedata.usedsheetMaxX = 8;
+            m_spritedata.texture = m_enemyFire;
+            m_spritedata.fullsheetsizeX = 1;
+            m_spritedata.fullSheetsizeY = 1;
+            m_spritedata.usedsheetMaxX = 0;
             m_spritedata.usedSheetMaxY = 0;
             m_spritedata.usedsheetMinX = 0;
             m_spritedata.usedSheetMinY = 0;
-            m_spritedata.width = 261;
-            m_spritedata.height = 90;
+            m_spritedata.width = 57;
+            m_spritedata.height = 30;
             m_spritedata.mass = 100;
-            m_spritedata.type = SPRITE_TYPE.ENEMY0;
-            m_objectData.Add(SPRITE_TYPE.ENEMY0, m_spritedata);
+            m_spritedata.type = SPRITE_TYPE.ENEMY;
+            m_objectData.Add(SPRITE_TYPE.ENEMY, m_spritedata);
 
-            m_spritedata.texture = m_enemiespath;
-            m_spritedata.fullsheetsizeX = 9;
-            m_spritedata.fullSheetsizeY = 3;
-            m_spritedata.usedsheetMaxX = 2;
-            m_spritedata.usedSheetMaxY = 1;
+            m_spritedata.texture = m_mushroom;
+            m_spritedata.fullsheetsizeX = 1;
+            m_spritedata.fullSheetsizeY = 1;
+            m_spritedata.usedsheetMaxX = 0;
+            m_spritedata.usedSheetMaxY = 0;
             m_spritedata.usedsheetMinX = 0;
-            m_spritedata.usedSheetMinY = 1;
-            m_spritedata.width = 261;
-            m_spritedata.height = 90;
-            m_spritedata.type = SPRITE_TYPE.ENEMY1;
-            m_objectData.Add(SPRITE_TYPE.ENEMY1, m_spritedata);
+            m_spritedata.usedSheetMinY = 0;
+            m_spritedata.width = 40;
+            m_spritedata.height = 40;
+            m_spritedata.type = SPRITE_TYPE.MUSHROOM;
+            m_objectData.Add(SPRITE_TYPE.MUSHROOM, m_spritedata);
 
-            m_spritedata.texture = m_enemiespath;
-            m_spritedata.fullsheetsizeX = 9;
-            m_spritedata.fullSheetsizeY = 3;
-            m_spritedata.usedsheetMaxX = 7;
-            m_spritedata.usedSheetMaxY = 1;
-            m_spritedata.usedsheetMinX = 6;
-            m_spritedata.usedSheetMinY = 1;
-            m_spritedata.width = 261;
-            m_spritedata.height = 90;
-            m_spritedata.type = SPRITE_TYPE.ENEMY2;
-            m_objectData.Add(SPRITE_TYPE.ENEMY2, m_spritedata);
+            
 
             m_spritedata.texture = m_pipepath;
             m_spritedata.fullsheetsizeX = 1;
@@ -147,7 +142,8 @@ namespace Supermario
             m_platformtex = Game.Content.Load<Texture2D>(m_platformpath);
             m_coinblockTex = Game.Content.Load<Texture2D>(m_coinblockpath);
             m_backrgoundTex = Game.Content.Load<Texture2D>(m_backgroundpath);
-            m_enemiesTex = Game.Content.Load<Texture2D>(m_enemiespath);
+            m_enemyFireTex = Game.Content.Load<Texture2D>(m_enemyFire);
+            m_mushroomTex = Game.Content.Load<Texture2D>(m_mushroom);
             m_pipeTex = Game.Content.Load<Texture2D>(m_pipepath);
             m_textures.Add(m_platformpath, m_platformtex);
             m_textures.Add(m_coinblockpath, m_coinblockTex);
@@ -156,8 +152,9 @@ namespace Supermario
             m_textures.Add(m_timeuppath, m_timeupTex);
             m_textures.Add(m_gameoverpath, m_gameoverTex);
             m_textures.Add(m_buttonpath, m_buttonTex);
-            m_textures.Add(m_enemiespath, m_enemiesTex);
+            m_textures.Add(m_enemyFire, m_enemyFireTex);
             m_textures.Add(m_pipepath, m_pipeTex);
+            m_textures.Add(m_mushroom, m_mushroomTex);
             base.LoadContent();
         }
         public static ref Player GetPlayer() { return ref m_player; }
@@ -182,8 +179,13 @@ namespace Supermario
             {
                 m_pipes.Add(s as StaticObject);
             }
-        
+            else if (s.GetSpriteType() == SPRITE_TYPE.MUSHROOM)
+            {
+                m_pickups.Add(s as StaticObject);
+            }
+
         }
+        public static ref List<StaticObject> GetMushrooms() { return ref m_pickups; }
         public static ref List<StaticObject> GetPipes() { return ref m_pipes; }
         public static ref List<GameObject> GetObjects() { return ref m_objects; }
         public static ref List<Enemy> GetEnemies() { return ref m_enemies; }

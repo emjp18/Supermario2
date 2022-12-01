@@ -1,24 +1,26 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SharpDX.Direct3D9;
+
 using SuperMario;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
 
 namespace Supermario
 {
     internal class GameObjectManager : Microsoft.Xna.Framework.DrawableGameComponent
     {
+        float m_bgspeed = 20;
         SpriteBatch m_spriteBatch;
         SpriteFont m_font;
-       
+        Vector2 m_positionEditorCamera = Vector2.Zero;
         List<GameObject> m_editorSprites = new List<GameObject>();
         public GameObjectManager(Game game) : base(game)
         {
-            
+            m_positionEditorCamera = GameManager.GetPlayerStart();
         }
 
         public override void Draw(GameTime gameTime)
@@ -73,7 +75,9 @@ namespace Supermario
             }
             else if(GameManager.GetState() == GAME_STATE.EDITOR)
             {
-                m_spriteBatch.Begin();
+                
+                m_spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null,
+                  GameManager.GetSetEditorCamera().Transform);
                 foreach (KeyValuePair<MENU_TYPE, GameObject> sprite in ResourceManager.GetMenuObjects())
                 {
                     if (sprite.Key == MENU_TYPE.START)
@@ -114,7 +118,9 @@ namespace Supermario
                 m_spriteBatch.DrawString(m_font, "The level is saved when you return", vec2, Color.Black);
                 vec2.Y += m_font.MeasureString("P").Y;
                 m_spriteBatch.DrawString(m_font, "Press ESCAPE to return", vec2, Color.Black);
-                
+                vec2.Y += m_font.MeasureString("P").Y;
+                m_spriteBatch.DrawString(m_font, "Press ENTER to remove all tiles", vec2, Color.Black);
+
             }
             else if(GameManager.GetState() == GAME_STATE.GAME)
             {
@@ -135,15 +141,33 @@ namespace Supermario
 
                 foreach (GameObject sprite in ResourceManager.GetObjects())
                 {
-                    
+
                     if (sprite.GetShouldDraw())
                     {
                         sprite.Draw(m_spriteBatch);
                     }
-                    
-                }
 
-                
+                }
+                //for (int i = 0; i < GameManager.GetRes(true) / 10 * 25; i++)
+                //{
+                //    for (int j = 0; j < (int)Math.Ceiling((double)GameManager.GetRes(false) / 10 * 25); j++)
+                //    {
+                //        QUAD_NODE node = new QUAD_NODE();
+                //        GameManager.GetGridPoint(new Vector2(i * 75, j * 19), GameManager.GetRootNode(),
+                //            ref node);
+                //        //m_spriteBatch.Draw(ResourceManager.GetTexture("background"), node.bounds, Color.Black);
+                //        if(node.tiles!=null)
+                //        {
+                //            foreach (StaticObject s in node.tiles)
+                //            {
+                //                s.Draw(m_spriteBatch);
+                //            }
+                //        }
+
+
+                //    }
+                //}
+
 
             }
 
@@ -176,7 +200,30 @@ namespace Supermario
                 }
                 
                 
+
+            }
+            else if(GameManager.GetState() == GAME_STATE.EDITOR)
+            {
+                if (KeyMouseReader.KeyHeld(Microsoft.Xna.Framework.Input.Keys.Left))
+                {
+                    m_positionEditorCamera.X += -10;
+                }
+
+                if (KeyMouseReader.KeyHeld(Microsoft.Xna.Framework.Input.Keys.Right))
+                {
+                    m_positionEditorCamera.X += 10;
+                }
+                if (KeyMouseReader.KeyHeld(Microsoft.Xna.Framework.Input.Keys.Up))
+                {
+                    m_positionEditorCamera.Y += -10;
+                }
+
+                if (KeyMouseReader.KeyHeld(Microsoft.Xna.Framework.Input.Keys.Down))
+                {
+                    m_positionEditorCamera.Y += 10;
+                }
                 
+                GameManager.GetSetEditorCamera().SetPosition(m_positionEditorCamera);
             }
             
             base.Update(gameTime);
@@ -187,9 +234,9 @@ namespace Supermario
             m_font = Game.Content.Load<SpriteFont>("font");
             m_spriteBatch = new SpriteBatch(Game.GraphicsDevice);
        
-            m_editorSprites.Add(new Enemy(ResourceManager.GetSpritedata(Supermario.SPRITE_TYPE.ENEMY0)));
-            m_editorSprites.Add(new Enemy(ResourceManager.GetSpritedata(Supermario.SPRITE_TYPE.ENEMY1)));
-            m_editorSprites.Add(new Enemy(ResourceManager.GetSpritedata(Supermario.SPRITE_TYPE.ENEMY2)));
+            m_editorSprites.Add(new Enemy(ResourceManager.GetSpritedata(Supermario.SPRITE_TYPE.ENEMY)));
+            m_editorSprites.Add(new Enemy(ResourceManager.GetSpritedata(Supermario.SPRITE_TYPE.MUSHROOM)));
+          
             m_editorSprites.Add(new StaticObject(ResourceManager.GetSpritedata(Supermario.SPRITE_TYPE.COINBLOCK)));
             m_editorSprites.Add(new StaticObject(ResourceManager.GetSpritedata(Supermario.SPRITE_TYPE.BLOCK)));
             m_editorSprites.Add(new StaticObject(ResourceManager.GetSpritedata(Supermario.SPRITE_TYPE.PIPE)));

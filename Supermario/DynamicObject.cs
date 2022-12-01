@@ -30,8 +30,8 @@ namespace Supermario
         protected List<A_STAR_NODE> m_open = new List<A_STAR_NODE>();
         protected List<A_STAR_NODE> m_closed = new List<A_STAR_NODE>();
         protected List<A_STAR_NODE> m_path = new List<A_STAR_NODE>();
-        
-        
+        public void SetIsJumping(bool jumping) { m_isjumping = jumping; }
+        public bool GetIsJumping() { return m_isjumping; }
         public DynamicObject(OBJECT_CONSTRUCTION_DATA constructiondata) : base(constructiondata)
         {
             

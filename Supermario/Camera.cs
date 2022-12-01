@@ -16,6 +16,10 @@ namespace Supermario
         {
             get { return m_transform; }
         }
+        public Vector2 Position
+        {
+            get { return m_position; }
+        }
         public Camera(Viewport view)
         {
             m_view = view;
