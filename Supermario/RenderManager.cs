@@ -7,18 +7,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
 
 namespace Supermario
 {
-    internal class GameObjectManager : Microsoft.Xna.Framework.DrawableGameComponent
+    internal class RenderManager : Microsoft.Xna.Framework.DrawableGameComponent
     {
         float m_bgspeed = 20;
         SpriteBatch m_spriteBatch;
         SpriteFont m_font;
         Vector2 m_positionEditorCamera = Vector2.Zero;
         List<GameObject> m_editorSprites = new List<GameObject>();
-        public GameObjectManager(Game game) : base(game)
+        public RenderManager(Game game) : base(game)
         {
             m_positionEditorCamera = GameManager.GetPlayerStart();
         }
@@ -43,35 +44,36 @@ namespace Supermario
                 }
                 
                 Vector2 pos = Vector2.Zero;
-                pos.X = GameManager.GetRes(true) / 2;
-                pos.Y = GameManager.GetRes(false) / 2;
+                m_spriteBatch.DrawString(m_font, "Run to the end of the map to win.", pos, Color.Black);
+                pos.X = GameManager.GetRes(true) / 3;
+                pos.Y = GameManager.GetRes(false) / 4;
                 ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL1].SetPos(pos);
                 (ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL1] as Button).SetText("LEVEL 1");
                 (ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL1] as Button).Draw(m_spriteBatch, m_font);
                 Vector2 offset = m_font.MeasureString("LEVEL 1");
-                pos.Y += offset.Y;
+                pos.Y += offset.Y*2;
                 ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL2].SetPos(pos);
                 (ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL2] as Button).SetText("LEVEL 2");
                 (ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL2] as Button).Draw(m_spriteBatch, m_font);
-                pos.Y += offset.Y;
+                pos.Y += offset.Y*2;
                 ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL3].SetPos(pos);
                 (ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL3] as Button).SetText("LEVEL 3");
                 (ResourceManager.GetButtons()[(int)BUTTON_TYPE.LEVEL3] as Button).Draw(m_spriteBatch, m_font);
-                pos.Y += offset.Y;
+                pos.Y += offset.Y*2;
                 ResourceManager.GetButtons()[(int)BUTTON_TYPE.CUSTOM].SetPos(pos);
                 (ResourceManager.GetButtons()[(int)BUTTON_TYPE.CUSTOM] as Button).SetText("Custom Level");
                 (ResourceManager.GetButtons()[(int)BUTTON_TYPE.CUSTOM] as Button).Draw(m_spriteBatch, m_font);
                 offset = m_font.MeasureString("Custom Level");
-                pos.Y = GameManager.GetRes(true) / 2;
-                pos.X += offset.X;
+                pos.Y = GameManager.GetRes(false) / 4;
+                pos.X += offset.X*2;
                 ResourceManager.GetButtons()[(int)BUTTON_TYPE.HS].SetPos(pos);
                 (ResourceManager.GetButtons()[(int)BUTTON_TYPE.HS] as Button).SetText("High Score");
                 (ResourceManager.GetButtons()[(int)BUTTON_TYPE.HS] as Button).Draw(m_spriteBatch, m_font);
-                pos.Y += offset.Y;
+                pos.Y += offset.Y * 2;
                 ResourceManager.GetButtons()[(int)BUTTON_TYPE.EDITOR].SetPos(pos);
                 (ResourceManager.GetButtons()[(int)BUTTON_TYPE.EDITOR] as Button).SetText("Editor");
                 (ResourceManager.GetButtons()[(int)BUTTON_TYPE.EDITOR] as Button).Draw(m_spriteBatch, m_font);
-              
+                m_spriteBatch.End();
             }
             else if(GameManager.GetState() == GAME_STATE.EDITOR)
             {
@@ -100,11 +102,11 @@ namespace Supermario
                    
                 }
                 m_spriteBatch.DrawString(m_font, "Press E to switch", Vector2.Zero, Color.Black);
-                Vector2 vec2 = Vector2.Zero;
+                Vector2 vec2 = Vector2.Zero+ GameManager.GetSetEditorCamera().Position;
                 foreach (GameObject s in m_editorSprites)
                 {
                     
-                    if (s.GetSpriteType() == LevelManager.GetSelection() && s is not Player)
+                    if (s.GetSpriteType() == LogicManager.GetSelection() && s is not Player)
                     {
                         vec2.X = m_font.MeasureString("Press E to switch sprite").X;
                         s.SetPos(vec2);
@@ -113,14 +115,14 @@ namespace Supermario
                     }
 
                 }
-                vec2.X = 0;
+                vec2.X = GameManager.GetSetEditorCamera().Position.X;
                 vec2.Y += m_font.MeasureString("P").Y;
                 m_spriteBatch.DrawString(m_font, "The level is saved when you return", vec2, Color.Black);
                 vec2.Y += m_font.MeasureString("P").Y;
                 m_spriteBatch.DrawString(m_font, "Press ESCAPE to return", vec2, Color.Black);
                 vec2.Y += m_font.MeasureString("P").Y;
                 m_spriteBatch.DrawString(m_font, "Press ENTER to remove all tiles", vec2, Color.Black);
-
+                m_spriteBatch.End();
             }
             else if(GameManager.GetState() == GAME_STATE.GAME)
             {
@@ -148,6 +150,26 @@ namespace Supermario
                     }
 
                 }
+                //if (GameManager.GetGrid() != null)
+                //{
+                //    for (int i = 0; i < GameManager.GetTileCount(true); i++)
+                //    {
+                //        for (int j = 0; j < GameManager.GetTileCount(false); j++)
+                //        {
+
+                //            if (GameManager.GetGrid()[i, j].obstacle)
+                //            {
+                //                m_spriteBatch.Draw(ResourceManager.GetTexture("background"), new Rectangle(i *
+                //                    25, j *
+                //                    25, 25, 25)
+                //                    , Color.Black);
+                //            }
+
+                //        }
+                //    }
+                //}
+
+
                 //for (int i = 0; i < GameManager.GetRes(true) / 10 * 25; i++)
                 //{
                 //    for (int j = 0; j < (int)Math.Ceiling((double)GameManager.GetRes(false) / 10 * 25); j++)
@@ -168,12 +190,12 @@ namespace Supermario
                 //    }
                 //}
 
-
+                m_spriteBatch.End();
             }
 
 
             base.Draw(gameTime);
-            m_spriteBatch.End();
+           
         }
 
         public override void Update(GameTime gameTime)

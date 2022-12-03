@@ -20,6 +20,7 @@ namespace Supermario
         protected Random m_random = new Random();
         protected Point m_gridposition = new Point();
         protected new Point m_destination = new Point();
+        protected new Point m_gridDestination = new Point();
         protected const double m_resetDelay = 2.0;
         protected Timer m_pathTimer = new Timer();
         protected A_STAR_NODEComparer m_comp = new A_STAR_NODEComparer();
@@ -127,15 +128,19 @@ namespace Supermario
         {
             m_gridposition.X = (int)m_position.X;
             m_gridposition.Y = (int)m_position.Y;
-
+            
             GameManager.ModWithRes(ref m_gridposition);
-            m_gridposition.X /= GameManager.GetTileCount(true);
-            m_gridposition.Y /= GameManager.GetTileCount(false);
-            GameManager.ModWithRes(ref m_destination);
-            m_destination.X /= GameManager.GetTileCount(true);
-            m_destination.Y /= GameManager.GetTileCount(false);
+            m_gridposition.X /= GameManager.GetTileSize();
+            m_gridposition.Y /= GameManager.GetTileSize();
+            m_gridDestination = m_destination;
+            GameManager.ModWithRes(ref m_gridDestination);
+            m_gridDestination.X /= GameManager.GetTileSize();
+            m_gridDestination.Y /= GameManager.GetTileSize();
             m_start = GameManager.GetGrid()[m_gridposition.X, m_gridposition.Y];
-            m_end = GameManager.GetGrid()[m_destination.X, m_destination.Y];
+            m_end = GameManager.GetGrid()[m_gridDestination.X, m_gridDestination.Y];
+
+
+            
 
 
             m_open.Clear();
@@ -152,7 +157,7 @@ namespace Supermario
                 }
 
                 A_STAR_NODE current = m_open[0];
-                if (current.pos.X == m_end.pos.X && current.pos.Y == m_end.pos.Y)     //if current is end, save the correct path and end loop
+                if (current.gridpos.X == m_end.gridpos.X && current.gridpos.Y == m_end.gridpos.Y)     //if current is end, save the correct path and end loop
                 {
                     m_pathFound = true;
                     A_STAR_NODE temp = current;
@@ -182,6 +187,7 @@ namespace Supermario
                             float tempG = current.g + 1;
 
                             bool newPath = false;
+                            
                             if (m_open.Contains(current.neighbours[i]))
                             {
                                 if (tempG < current.neighbours[i].g)
@@ -215,6 +221,8 @@ namespace Supermario
                     }
                 }
             }
+
+
         }
         protected void ResetPath()
         {
@@ -287,14 +295,18 @@ namespace Supermario
         }
         protected void ClampDirection(ref Vector2 dir, bool onlyUseX=false)
         {
-            if (MathF.Abs(dir.X) > MathF.Abs(dir.Y))
+            if (MathF.Abs(dir.X) > MathF.Abs(dir.Y)||onlyUseX)
             {
                 dir.Y = 0;
                 if (dir.X > 0)
                 {
                     dir.X = 1;
                 }
-                else
+                else if(dir.X==0)
+                {
+                    dir.X = 0;
+                }
+                else if(dir.X<0)
                 {
                     dir.X = -1;
                 }
@@ -311,15 +323,16 @@ namespace Supermario
                 {
                     dir.Y = 1;
                 }
-                else
+                else if (dir.Y==0)
+                {
+                    dir.Y = 0;
+                }
+                else if(dir.Y<0)
                 {
                     dir.Y = -1;
                 }
             }
-            if(onlyUseX)
-            {
-                dir.Y = 0;
-            }
+           
         }
     }
 }

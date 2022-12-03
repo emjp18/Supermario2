@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Supermario
 {
-    internal class LevelManager : DrawableGameComponent
+    internal class LogicManager : DrawableGameComponent
     {
         LEVEL_TYPE m_currentLevel;
         static SPRITE_TYPE m_sprite = SPRITE_TYPE.BLOCK;
@@ -19,7 +19,7 @@ namespace Supermario
         const int m_pipedistance = 10;
         Timer m_timer = new Timer();
         const double m_time = 30;
-        public LevelManager(Game game, LEVEL_TYPE currentLevel) : base(game)
+        public LogicManager(Game game, LEVEL_TYPE currentLevel) : base(game)
         {
             m_currentLevel = currentLevel;
             m_timer.ResetAndStart(m_time);
@@ -71,25 +71,13 @@ namespace Supermario
                 m_timer.Update(gameTime.ElapsedGameTime.TotalSeconds);
                 if(m_timer.IsDone())
                 {
-                    GameManager.SetState(GAME_STATE.HIGHSCORE);
+                    //GameManager.SetState(GAME_STATE.HIGHSCORE);
                 }
                 foreach (Enemy e in ResourceManager.GetEnemies())
                 {
                     if (ResourceManager.GetPlayer().PixelIntersects(e))
                     {
-                        Vector2 dir = ResourceManager.GetPlayer().KnockbackRectangle(ResourceManager.GetPlayer().GetBounds()
-                            , e);
-                        if (dir.Y<0)
-                        {
-                            e.SetShouldUpdate(false);
-                            e.SetShouldDraw(false);
-                            //Death animation
-                        }
-                        else
-                        {
-                            ResourceManager.GetPlayer().Knocback(e);
-                            //lose life
-                        }
+                        //do something
                     }
 
 

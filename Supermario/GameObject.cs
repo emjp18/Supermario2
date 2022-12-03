@@ -16,7 +16,7 @@ namespace Supermario
 {
      public abstract class GameObject
     {
-        protected float m_mingrounddistance = 5.0f;
+        protected float m_mingrounddistance =13.0f;
         protected Point m_groundpos = new Point(-1, -1);
         protected bool m_grounded = false;
         protected SPRITE_TYPE m_type;
@@ -105,53 +105,42 @@ namespace Supermario
             m_prevPos = m_position;
             m_type = constructiondata.type;
         }
+        
         public Vector2 KnockbackRectangle(Rectangle bounds, GameObject other)
         {
             
             Rectangle otherbounds = other.GetBounds();
 
-
-            int up = Math.Abs(otherbounds.Top - bounds.Bottom);
-            int down = Math.Abs(otherbounds.Bottom - bounds.Top);
-            int left = Math.Abs(otherbounds.Left - bounds.Right);
-            int right = Math.Abs(otherbounds.Right - bounds.Left);
-
-            int min = int.MaxValue;
-
-            if (up < min)
-                min = up;
-            if (down < min)
-                min = down;
-            if (left < min)
-                min = left;
-            if (right < min)
-                min = right;
-
-
-            //if (collisionVector.Y != 0)
-            //{
-            //    collisionVector.Y += m_frameSize.Y;
-            //}
-            //else
-            //{
-            //    collisionVector.X += m_frameSize.X;
-            //}
-
-            if (min == up)
+            
+            float up = (new Vector2(0, otherbounds.Top) - new Vector2(0, bounds.Bottom)).Length();
+            float down = (new Vector2(0, otherbounds.Bottom) - new Vector2(0, bounds.Top)).Length();
+            float left = (new Vector2(0, otherbounds.Left) - new Vector2(0, bounds.Right)).Length();
+            float right = (new Vector2(0, otherbounds.Right) - new Vector2(0, bounds.Left)).Length();
+            Vector2 dir = m_velocity;
+            dir.Normalize();
+            dir *= -1;
+            if (MathF.Abs(m_velocity.Y)>MathF.Abs(m_velocity.X))
             {
-                return new Vector2(0, min);
-            }
-            else if (min == down)
-            {
-                return new Vector2(0, -min);
-            }
-            else if (min == left)
-            {
-                return new Vector2(min, 0);
+                if(m_velocity.Y>0)
+                {
+                    
+                    return dir*up;
+                }
+                else
+                {
+                    return dir * down;
+                }
             }
             else
             {
-                return new Vector2(-min, 0);
+                if (m_velocity.X > 0)
+                {
+                    return dir * left;
+                }
+                else
+                {
+                    return dir * right;
+                }
             }
 
         }
@@ -219,36 +208,123 @@ namespace Supermario
 
                 GameManager.ClampInWindow(ref pos, bounds);
             }
-           
-            //origin += new Vector3(futurePos.X - m_position.X, futurePos.Y - m_position.Y, 0) * step;
-            //bounds.X = (int)origin.X;
-            //bounds.Y = (int)origin.Y;
+            //int steps = (int)pos.Length();
+            //Vector2 dir = pos;
+            //dir.Normalize();
             QUAD_NODE node = new QUAD_NODE();
             GameManager.GetGridPoint(bounds, GameManager.GetRootNode(), ref node);
             if (node.tiles != null)
             {
                 if (node.tiles.Count > 0)
                 {
+                    //pos = (bounds.Location.ToVector2() - m_position);
                     foreach (StaticObject obj in node.tiles)
                     {
-                        //Vector3 max = new Vector3(obj.GetBounds().Right, obj.GetBounds().Bottom, 0);
-                        //Vector3 min = new Vector3(obj.GetBounds().Left, obj.GetBounds().Top, 0);
-                        //BoundingBox bb = new BoundingBox(min, max);
-                        //var t = ray.Intersects(bb);
+
                         if (obj.GetBounds().Intersects(bounds))
                         {
-
-                            var collisionVector = KnockbackRectangle(bounds, obj);
+                            pos = Vector2.Zero;
+                            return;
+                            Vector2 collisionVector = KnockbackRectangle(bounds, obj);
 
                             pos -= collisionVector;
-                            
-                            //return;
+
                         }
 
 
+                    }
+
+                }
+
+
+            }
+            //for (int i=0; i<steps; i++)
+            //{
+               
+                
+            //    //bounds.Location -= dir.ToPoint();
+            //    //if(bounds.Location.X -m_position.X<=GameManager.GetLeafNodeBoundsSize().X
+            //    //    || bounds.Location.Y - m_position.Y <= GameManager.GetLeafNodeBoundsSize().Y)
+            //    //{
+            //    //    break;
+            //    //}
+            //}
+
+           
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+        public bool IsColliding()
+        {
+            Rectangle bounds = GetBounds();
+            
+            QUAD_NODE node = new QUAD_NODE();
+            GameManager.GetGridPoint(bounds, GameManager.GetRootNode(), ref node);
+            if (node.tiles != null)
+            {
+                if (node.tiles.Count > 0)
+                {
+
+                    foreach (StaticObject obj in node.tiles)
+                    {
+
+                        if (obj.GetBounds().Intersects(bounds))
+                        {
+
+                            return true;
+
+                        }
+
+
+                    }
+
+                }
+
+
+            }
+            return false;
+        }
+        public void Collision()
+        {
+            Rectangle bounds = GetBounds();
+            
+            if (!GameManager.IsWithinWindowBounds(bounds))
+            {
+
+                GameManager.ClampInWindow(ref m_position, bounds);
+            }
+            QUAD_NODE node = new QUAD_NODE();
+            GameManager.GetGridPoint(bounds, GameManager.GetRootNode(), ref node);
+            if (node.tiles != null)
+            {
+                if (node.tiles.Count > 0)
+                {
+                    
+                    foreach (StaticObject obj in node.tiles)
+                    {
+
+                        if (obj.GetBounds().Intersects(bounds))
+                        {
+
+                            m_position += KnockbackRectangle(bounds, obj);
+                            //while (IsColliding())
+                            //{
+                            //    m_position += KnockbackRectangle(bounds, obj);
+                            //}
+                        }
 
 
                     }
@@ -260,29 +336,11 @@ namespace Supermario
 
 
 
-
-            //Vector3 origin = new Vector3(m_position.X, m_position.Y, 0);
-            //Vector3 dir = new Vector3(futurePos.X-m_position.X, futurePos.Y-m_position.Y, 0);
-            ////dir.Normalize();
-            //Ray ray = new Ray(origin, dir);
-            
-            //float step = 1.0f / 2.0f;
-            //while(origin.Length() < futurePos.Length())
-            //{
-               
-
-            //}
-            
-
-
-           
-            
-            
         }
         public void SetGroundPos(Vector2 pos)
         {
-            pos.Y += 1;
-            if (pos.Y>GameManager.GetWindowSize(false))
+            //pos.Y += 1;
+            if (pos.Y>=GameManager.GetWindowSize(false))
             {
                 m_groundpos = new Point(int.MaxValue, int.MaxValue);
                 return;
@@ -297,28 +355,31 @@ namespace Supermario
             {
                 if (node.tiles.Count > 0)
                 {
+                    bool r = false;
                     foreach (StaticObject obj in node.tiles)
                     {
 
                         if (obj.GetBounds().Intersects(bounds))
                         {
                             m_groundpos = new Point(obj.GetBounds().Left, obj.GetBounds().Top);
-                           
-                            return;
+                            r = true;
+                            
 
                         }
                         
                     }
-                    SetGroundPos(pos + new Vector2(0, 25));
+                    if(r)
+                        return;
+                    SetGroundPos(pos + new Vector2(0, GameManager.GetTileSize()/2));
                 }
                 else
                 {
-                    SetGroundPos(pos + new Vector2(0, 25));
+                    SetGroundPos(pos + new Vector2(0, GameManager.GetTileSize()/2));
                 }
             }
             else
             {
-                SetGroundPos(pos + new Vector2(0, 25));
+                SetGroundPos(pos + new Vector2(0, GameManager.GetTileSize() / 2));
             }
         }
        
@@ -331,10 +392,10 @@ namespace Supermario
             Vector2 movement = m_velocity * (float)gametime.ElapsedGameTime.TotalSeconds;
             movement.X = (int)movement.X;
             movement.Y = (int)movement.Y;
-            LimitMovement(ref movement);
+            //LimitMovement(ref movement);
             
             m_position += movement;
-
+            Collision();
             SetGroundPos(m_position);
             if (m_groundpos.Y != -1)
             {

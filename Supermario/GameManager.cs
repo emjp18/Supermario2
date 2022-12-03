@@ -23,10 +23,10 @@ namespace Supermario
         static GAME_STATE m_currentState = GAME_STATE.MENU;
         static LEVEL_TYPE m_currentLevel;
         FileManager m_filemanager;
-        GameObjectManager m_gameobjectManager;
+        RenderManager m_gameobjectManager;
         //SoundManager m_soundmanager;
         ResourceManager m_resourcemanager;
-        LevelManager m_levelmanager;
+        LogicManager m_levelmanager;
         const string m_directory = "../../../";
         static int m_resX;
         static int m_resY;
@@ -35,6 +35,7 @@ namespace Supermario
         const int m_tileSize = 25;
         static int m_tileCountX;
         static int m_tileCountY;
+        static Point m_leafNodeBoundsSize;
         string m_levelEditor = "levelE.json";
         string m_level1 = "level1.json";
         string m_level2 = "level2.json";
@@ -46,8 +47,8 @@ namespace Supermario
             m_resourcemanager = new ResourceManager(game);
             m_filemanager = new FileManager(m_directory);
             //m_soundmanager = new SoundManager(game);
-            m_gameobjectManager = new GameObjectManager(game);
-            m_levelmanager = new LevelManager(game, LEVEL_TYPE.LEVELE);
+            m_gameobjectManager = new RenderManager(game);
+            m_levelmanager = new LogicManager(game, LEVEL_TYPE.LEVELE);
             m_levels.Add(LEVEL_TYPE.LEVELE, m_levelEditor);
             m_levels.Add(LEVEL_TYPE.LEVEL1, m_level1);
             m_resX = resX;
@@ -70,17 +71,18 @@ namespace Supermario
            
 
         }
+        public static Point GetLeafNodeBoundsSize() { return m_leafNodeBoundsSize; }
         public static QUAD_NODE GetRootNode() { return m_root; }
         public static A_STAR_NODE[,] GetGrid() { return m_grid; }
         public static int GetTileSize() { return m_tileSize; }
         public static int GetTileCount(bool x) { if (x) return m_tileCountX; else return m_tileCountY; }
         public static int GetRes(bool x) { if (x) return m_resX; else return m_resY; }
         public static int GetWindowSize(bool x) { if (x) return m_windowSizeX; else return m_windowSizeY; }
-        public GameObjectManager GetGameObjectManager() { return m_gameobjectManager; }
+        public RenderManager GetGameObjectManager() { return m_gameobjectManager; }
         //public SoundManager GetSoundManager() { return m_soundmanager; }
         public FileManager GetFileManager() { return m_filemanager; }
         public ResourceManager GetResourceManager() { return m_resourcemanager; }
-        public LevelManager GetLevelManager() { return m_levelmanager; }
+        public LogicManager GetLevelManager() { return m_levelmanager; }
         public static Vector2 GetPlayerStart() { return m_playerStart; }
         public static float GetGravity() { return m_gravity; }
         public void LoadMenuObjects()
@@ -103,7 +105,7 @@ namespace Supermario
             {
                 pos.X -= (rect.X + rect.Width) - GameManager.GetWindowSize(true);
             }
-            else if (rect.X <= 0)
+            else if (rect.X < 0)
             {
                 pos.X -= (rect.X + GameManager.GetWindowSize(true)) - GameManager.GetWindowSize(true);
             }
@@ -111,7 +113,7 @@ namespace Supermario
             {
                 pos.Y -= (rect.Y + rect.Height) - GameManager.GetWindowSize(false);
             }
-            else if (rect.Y <= 0)
+            else if (rect.Y < 0)
             {
                 pos.Y -= (rect.Y + GameManager.GetWindowSize(false)) - GameManager.GetWindowSize(false);
             }
@@ -173,16 +175,19 @@ namespace Supermario
                 ResourceManager.AddObject(s);
 
             }
-
-            GenerateGrid();
             GenerateQuadTree(ref m_root);
+            GenerateGrid();
+            foreach (Enemy s in ResourceManager.GetEnemies())
+            {
+                s.FindPaths();
+            }
             m_levelmanager.SetLevelType(level);
             
         }
         
         public static bool IsWithinWindowBounds(Rectangle rect)
         {
-            if ((rect.X + rect.Width <= m_windowSizeX) && (rect.Y + rect.Height <= m_windowSizeY)
+            if ((rect.X + rect.Width < m_windowSizeX) && (rect.Y + rect.Height < m_windowSizeY)
                 && (rect.X >= 0) && (rect.Y >= 0))
                 return true;
             else
@@ -311,6 +316,41 @@ namespace Supermario
             }
             return;
         }
+        
+        public static void GetGridPoint(Ray ray, QUAD_NODE node, ref QUAD_NODE outNode
+            , ref float tsalar)
+        {
+            //Let the segment endpoints be p1=(x1 y1) and p2=(x2 y2).
+            //Let the rectangle's corners be (xBL yBL) and (xTR yTR).
+
+            BoundingBox bb = new BoundingBox(new Vector3(node.bounds.Left, node.bounds.Top, 0),
+                new Vector3(node.bounds.Right, node.bounds.Bottom,0));
+
+            var t = ray.Intersects(bb);
+            if(t!=null)
+            {
+                tsalar = (float)t;
+                if (node.leaf)
+                {
+                    outNode = node;
+                    return;
+
+                }
+                else
+                {
+                    if (node.children != null)
+                    {
+                        for (int i = 0; i < 4; i++)
+                        {
+                            GetGridPoint(ray, node.children[i], ref outNode,ref tsalar);
+                        }
+                    }
+
+                }
+            }
+
+            return;
+        }
         public static LEVEL_TYPE GetCurrentLevel() { return m_currentLevel; }
         public static LEVEL_TYPE GetOldLevel() { return m_oldLevel; }
         public static void SetOldLevel(LEVEL_TYPE level) { m_oldLevel = level; }
@@ -326,8 +366,8 @@ namespace Supermario
         public static void SetLevel(LEVEL_TYPE level) { m_currentLevel = level; }
         private void AddNeighbours(A_STAR_NODE node)
         {
-            int x = (int)node.pos.X / m_tileCountX;
-            int y = (int)node.pos.Y / m_tileCountY;
+            int x = (int)node.pos.X / m_tileSize;
+            int y = (int)node.pos.Y / m_tileSize;
 
             if (x < (m_tileCountX - 1)) //Precomputed since the map doesnt change.
                 node.neighbours.Add(GetGrid()[x + 1, y]);
@@ -392,6 +432,7 @@ namespace Supermario
             node.leaf = true;
             node.gridpoints = new List<Point>();
             node.tiles = new List<StaticObject>();
+            m_leafNodeBoundsSize = node.bounds.Size;
             for (int i = 0; i < m_tileCountX; i++)
             {
                 for (int j = 0; j < m_tileCountY; j++)
@@ -435,27 +476,39 @@ namespace Supermario
                     m_grid[i, j].pos = new Vector2(i * m_tileSize, j * m_tileSize);
                     QUAD_NODE node = new QUAD_NODE();
                     Vector2 pos = new Vector2(i * m_tileSize, j * m_tileSize);
-                    GetGridPoint(pos, m_root, ref node);
-                    bool poshastile = false;
-                    if(node.tiles!=null)
+                    Rectangle rect = new Rectangle(pos.ToPoint(), new Point(25, 25));
+                    GetGridPoint(rect, m_root, ref node);
+                    m_grid[i, j].obstacle = false;
+                    if (node.tiles!=null)
                     {
-                        foreach(StaticObject obj in node.tiles)
+                        foreach(StaticObject tile in node.tiles)
                         {
-                            if(obj.GetBounds().Contains(pos))
+                            if(tile.GetBounds().Intersects(rect))
                             {
-                                poshastile = true;
+                                m_grid[i, j].obstacle = true;
                                 break;
                             }
                         }
                     }
-                    m_grid[i, j].obstacle = poshastile;
-                   
+                    
                     m_grid[i, j].previous = new A_STAR_NODE[1];
                     m_grid[i, j].neighbours = new List<A_STAR_NODE>();
                     m_grid[i, j].isActive = true;
                     m_grid[i, j].previous[0] = new A_STAR_NODE();
                     m_grid[i, j].previous[0].isActive = false;
                     m_grid[i, j].gridpos = new Point(i, j);
+
+                }
+            }
+            for (int i = 0; i < m_tileCountX; i++)
+            {
+                for (int j = 0; j < m_tileCountY-1; j++)
+                {
+
+                    if (!m_grid[i, j+1].obstacle)
+                    {
+                        m_grid[i, j].obstacle = true;
+                    }
 
                 }
             }

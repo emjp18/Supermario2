@@ -27,8 +27,10 @@ namespace Supermario
         public void SetPosition(Vector2 position)
         {
             m_position = position;
-            float offset =GameManager.GetWindowSize(false)-GameManager.GetPlayerStart().Y;
-            m_position.Y -= m_view.Height - offset;
+            float offsety =GameManager.GetWindowSize(false)-GameManager.GetPlayerStart().Y;
+            m_position.Y -= m_view.Height - offsety;
+
+            m_position.X -= m_view.Width * 0.5f;
             GameManager.ClampInWindow(ref m_position, new Rectangle((int)m_position.X, (int)m_position.Y
                 , m_view.Width,
                 m_view.Height));

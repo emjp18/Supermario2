@@ -38,8 +38,8 @@ namespace Supermario
                 m_direction.X = 1;
                 m_effect = SpriteEffects.FlipHorizontally;
             }
-            
 
+            AddForce(m_direction * m_speed);
             if (m_grounded)
             {
                
@@ -52,7 +52,7 @@ namespace Supermario
                     AddForce(m_direction*-GameManager.GetGravity() * 2*m_speed);
                    
                 }
-                AddForce(m_direction * m_speed);
+                
             }
             else
             {

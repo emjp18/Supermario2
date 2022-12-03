@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 namespace Supermario
 {
@@ -35,7 +38,7 @@ namespace Supermario
         public Rectangle bounds;
         public bool leaf;
     }
-    public struct A_STAR_NODE
+    public struct A_STAR_NODE : IEquatable<A_STAR_NODE>
     {
         public Point gridpos;
         public bool isActive;
@@ -49,13 +52,18 @@ namespace Supermario
         public bool closedSet;
         public bool correctPath;
         public List<A_STAR_NODE> neighbours;
-
-
-        public override bool Equals(object obj)
+        public bool Equals(A_STAR_NODE other)
         {
-            var b = (A_STAR_NODE)obj;
-            return pos == b.pos;
+            return this.gridpos == other.gridpos;
         }
+
+
+
+        //public override bool Equals(object obj)
+        //{
+        //    var b = (A_STAR_NODE)obj;
+        //    return gridpos == b.gridpos;
+        //}
 
         public override int GetHashCode()
         {
@@ -63,13 +71,36 @@ namespace Supermario
             {
                 int hash = 1430287;
 
-                hash = hash * 7302013 ^ pos.X.GetHashCode();
-                hash = hash * 7302013 ^ pos.Y.GetHashCode();
+                hash = hash * 7302013 ^ gridpos.X.GetHashCode();
+                hash = hash * 7302013 ^ gridpos.Y.GetHashCode();
                 return hash;
             }
         }
+
+        public static bool ArePointsSame(A_STAR_NODE lhs, A_STAR_NODE rhs)
+        {
+            
+            return lhs.gridpos == rhs.gridpos;
+        }
     }
-    public class A_STAR_NODEComparer : IComparer<A_STAR_NODE>
+
+
+
+
+
+    //class A_STAR_NODELIST : List<A_STAR_NODE>
+    //{
+    //    public new bool Contains(A_STAR_NODE other)
+    //    {
+
+    //        int index = FindIndex(x => A_STAR_NODE.ArePointsSame(x, other));
+    //        if (index == -1)
+    //            return false;
+    //        else
+    //            return true;
+    //    }
+    //}     
+public class A_STAR_NODEComparer : IComparer<A_STAR_NODE>
     {
         public int Compare(A_STAR_NODE x, A_STAR_NODE y)
         {

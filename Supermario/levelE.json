@@ -45,6 +45,46 @@
     {
       "positionX": 950.0,
       "positionY": 525.0
+    },
+    {
+      "positionX": 450.0,
+      "positionY": 350.0
+    },
+    {
+      "positionX": 950.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 450.0,
+      "positionY": 350.0
+    },
+    {
+      "positionX": 950.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 450.0,
+      "positionY": 350.0
+    },
+    {
+      "positionX": 950.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 450.0,
+      "positionY": 350.0
+    },
+    {
+      "positionX": 950.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 450.0,
+      "positionY": 350.0
+    },
+    {
+      "positionX": 950.0,
+      "positionY": 525.0
     }
   ],
   "blocks": [
@@ -549,8 +589,180 @@
       "positionY": 525.0
     },
     {
-      "positionX": 225.0,
+      "positionX": 575.0,
+      "positionY": 425.0
+    },
+    {
+      "positionX": 2050.0,
       "positionY": 550.0
+    },
+    {
+      "positionX": 2075.0,
+      "positionY": 550.0
+    },
+    {
+      "positionX": 2100.0,
+      "positionY": 550.0
+    },
+    {
+      "positionX": 2125.0,
+      "positionY": 550.0
+    },
+    {
+      "positionX": 2150.0,
+      "positionY": 550.0
+    },
+    {
+      "positionX": 2175.0,
+      "positionY": 550.0
+    },
+    {
+      "positionX": 2200.0,
+      "positionY": 550.0
+    },
+    {
+      "positionX": 2225.0,
+      "positionY": 550.0
+    },
+    {
+      "positionX": 2250.0,
+      "positionY": 550.0
+    },
+    {
+      "positionX": 2275.0,
+      "positionY": 550.0
+    },
+    {
+      "positionX": 2275.0,
+      "positionY": 500.0
+    },
+    {
+      "positionX": 2275.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 2275.0,
+      "positionY": 475.0
+    },
+    {
+      "positionX": 2250.0,
+      "positionY": 475.0
+    },
+    {
+      "positionX": 2250.0,
+      "positionY": 500.0
+    },
+    {
+      "positionX": 2250.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 2225.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 2225.0,
+      "positionY": 500.0
+    },
+    {
+      "positionX": 2225.0,
+      "positionY": 475.0
+    },
+    {
+      "positionX": 2225.0,
+      "positionY": 450.0
+    },
+    {
+      "positionX": 2200.0,
+      "positionY": 450.0
+    },
+    {
+      "positionX": 2175.0,
+      "positionY": 450.0
+    },
+    {
+      "positionX": 2150.0,
+      "positionY": 450.0
+    },
+    {
+      "positionX": 2125.0,
+      "positionY": 450.0
+    },
+    {
+      "positionX": 2125.0,
+      "positionY": 475.0
+    },
+    {
+      "positionX": 2100.0,
+      "positionY": 475.0
+    },
+    {
+      "positionX": 2100.0,
+      "positionY": 500.0
+    },
+    {
+      "positionX": 2075.0,
+      "positionY": 500.0
+    },
+    {
+      "positionX": 2075.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 2050.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 2025.0,
+      "positionY": 550.0
+    },
+    {
+      "positionX": 2100.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 2125.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 2150.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 2175.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 2200.0,
+      "positionY": 525.0
+    },
+    {
+      "positionX": 2200.0,
+      "positionY": 500.0
+    },
+    {
+      "positionX": 2175.0,
+      "positionY": 500.0
+    },
+    {
+      "positionX": 2150.0,
+      "positionY": 500.0
+    },
+    {
+      "positionX": 2150.0,
+      "positionY": 475.0
+    },
+    {
+      "positionX": 2175.0,
+      "positionY": 475.0
+    },
+    {
+      "positionX": 2200.0,
+      "positionY": 475.0
+    },
+    {
+      "positionX": 2125.0,
+      "positionY": 500.0
     }
   ],
   "coinblocks": [

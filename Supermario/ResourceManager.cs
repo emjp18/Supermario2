@@ -88,7 +88,7 @@ namespace Supermario
             m_spritedata.mass = 10;
             m_objectData.Add(SPRITE_TYPE.PLAYER, m_spritedata);
 
-            m_spritedata.speed = 4400;
+            m_spritedata.speed = 1100;
             m_spritedata.texture = m_enemyFire;
             m_spritedata.fullsheetsizeX = 1;
             m_spritedata.fullSheetsizeY = 1;
@@ -98,7 +98,7 @@ namespace Supermario
             m_spritedata.usedSheetMinY = 0;
             m_spritedata.width = 57;
             m_spritedata.height = 30;
-            m_spritedata.mass = 100;
+            m_spritedata.mass = 10;
             m_spritedata.type = SPRITE_TYPE.ENEMY;
             m_objectData.Add(SPRITE_TYPE.ENEMY, m_spritedata);
 
