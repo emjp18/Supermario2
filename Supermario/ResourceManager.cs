@@ -27,7 +27,7 @@ namespace Supermario
         static string m_mushroom = "mushroom";
         Texture2D m_coinblockTex;
         Texture2D m_pipeTex;
-        Texture2D m_enemiesTex;
+        Texture2D m_flagTex;
         Texture2D m_backrgoundTex;
         Texture2D m_platformtex;
         Texture2D m_marioTinyTex;
@@ -96,8 +96,8 @@ namespace Supermario
             m_spritedata.usedSheetMaxY = 0;
             m_spritedata.usedsheetMinX = 0;
             m_spritedata.usedSheetMinY = 0;
-            m_spritedata.width = 57;
-            m_spritedata.height = 30;
+            m_spritedata.width = 25;
+            m_spritedata.height = 13;
             m_spritedata.mass = 10;
             m_spritedata.type = SPRITE_TYPE.ENEMY;
             m_objectData.Add(SPRITE_TYPE.ENEMY, m_spritedata);
@@ -128,6 +128,19 @@ namespace Supermario
             m_spritedata.mass = 1;
             m_spritedata.type = SPRITE_TYPE.PIPE;
             m_objectData.Add(SPRITE_TYPE.PIPE, m_spritedata);
+
+            m_spritedata.texture = "flag";
+            m_spritedata.fullsheetsizeX = 1;
+            m_spritedata.fullSheetsizeY = 1;
+            m_spritedata.usedsheetMaxX = 0;
+            m_spritedata.usedSheetMaxY = 0;
+            m_spritedata.usedsheetMinX = 0;
+            m_spritedata.usedSheetMinY = 0;
+            m_spritedata.width = 50;
+            m_spritedata.height = 50;
+            m_spritedata.mass = 1;
+            m_spritedata.type = SPRITE_TYPE.FLAG;
+            m_objectData.Add(SPRITE_TYPE.FLAG, m_spritedata);
         }
 
         
@@ -145,6 +158,7 @@ namespace Supermario
             m_enemyFireTex = Game.Content.Load<Texture2D>(m_enemyFire);
             m_mushroomTex = Game.Content.Load<Texture2D>(m_mushroom);
             m_pipeTex = Game.Content.Load<Texture2D>(m_pipepath);
+            m_flagTex = Game.Content.Load<Texture2D>("flag");
             m_textures.Add(m_platformpath, m_platformtex);
             m_textures.Add(m_coinblockpath, m_coinblockTex);
             m_textures.Add(m_backgroundpath, m_backrgoundTex);
@@ -155,6 +169,8 @@ namespace Supermario
             m_textures.Add(m_enemyFire, m_enemyFireTex);
             m_textures.Add(m_pipepath, m_pipeTex);
             m_textures.Add(m_mushroom, m_mushroomTex);
+            m_textures.Add("flag", m_flagTex);
+
             base.LoadContent();
         }
         public static ref Player GetPlayer() { return ref m_player; }

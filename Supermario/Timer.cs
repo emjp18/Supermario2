@@ -21,5 +21,6 @@ namespace SuperMario
         {
             currentTime -= deltaTime;
         }
+        public double GetTime() { return currentTime; }
     }
 }

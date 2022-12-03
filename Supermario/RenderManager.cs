@@ -4,10 +4,12 @@ using Microsoft.Xna.Framework.Graphics;
 using SuperMario;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
 
 namespace Supermario
@@ -108,7 +110,7 @@ namespace Supermario
                     
                     if (s.GetSpriteType() == LogicManager.GetSelection() && s is not Player)
                     {
-                        vec2.X = m_font.MeasureString("Press E to switch sprite").X;
+                        vec2.X = m_font.MeasureString("Press E to switch sprite").X+GameManager.GetSetEditorCamera().Position.X;
                         s.SetPos(vec2);
                         s.Draw(m_spriteBatch);
                         break;
@@ -122,11 +124,14 @@ namespace Supermario
                 m_spriteBatch.DrawString(m_font, "Press ESCAPE to return", vec2, Color.Black);
                 vec2.Y += m_font.MeasureString("P").Y;
                 m_spriteBatch.DrawString(m_font, "Press ENTER to remove all tiles", vec2, Color.Black);
+                vec2.Y += m_font.MeasureString("P").Y;
+                m_spriteBatch.DrawString(m_font, "Move Camera with arrows", vec2, Color.Black);
                 m_spriteBatch.End();
             }
             else if(GameManager.GetState() == GAME_STATE.GAME)
             {
-                if(ResourceManager.GetPlayer()!= null)
+                
+                if (ResourceManager.GetPlayer()!= null)
                 {
                     m_spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null,
                     ResourceManager.GetPlayer().GetCamera().Transform);
@@ -139,7 +144,18 @@ namespace Supermario
                 if (ResourceManager.GetMenuObjects()[MENU_TYPE.START].GetShouldDraw())
                     ResourceManager.GetMenuObjects()[MENU_TYPE.START].Draw(m_spriteBatch);
 
+                if(ResourceManager.GetPlayer() != null)
+                {
 
+                    Vector2 vec2 = Vector2.Zero;
+                    vec2.X = ResourceManager.GetPlayer().GetCamera().Position.X;
+                    vec2.Y += m_font.MeasureString("P").Y;
+                    m_spriteBatch.DrawString(m_font, "Time Left: " + ((int)ResourceManager.GetPlayer().GetSetTime().GetTime()).ToString(),
+                        vec2, Color.Black);
+                    vec2.Y += m_font.MeasureString("P").Y;
+                    m_spriteBatch.DrawString(m_font, "Current Score: " + ((int)ResourceManager.GetPlayer().GetSCore()).ToString(),
+                        vec2, Color.Black);
+                }
 
                 foreach (GameObject sprite in ResourceManager.GetObjects())
                 {
@@ -190,6 +206,24 @@ namespace Supermario
                 //    }
                 //}
 
+                m_spriteBatch.End();
+            }
+            else if(GameManager.GetState() == GAME_STATE.HIGHSCORE)
+            {
+                Vector2 vec2 = Vector2.Zero;
+                m_spriteBatch.Begin();
+                foreach (KeyValuePair<int, string> kv in GameManager.GetSetHighScore())
+                {
+                    
+                    m_spriteBatch.DrawString(m_font, kv.Value,
+                         vec2, Color.Black);
+
+                    vec2.Y += 60;
+                }
+
+
+                
+                
                 m_spriteBatch.End();
             }
 

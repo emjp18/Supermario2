@@ -74,14 +74,20 @@ namespace Supermario
         
         public override void Update(GameTime gametime)
         {
-            m_destination.Y = (int)m_position.Y;
+            if(m_destination.Y!=(int)m_position.Y&&m_grounded)
+            {
+                FindPaths();
+                m_destination.Y = (int)m_position.Y;
+            }
+           
             m_pathTimer.Update(gametime.ElapsedGameTime.TotalSeconds);
             if (m_pathTimer.IsDone()&&!m_pathFound)
             {
-                
+               
                 ResetPath();
                 AStarSearch();
                 m_pathTimer.ResetAndStart(m_resetDelay);
+                
             }
             if (m_pathFound)
             {

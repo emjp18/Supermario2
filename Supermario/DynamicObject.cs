@@ -67,30 +67,43 @@ namespace Supermario
 
             if (DistanceNext< DistanceNow)
             {
-                Vector2 collisionNormal = Vector2.Normalize(m_position
-               - other.GetCurrentPos());
-                ////split a1's velocity into parallel and right-angled components
-                Vector2 u1Orthogonal = Vector2.Dot(m_velocity, collisionNormal)
-                * collisionNormal;
-                Vector2 u1Parallel = m_velocity - u1Orthogonal;
-                Vector2 u2Orthogonal = Vector2.Dot(other.GetVelocity(), collisionNormal)
-                * collisionNormal;
-                Vector2 u2Parallel = other.GetVelocity() - u2Orthogonal;
-                float elasticity = 1.1f;
-                //Update the right-angled components of the asteroids' hastigheterna
-                // and add back the parallel components 
-                AddForce(((u1Orthogonal + u2Orthogonal
-                + elasticity * (u2Orthogonal - u1Orthogonal)) / 2 + u1Parallel)
-                );
+                // Vector2 collisionNormal = Vector2.Normalize(m_position
+                //- other.GetCurrentPos());
+                // ////split a1's velocity into parallel and right-angled components
+                // Vector2 u1Orthogonal = Vector2.Dot(m_velocity, collisionNormal)
+                // * collisionNormal;
+                // Vector2 u1Parallel = m_velocity - u1Orthogonal;
+                // Vector2 u2Orthogonal = Vector2.Dot(other.GetVelocity(), collisionNormal)
+                // * collisionNormal;
+                // Vector2 u2Parallel = other.GetVelocity() - u2Orthogonal;
+                // float elasticity = 1.1f;
+                // //Update the right-angled components of the asteroids' hastigheterna
+                // // and add back the parallel components 
 
+                float e = 1.1f;
+                Vector2 WA = (m_mass * m_velocity + other.GetMass() * other.GetVelocity() + e * other.GetMass()
+                        * ((other.GetVelocity() - m_velocity))) / (m_mass + other.GetMass());
 
+                Vector2 WB = (m_mass * m_velocity + other.GetMass() * other.GetVelocity() + e
+                    * (m_mass * (m_velocity - other.GetVelocity()))) / (m_mass + other.GetMass());
+
+                AddForce(WA*50);
                 if (other is DynamicObject)
-                {
-                    other.AddForce(((u1Orthogonal + u2Orthogonal
-                + elasticity * (u1Orthogonal - u2Orthogonal)) / 2 + u2Parallel)
-                );
+                    other.AddForce(WB * 50);
 
-                }
+
+                //AddForce(((u1Orthogonal + u2Orthogonal
+                //+ elasticity * (u2Orthogonal - u1Orthogonal)) / 2 + u1Parallel)
+                //);
+
+
+                //if (other is DynamicObject)
+                //{
+                //    other.AddForce(((u1Orthogonal + u2Orthogonal
+                //+ elasticity * (u1Orthogonal - u2Orthogonal)) / 2 + u2Parallel)
+                //);
+
+                //}
             }
 
            

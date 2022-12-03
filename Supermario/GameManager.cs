@@ -42,6 +42,7 @@ namespace Supermario
         string m_level3 = "level3.json";
         static A_STAR_NODE[,] m_grid;
         Dictionary<LEVEL_TYPE, string> m_levels = new Dictionary<LEVEL_TYPE, string>();
+        static Dictionary<int,string> m_highscore = new Dictionary<int, string>();
         public GameManager(Game game, int resX, int resY)
         {
             m_resourcemanager = new ResourceManager(game);
@@ -51,6 +52,8 @@ namespace Supermario
             m_levelmanager = new LogicManager(game, LEVEL_TYPE.LEVELE);
             m_levels.Add(LEVEL_TYPE.LEVELE, m_levelEditor);
             m_levels.Add(LEVEL_TYPE.LEVEL1, m_level1);
+            m_levels.Add(LEVEL_TYPE.LEVEL2, m_level2);
+            m_levels.Add(LEVEL_TYPE.LEVEL3, m_level3);
             m_resX = resX;
             m_resY = resY;
             m_currentLevel = LEVEL_TYPE.NONE;
@@ -71,6 +74,7 @@ namespace Supermario
            
 
         }
+        public static ref Dictionary<int, string> GetSetHighScore() { return ref m_highscore; }
         public static Point GetLeafNodeBoundsSize() { return m_leafNodeBoundsSize; }
         public static QUAD_NODE GetRootNode() { return m_root; }
         public static A_STAR_NODE[,] GetGrid() { return m_grid; }
@@ -166,7 +170,12 @@ namespace Supermario
             data.x = (int)m_playerStart.X;
             data.y = (int)m_playerStart.Y;
             Player p = new Player(data, viewport);
-          
+            var data1 = ResourceManager.GetSpritedata(SPRITE_TYPE.FLAG);
+            data1.x = (int)m_windowSizeX - (m_tileSize * 2);
+            data1.y = (int)m_playerStart.Y - (m_tileSize);
+            StaticObject flag = new StaticObject(data1);
+            flag.SetIsEditable(false);
+            ResourceManager.AddObject(flag);
             ResourceManager.AddObject(p);
 
             foreach (GameObject s in m_filemanager.GetPipes())

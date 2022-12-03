@@ -3,6 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using SuperMario;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Resources;
 
 namespace Supermario
@@ -73,6 +76,12 @@ namespace Supermario
                     }
                 case GAME_STATE.HIGHSCORE:
                     {
+                        if (KeyMouseReader.KeyPressed(Keys.Escape))
+                        {
+                            GameManager.SetLevel(LEVEL_TYPE.NONE);
+                            GameManager.SetOldLevel(LEVEL_TYPE.NONE);
+                            GameManager.SetState(GAME_STATE.MENU);
+                        }
                         break;
 
                     }
@@ -102,19 +111,41 @@ namespace Supermario
             
             if(GameManager.GetState()!=GameManager.GetOldState())
             {
-                //if(GameManager.GetState()== GAME_STATE.EDITOR)
-                //{
-                //    _graphics.PreferredBackBufferWidth = (int)(m_resX*1.5f);
-                //    _graphics.PreferredBackBufferHeight = (int)(m_resY*1.5f);
-                //    _graphics.ApplyChanges();
-                //}
-                //else
-                //{
-                //    _graphics.PreferredBackBufferWidth = m_resX;
-                //    _graphics.PreferredBackBufferHeight = m_resY;
-                //    _graphics.ApplyChanges();
-                //}
-               
+                if (GameManager.GetState() == GAME_STATE.HIGHSCORE)
+                {
+                    string text1 = "";
+                    if (GameManager.GetOldState() != GameManager.GetState())
+                    {
+                        StreamReader sr = new StreamReader("../../../highscore.txt");
+                        while(!sr.EndOfStream)
+                        {
+                            string line = sr.ReadLine();
+                            if (line[0]=='#')
+                            {
+                                continue;
+                            }
+                            //level 1 32
+                           string[] words = line.Split(' ');
+                            if (!GameManager.GetSetHighScore().ContainsKey(int.Parse(words[2])))
+                            {
+
+                                GameManager.GetSetHighScore().Add(int.Parse(words[2]), line);
+                            }
+                        }
+                      
+                        sr.Close();
+                    }
+                    GameManager.GetSetHighScore() = GameManager.GetSetHighScore().OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
+                    //GameManager.GetSetHighScore().Reverse();
+                    string text = "#highscore\n";
+                    foreach (KeyValuePair<int, string> kv in GameManager.GetSetHighScore())
+                    {
+                        text += kv.Value + "\n";
+                    }
+                    File.WriteAllText("../../../highscore.txt", text);
+                }
+                
+
 
                 GameManager.SetOldState(GameManager.GetState());
             }

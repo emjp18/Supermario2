@@ -13,6 +13,8 @@ namespace Supermario
     {
         Camera m_camera;
         float m_jumpforce = 4;
+        int m_score = 0;
+        Timer m_timer = new Timer();
         public Player(OBJECT_CONSTRUCTION_DATA constructiondata, Viewport viewport) : base(constructiondata)
         {
             m_isEditable = false;
@@ -21,6 +23,9 @@ namespace Supermario
             m_camera.SetPosition(m_position);
         }
         public Camera GetCamera() { return m_camera; }
+        public int GetSCore() { return m_score; }
+        public void SetScore(int score) { m_score = score; }
+        public ref Timer GetSetTime() { return ref m_timer; }
         public override void Update(GameTime gametime)
         {
             

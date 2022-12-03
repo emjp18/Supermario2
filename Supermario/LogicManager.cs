@@ -17,14 +17,21 @@ namespace Supermario
         static SPRITE_TYPE m_sprite = SPRITE_TYPE.BLOCK;
         const int m_spriteTypeCount = 7;
         const int m_pipedistance = 10;
-        Timer m_timer = new Timer();
-        const double m_time = 30;
+        
+        const double m_time = 45;
+
         public LogicManager(Game game, LEVEL_TYPE currentLevel) : base(game)
         {
             m_currentLevel = currentLevel;
-            m_timer.ResetAndStart(m_time);
+            
         }
-        public void SetLevelType(LEVEL_TYPE currentLevel) { m_currentLevel = currentLevel; }
+        public void SetLevelType(LEVEL_TYPE currentLevel) { m_currentLevel = currentLevel;
+            ResourceManager.GetPlayer().GetSetTime().ResetAndStart(m_time);
+
+            ResourceManager.GetPlayer().SetScore(0);
+
+
+        }
         public static SPRITE_TYPE GetSelection() { return m_sprite; }
         public override void Update(GameTime gameTime)
         {
@@ -68,16 +75,78 @@ namespace Supermario
             }
             else if (GameManager.GetState()==GAME_STATE.GAME)
             {
-                m_timer.Update(gameTime.ElapsedGameTime.TotalSeconds);
-                if(m_timer.IsDone())
+                ResourceManager.GetPlayer().GetSetTime().Update(gameTime.ElapsedGameTime.TotalSeconds);
+                
+
+               if (ResourceManager.GetPlayer().GetCurrentPos().X >=
+                        GameManager.GetWindowSize(true) - GameManager.GetTileSize()*2)
                 {
-                    //GameManager.SetState(GAME_STATE.HIGHSCORE);
+                    ResourceManager.GetPlayer().SetScore(ResourceManager.GetPlayer().GetSCore() + 5*
+                        (int)ResourceManager.GetPlayer().GetSetTime().GetTime());
+
+                    string level = "Level 1";
+                    if(GameManager.GetCurrentLevel()==LEVEL_TYPE.LEVEL2)
+                    {
+                        level = "Level 2";
+                    }
+                    else if(GameManager.GetCurrentLevel() == LEVEL_TYPE.LEVEL3)
+                    {
+                        level = "Level 3";
+                    }
+                    else if (GameManager.GetCurrentLevel() == LEVEL_TYPE.LEVELE)
+                    {
+                        level = "Level C";
+                    }
+                    if(!GameManager.GetSetHighScore().ContainsKey(ResourceManager.GetPlayer().GetSCore()))
+                    {
+                        GameManager.GetSetHighScore().Add(ResourceManager.GetPlayer().GetSCore(), level + " " +
+                        ResourceManager.GetPlayer().GetSCore().ToString());
+                        GameManager.GetSetHighScore() = GameManager.GetSetHighScore().OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+                        
+                    }
+                    GameManager.SetState(GAME_STATE.HIGHSCORE);
                 }
+                if (ResourceManager.GetPlayer().GetSetTime().IsDone())
+                {
+                    string level = "Level 1";
+                    if (GameManager.GetCurrentLevel() == LEVEL_TYPE.LEVEL2)
+                    {
+                        level = "Level 2";
+                    }
+                    else if (GameManager.GetCurrentLevel() == LEVEL_TYPE.LEVEL3)
+                    {
+                        level = "Level 3";
+                    }
+                    else if (GameManager.GetCurrentLevel() == LEVEL_TYPE.LEVELE)
+                    {
+                        level = "Level C";
+                    }
+
+                    GameManager.GetSetHighScore().Add(ResourceManager.GetPlayer().GetSCore(), level + " " +
+                        ResourceManager.GetPlayer().GetSCore().ToString());
+                    GameManager.GetSetHighScore() = GameManager.GetSetHighScore().OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
+                    //GameManager.GetSetHighScore().Reverse();
+                    GameManager.SetState(GAME_STATE.HIGHSCORE);
+                }
+
                 foreach (Enemy e in ResourceManager.GetEnemies())
                 {
-                    if (ResourceManager.GetPlayer().PixelIntersects(e))
+                    if (ResourceManager.GetPlayer().CircleIntersects(e))
                     {
+                        ResourceManager.GetPlayer().Knocback(e);
                         //do something
+                        ResourceManager.GetPlayer().SetScore(ResourceManager.GetPlayer().GetSCore() - 10);
+                    }
+
+
+                }
+                foreach (StaticObject e in ResourceManager.GetMushrooms())
+                {
+                    if (ResourceManager.GetPlayer().CircleIntersects(e))
+                    {
+                        e.SetShouldDraw(false);
+                        //do something
+                        ResourceManager.GetPlayer().SetScore(ResourceManager.GetPlayer().GetSCore() + 10);
                     }
 
 
